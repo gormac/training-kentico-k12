@@ -11,14 +11,11 @@ namespace Identity
         {
         }
 
-        Task<IdentityResult> IKenticoUserManager.UpdatePassword(IUserPasswordStore<User, int> passwordStore, User user, string newPassword)
-        {
-            return base.UpdatePassword(passwordStore, user, newPassword);
-        }
+        // TODO: Can be removed somehow?
+        Task<IdentityResult> IKenticoUserManager.UpdatePassword(IUserPasswordStore<User, int> passwordStore, User user, string newPassword) =>
+            base.UpdatePassword(passwordStore, user, newPassword);
 
-        Task<bool> IKenticoUserManager.VerifyPasswordAsync(IUserPasswordStore<User, int> store, User user, string password)
-        {
-            return base.VerifyPasswordAsync(store, user, password);
-        }
+        Task<bool> IKenticoUserManager.VerifyPasswordAsync(IUserPasswordStore<User, int> store, User user, string password) =>
+            base.VerifyPasswordAsync(store, user, password);
     }
 }

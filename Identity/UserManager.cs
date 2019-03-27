@@ -2,13 +2,17 @@
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 
+using Kentico.Membership;
+
+using Identity.Models;
+
 namespace Identity
 {
-    public class UserManager : UserManager<Models.User, int>
+    public class UserManager : UserManager<MedioClinicUser, int>
     {
         public IKenticoUserManager KenticoUserManager { get; }
 
-        public UserManager(IUserStore<Models.User, int> store, IKenticoUserManager kenticoUserManager) : base(store) =>
+        public UserManager(IUserStore<MedioClinicUser, int> store, IKenticoUserManager kenticoUserManager) : base(store) =>
             KenticoUserManager = KenticoUserManager ?? throw new ArgumentNullException(nameof(kenticoUserManager));
 
         //public static T Initialize<T>(IAppBuilder app, T manager) where T : UserManager
@@ -27,10 +31,10 @@ namespace Identity
         //    return manager;
         //}
 
-        protected override Task<IdentityResult> UpdatePassword(IUserPasswordStore<Models.User, int> passwordStore, Models.User user, string newPassword) =>
-            KenticoUserManager.UpdatePassword((IUserPasswordStore<Kentico.Membership.User, int>)passwordStore, user, newPassword);
+        protected override Task<IdentityResult> UpdatePassword(IUserPasswordStore<MedioClinicUser, int> passwordStore, MedioClinicUser user, string newPassword) =>
+            KenticoUserManager.UpdatePassword((IUserPasswordStore<User, int>)passwordStore, user, newPassword);
 
-        protected override Task<bool> VerifyPasswordAsync(IUserPasswordStore<Models.User, int> store, Models.User user, string password) =>
-            KenticoUserManager.VerifyPasswordAsync((IUserPasswordStore<Kentico.Membership.User, int>)store, user, password);
+        protected override Task<bool> VerifyPasswordAsync(IUserPasswordStore<MedioClinicUser, int> store, MedioClinicUser user, string password) =>
+            KenticoUserManager.VerifyPasswordAsync((IUserPasswordStore<User, int>)store, user, password);
     }
 }

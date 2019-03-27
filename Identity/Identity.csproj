@@ -513,8 +513,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\UserExtensions.cs" />
+    <Compile Include="Helpers\UserHelper.cs" />
     <Compile Include="IKenticoUserManager.cs" />
+    <Compile Include="IKenticoUserStore.cs" />
     <Compile Include="KenticoUserManager.cs" />
+    <Compile Include="KenticoUserStore.cs" />
     <Compile Include="Models\Gender.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
