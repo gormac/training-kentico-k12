@@ -14,19 +14,20 @@ using Identity.Helpers;
 
 namespace Identity
 {
-    public class UserStore : IUserPasswordStore<MedioClinicUser, int>,
-                             IUserLockoutStore<MedioClinicUser, int>,
-                             IUserTwoFactorStore<MedioClinicUser, int>,
-                             IUserRoleStore<MedioClinicUser, int>,
-                             IUserEmailStore<MedioClinicUser, int>,
-                             IUserLoginStore<MedioClinicUser, int>,
-                             IUserSecurityStampStore<MedioClinicUser, int>
+    public class MedioClinicUserStore : 
+        IUserPasswordStore<MedioClinicUser, int>,
+        IUserLockoutStore<MedioClinicUser, int>,
+        IUserTwoFactorStore<MedioClinicUser, int>,
+        IUserRoleStore<MedioClinicUser, int>,
+        IUserEmailStore<MedioClinicUser, int>,
+        IUserLoginStore<MedioClinicUser, int>,
+        IUserSecurityStampStore<MedioClinicUser, int>
     {
         private ISiteContextService SiteContextService { get; }
 
         private IKenticoUserStore KenticoUserStore { get; }
 
-        public UserStore(ISiteContextService siteContextService, IKenticoUserStore kenticoUserStore)
+        public MedioClinicUserStore(ISiteContextService siteContextService, IKenticoUserStore kenticoUserStore)
         {
             SiteContextService = siteContextService ?? throw new ArgumentNullException(nameof(siteContextService));
             kenticoUserStore = kenticoUserStore ?? throw new ArgumentNullException(nameof(kenticoUserStore));

@@ -8,11 +8,11 @@ using Identity.Models;
 
 namespace Identity
 {
-    public class UserManager : UserManager<MedioClinicUser, int>
+    public class MedioClinicUserManager : UserManager<MedioClinicUser, int>
     {
         public IKenticoUserManager KenticoUserManager { get; }
 
-        public UserManager(IUserStore<MedioClinicUser, int> store, IKenticoUserManager kenticoUserManager) : base(store) =>
+        public MedioClinicUserManager(IUserStore<MedioClinicUser, int> store, IKenticoUserManager kenticoUserManager) : base(store) =>
             KenticoUserManager = KenticoUserManager ?? throw new ArgumentNullException(nameof(kenticoUserManager));
 
         //public static T Initialize<T>(IAppBuilder app, T manager) where T : UserManager

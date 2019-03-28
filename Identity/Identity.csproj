@@ -519,11 +519,12 @@
     <Compile Include="IKenticoUserStore.cs" />
     <Compile Include="KenticoUserManager.cs" />
     <Compile Include="KenticoUserStore.cs" />
+    <Compile Include="MedioClinicSignInManager.cs" />
     <Compile Include="Models\Gender.cs" />
-    <Compile Include="Models\User.cs" />
+    <Compile Include="Models\MedioClinicUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UserManager.cs" />
-    <Compile Include="UserStore.cs" />
+    <Compile Include="MedioClinicUserManager.cs" />
+    <Compile Include="MedioClinicUserStore.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
