@@ -515,10 +515,11 @@
   <ItemGroup>
     <Compile Include="Extensions\UserExtensions.cs" />
     <Compile Include="Helpers\UserHelper.cs" />
-    <Compile Include="IKenticoUserManager.cs" />
-    <Compile Include="IKenticoUserStore.cs" />
-    <Compile Include="KenticoUserManager.cs" />
-    <Compile Include="KenticoUserStore.cs" />
+    <Compile Include="Proxies\IKenticoRoleStore.cs" />
+    <Compile Include="Proxies\IKenticoUserManager.cs" />
+    <Compile Include="Proxies\IKenticoUserStore.cs" />
+    <Compile Include="Proxies\KenticoUserManager.cs" />
+    <Compile Include="Proxies\KenticoUserStore.cs" />
     <Compile Include="MedioClinicSignInManager.cs" />
     <Compile Include="Models\Gender.cs" />
     <Compile Include="Models\MedioClinicUser.cs" />

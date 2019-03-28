@@ -1,35 +1,37 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security.DataProtection;
+using Owin;
 
 using Kentico.Membership;
 
 using Identity.Models;
+using Identity.Proxies;
 
 namespace Identity
 {
-    public class MedioClinicUserManager : UserManager<MedioClinicUser, int>
+    public class MedioClinicUserManager : Microsoft.AspNet.Identity.UserManager<MedioClinicUser, int>
     {
         public IKenticoUserManager KenticoUserManager { get; }
 
-        public MedioClinicUserManager(IUserStore<MedioClinicUser, int> store, IKenticoUserManager kenticoUserManager) : base(store) =>
+        public MedioClinicUserManager(IAppBuilder app, IUserStore<MedioClinicUser, int> store, IKenticoUserManager kenticoUserManager) : base(store)
+        {
             KenticoUserManager = KenticoUserManager ?? throw new ArgumentNullException(nameof(kenticoUserManager));
+            var provider = app.GetDataProtectionProvider();
 
-        //public static T Initialize<T>(IAppBuilder app, T manager) where T : UserManager
-        //{
-        //    var provider = app.GetDataProtectionProvider();
-        //    if (provider != null)
-        //    {
-        //        manager.UserTokenProvider = new DataProtectorTokenProvider<Models.User, int>(provider.Create("Kentico.Membership"));
-        //    }
+            if (provider != null)
+            {
+                // TODO: Can the "Kentico.Membership" purpose identifier be reused?
+                UserTokenProvider = new DataProtectorTokenProvider<MedioClinicUser, int>(provider.Create("Kentico.Membership"));
+            }
 
-        //    manager.PasswordValidator = new PasswordValidator();
-        //    manager.UserLockoutEnabledByDefault = false;
-        //    manager.EmailService = new EmailService();
-        //    manager.UserValidator = new UserValidator<Models.User, int>(manager);
-
-        //    return manager;
-        //}
+            PasswordValidator = new PasswordValidator();
+            UserLockoutEnabledByDefault = false;
+            EmailService = new EmailService();
+            UserValidator = new UserValidator<MedioClinicUser, int>(this);
+        }
 
         protected override Task<IdentityResult> UpdatePassword(IUserPasswordStore<MedioClinicUser, int> passwordStore, MedioClinicUser user, string newPassword) =>
             KenticoUserManager.UpdatePassword((IUserPasswordStore<User, int>)passwordStore, user, newPassword);

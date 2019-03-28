@@ -9,8 +9,9 @@ using CMS.Membership;
 
 using Business.Services.Context;
 using Identity.Extensions;
-using Identity.Models;
 using Identity.Helpers;
+using Identity.Models;
+using Identity.Proxies;
 
 namespace Identity
 {

@@ -1,4 +1,4 @@
-﻿namespace Identity
+﻿namespace Identity.Proxies
 {
     class KenticoUserStore: Kentico.Membership.UserStore, IKenticoUserStore
     {

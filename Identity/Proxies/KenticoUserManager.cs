@@ -3,7 +3,7 @@ using Microsoft.AspNet.Identity;
 
 using Kentico.Membership;
 
-namespace Identity
+namespace Identity.Proxies
 {
     public class KenticoUserManager : UserManager, IKenticoUserManager
     {
