@@ -1,8 +1,12 @@
 ﻿using System.Globalization;
 using System.Web.Mvc;
+
 using Autofac;
 using Autofac.Integration.Mvc;
+
 using Business.DependencyInjection;
+using Business.Identity;
+using Business.Identity.Proxies;
 using Business.Repository;
 using Business.Services;
 using Business.Services.Context;
@@ -46,6 +50,18 @@ namespace MedioClinic
             builder.RegisterAssemblyTypes(typeof(IRepository).Assembly)
                 .Where(x => x.IsClass && !x.IsAbstract && typeof(IRepository).IsAssignableFrom(x))
                 .AsImplementedInterfaces()
+                .InstancePerRequest();
+
+            builder.Register(context => new KenticoUserStore(context.Resolve<ISiteContextService>().SiteName))
+                .As<IKenticoUserStore>()
+                .InstancePerRequest();
+
+            builder.RegisterType<MedioClinicUserStore>()
+                .As<IMedioClinicUserStore>()
+                .InstancePerRequest();
+
+            builder.RegisterType<MedioClinicUserManager>()
+                .As<IMedioClinicUserManager>()
                 .InstancePerRequest();
 
             // Resolves the dependencies

@@ -2,7 +2,7 @@
 
 using CMS.Membership;
 
-namespace Identity.Models
+namespace Business.Identity.Models
 {
     public class MedioClinicUser : Kentico.Membership.User
     {
@@ -12,6 +12,10 @@ namespace Identity.Models
         public string Street { get; set; }
         public string Phone { get; set; }
         public string Nationality { get; set; }
+
+        public MedioClinicUser()
+        {
+        }
 
         public MedioClinicUser(UserInfo userInfo) : base(userInfo)
         {

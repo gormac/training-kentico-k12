@@ -1,4 +1,4 @@
-﻿namespace Identity.Models
+﻿namespace Business.Identity.Models
 {
     public enum Gender
     {

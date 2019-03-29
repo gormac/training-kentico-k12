@@ -2,19 +2,20 @@
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 
-using Identity.Models;
+using Business.Identity.Models;
+using Microsoft.AspNet.Identity;
 
-namespace Identity
+namespace Business.Identity
 {
-    public class MedioClinicSignInManager : SignInManager<MedioClinicUser, int>
+    public class MedioClinicSignInManager : SignInManager<MedioClinicUser, int>, IMedioClinicSignInManager
     {
         /// <summary>
         /// Creates the instance of <see cref="MedioClinicSignInManager"/>.
         /// </summary>
         /// <param name="userManager">User manager.</param>
         /// <param name="authenticationManager">Authentication manager.</param>
-        public MedioClinicSignInManager(MedioClinicUserManager userManager, IAuthenticationManager authenticationManager)
-        : base(userManager, authenticationManager)
+        public MedioClinicSignInManager(IMedioClinicUserManager userManager, IAuthenticationManager authenticationManager)
+        : base(userManager as UserManager<MedioClinicUser, int>, authenticationManager)
         {
         }
 

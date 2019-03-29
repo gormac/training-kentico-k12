@@ -1,28 +1,16 @@
-﻿using System;
-
-using CMS.Membership;
+﻿using CMS.Membership;
 using Kentico.Membership;
 
 using Business.Services.Context;
-using Identity.Models;
-using Identity.Helpers;
+using Business.Identity.Models;
+using Business.Identity.Helpers;
 
-namespace Identity.Extensions
+namespace Business.Identity.Extensions
 {
     public static class UserExtensions
     {
         public static MedioClinicUser ToMedioClinicUser(this UserInfo userInfo, ISiteContextService siteContextService)
         {
-            if (userInfo == null)
-            {
-                throw new ArgumentNullException(nameof(UserInfo));
-            }
-
-            if (siteContextService == null)
-            {
-                throw new ArgumentNullException(nameof(siteContextService));
-            }
-
             if (new User(UserInfoProvider.CheckUserBelongsToSite(userInfo, siteContextService.SiteName)) is MedioClinicUser medioClinicUser)
             {
                 medioClinicUser.DateOfBirth = userInfo.UserSettings.UserDateOfBirth;

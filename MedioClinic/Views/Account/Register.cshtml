@@ -1,0 +1,59 @@
+﻿@using MedioClinic.Models.Account
+
+@model MedioClinic.Models.PageViewModel<RegisterViewModel>
+
+@using (Html.BeginForm("Register", "Account"))
+{
+    @Html.AntiForgeryToken()
+    <div class="container">
+        <div class="row">
+            <div class="section">
+                <div class="col l6 m12 s12">
+                    <h4>Register</h4>
+                    <p>
+                        <a href="@Url.Action("SignIn", "Account")" class="kn-smaller">Already registered?</a>
+                        @Html.ValidationSummary()
+                        <div class="row kn-row-margin">
+                            <div class="input-field col s6">
+                                @*TODO: Custom HTML helper*@
+                                @Html.TextBoxFor(m => m.Data.FirstName, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.FirstName) })
+                            </div>
+                        </div>
+                        <div class="row kn-row-margin">
+                            <div class="input-field col s6">
+                                @Html.TextBoxFor(m => m.Data.LastName, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.LastName) })
+                            </div>
+                        </div>
+                        <div class="row kn-row-margin">
+                            <div class="input-field col s6">
+                                @Html.TextBoxFor(m => m.Data.Email, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.Email) })
+                            </div>
+                        </div>
+                        <div class="row kn-row-margin">
+                            <div class="input-field col s6">
+                                @Html.PasswordFor(m => m.Data.Password, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.Password) })
+                            </div>
+                        </div>
+                        <div class="row kn-row-margin">
+                            <div class="input-field col s6">
+                                @Html.PasswordFor(m => m.Data.ConfirmPassword, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.ConfirmPassword) })
+                            </div>
+                        </div>
+                        <div class="row kn-row-margin">
+                            <div>
+                                <button class="btn waves-effect waves-light red darken-3" type="submit">Create my account</button>
+                            </div>
+                        </div>
+                    </p>
+                </div>
+            </div>
+            <p>
+                @Html.CheckBoxFor(m => m.Data.MarketingConsent)
+            </p>
+
+        </div>
+        <div class="col l6 m12 s12">
+            <img class="responsive-img kn-img-margin" src="assets/Sign-In%20photo/signinphoto.jpg">
+        </div>
+    </div>
+}

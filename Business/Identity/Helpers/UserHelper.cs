@@ -1,7 +1,7 @@
 ﻿using CMS.Membership;
-using Identity.Models;
+using Business.Identity.Models;
 
-namespace Identity.Helpers
+namespace Business.Identity.Helpers
 {
     public static class UserHelper
     {

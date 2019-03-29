@@ -8,21 +8,21 @@ using CMS.Helpers;
 using CMS.Membership;
 
 using Business.Services.Context;
-using Identity.Extensions;
-using Identity.Helpers;
-using Identity.Models;
-using Identity.Proxies;
+using Business.Identity.Extensions;
+using Business.Identity.Helpers;
+using Business.Identity.Models;
+using Business.Identity.Proxies;
 
-namespace Identity
+namespace Business.Identity
 {
-    public class MedioClinicUserStore : 
-        IUserPasswordStore<MedioClinicUser, int>,
-        IUserLockoutStore<MedioClinicUser, int>,
-        IUserTwoFactorStore<MedioClinicUser, int>,
-        IUserRoleStore<MedioClinicUser, int>,
-        IUserEmailStore<MedioClinicUser, int>,
-        IUserLoginStore<MedioClinicUser, int>,
-        IUserSecurityStampStore<MedioClinicUser, int>
+    public class MedioClinicUserStore : IMedioClinicUserStore
+        //IUserPasswordStore<MedioClinicUser, int>,
+        //IUserLockoutStore<MedioClinicUser, int>,
+        //IUserTwoFactorStore<MedioClinicUser, int>,
+        //IUserRoleStore<MedioClinicUser, int>,
+        //IUserEmailStore<MedioClinicUser, int>,
+        //IUserLoginStore<MedioClinicUser, int>,
+        //IUserSecurityStampStore<MedioClinicUser, int>
     {
         private ISiteContextService SiteContextService { get; }
 
@@ -31,7 +31,7 @@ namespace Identity
         public MedioClinicUserStore(ISiteContextService siteContextService, IKenticoUserStore kenticoUserStore)
         {
             SiteContextService = siteContextService ?? throw new ArgumentNullException(nameof(siteContextService));
-            kenticoUserStore = kenticoUserStore ?? throw new ArgumentNullException(nameof(kenticoUserStore));
+            KenticoUserStore = kenticoUserStore ?? throw new ArgumentNullException(nameof(kenticoUserStore));
         }
 
         public Task CreateAsync(MedioClinicUser user)

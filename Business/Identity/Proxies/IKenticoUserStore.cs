@@ -5,7 +5,7 @@ using Microsoft.AspNet.Identity;
 
 using Kentico.Membership;
 
-namespace Identity.Proxies
+namespace Business.Identity.Proxies
 {
     public interface IKenticoUserStore
     {
