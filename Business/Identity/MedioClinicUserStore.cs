@@ -16,13 +16,6 @@ using Business.Identity.Proxies;
 namespace Business.Identity
 {
     public class MedioClinicUserStore : IMedioClinicUserStore
-        //IUserPasswordStore<MedioClinicUser, int>,
-        //IUserLockoutStore<MedioClinicUser, int>,
-        //IUserTwoFactorStore<MedioClinicUser, int>,
-        //IUserRoleStore<MedioClinicUser, int>,
-        //IUserEmailStore<MedioClinicUser, int>,
-        //IUserLoginStore<MedioClinicUser, int>,
-        //IUserSecurityStampStore<MedioClinicUser, int>
     {
         private ISiteContextService SiteContextService { get; }
 
@@ -50,6 +43,8 @@ namespace Business.Identity
 
             UserInfoProvider.SetUserInfo(userInfo);
             UserInfoProvider.AddUserToSite(userInfo.UserName, SiteContextService.SiteName);
+
+            user.Id = userInfo.UserID;
 
             return Task.FromResult(0);
         }

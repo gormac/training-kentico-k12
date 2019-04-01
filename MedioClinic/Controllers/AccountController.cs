@@ -1,19 +1,21 @@
-﻿using Business.DependencyInjection;
+﻿using System;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+
+using Business.DependencyInjection;
 using Business.Identity;
 using Business.Identity.Models;
 using MedioClinic.Models;
 using MedioClinic.Models.Account;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using System;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
 
 namespace MedioClinic.Controllers
 {
     public class AccountController : BaseController
     {
+        // TODO: Underscores?
         private MedioClinicSignInManager _signInManager;
 
         public MedioClinicUserManager UserManager { get; }
@@ -42,24 +44,23 @@ namespace MedioClinic.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Register(PageViewModel<RegisterViewModel> model)
+        public async Task<ActionResult> Register(PageViewModel<RegisterViewModel> uploadModel)
         {
             if (ModelState.IsValid)
             {
                 var user = new MedioClinicUser
                 {
-                    UserName = model.Data.Email,
-                    Email = model.Data.Email,
-                    FirstName = model.Data.FirstName,
-                    LastName = model.Data.LastName,
+                    UserName = uploadModel.Data.Email,
+                    Email = uploadModel.Data.Email,
+                    FirstName = uploadModel.Data.FirstName,
+                    LastName = uploadModel.Data.LastName,
                     Enabled = true
                 };
 
-                var result = await UserManager.CreateAsync(user, model.Data.Password);
+                var result = await UserManager.CreateAsync(user, uploadModel.Data.Password);
 
                 if (result.Succeeded)
                 {
-                    // TODO: UserId not found
                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
 
                     return RedirectToAction("Index", "Home");
@@ -68,8 +69,10 @@ namespace MedioClinic.Controllers
                 AddErrors(result);
             }
 
-            // If we got this far, something failed, redisplay form
-            return View(model);
+            // TODO: Localize?
+            var viewModel = GetPageViewModel(uploadModel.Data, "Error");
+
+            return View(viewModel);
         }
 
         private void AddErrors(IdentityResult result)
