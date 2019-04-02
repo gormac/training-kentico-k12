@@ -1,6 +1,7 @@
 ﻿using Business.DependencyInjection;
 using Business.Identity;
 using Business.Identity.Models;
+using MedioClinic.Extensions;
 using MedioClinic.Models;
 using MedioClinic.Models.Account;
 using Microsoft.AspNet.Identity;
@@ -57,23 +58,37 @@ namespace MedioClinic.Controllers
                     Email = uploadModel.Data.Email,
                     FirstName = uploadModel.Data.FirstName,
                     LastName = uploadModel.Data.LastName,
-                    Enabled = true
+
+                    // Registration: Confirmed registration
+                    Enabled = false
+                    
+                    // Registration: Direct sign in
+                    //Enabled = true
                 };
 
                 var result = await UserManager.CreateAsync(user, uploadModel.Data.Password);
 
                 if (result.Succeeded)
                 {
-                    //var token = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                    // Registration: Confirmed registration (begin)
+                    var token = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     //var confirmationUrl = Url.Action("ConfirmUser", "Account", new { userId = user.Id, token });
+                    var confirmationUrl = Url.AbsoluteUrl(Request, "ConfirmUser", "Account", new { userId = user.Id, token });
 
-                    // TDOO: Localize
-                    //await UserManager.SendEmailAsync(user.Id, "Confirm your new account",
-                        //$"To finish the registration process at Medio Clinic, please <a href=\"{confirmationUrl}\">confirm your new account</a> at Medio Clinic.");
-                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                    // TODO: Localize
+                    await UserManager.SendEmailAsync(user.Id, "Confirm your new account",
+                        $"To finish the registration process at Medio Clinic, please <a href=\"{confirmationUrl}\">confirm your new account</a>.");
 
-                    // TODO: Thank you, check your inbox
-                    return RedirectToAction("Index", "Home");
+                    ViewBag.Message = "Thank you for registering at Medio Clinic! Please check your mailbox and click the confirmation link in the message we've just sent to you.";
+
+                    return View("SimpleMessage", GetPageViewModel("Registration started"));
+                    // Registration: Confirmed registration (end)
+
+                    // Registration: Direct sign in (begin)
+                    /*await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+
+                    return RedirectToAction("Index", "Home");*/
+                    // Registration: Direct sign in (end)
                 }
 
                 AddErrors(result);
@@ -85,6 +100,7 @@ namespace MedioClinic.Controllers
             return View(viewModel);
         }
 
+        // Registration: Confirmed registration (begin)
         // GET: /Account/ConfirmUser
         public async Task<ActionResult> ConfirmUser(int? userId, string token)
         {
@@ -107,8 +123,9 @@ namespace MedioClinic.Controllers
                 }
             }
 
-            return View();
+            return View("SimpleMessage", GetPageViewModel("Account confirmed"));
         }
+        // Registration: Confirmed registration (end)
 
         // GET: /Account/Signin
         public ActionResult Signin()
@@ -128,19 +145,26 @@ namespace MedioClinic.Controllers
                 return View(GetPageViewModel(uploadModel.Data, "Sign in"));
             }
 
+            var user = await UserManager.FindByEmailAsync(uploadModel.Data.Email);
+
+            // Registration: Confirmed registration (begin)
+            if (user != null && !await UserManager.IsEmailConfirmedAsync(user.Id))
+            {
+                return InvalidAttempt(uploadModel);
+            }
+            // Registration: Confirmed registration (end)
+
             var result = await SignInManager.PasswordSignInAsync(uploadModel.Data.Email, uploadModel.Data.Password, uploadModel.Data.StaySignedIn, false);
-            var actionResult = string.IsNullOrEmpty(returnUrl) ? RedirectToAction("Index", "Home") : RedirectToLocal(returnUrl);
 
             switch (result)
             {
                 case SignInStatus.Success:
+                    var actionResult = string.IsNullOrEmpty(returnUrl) ? RedirectToAction("Index", "Home") : RedirectToLocal(returnUrl);
+
                     return actionResult;
                 case SignInStatus.Failure:
                 default:
-                    // TODO: Localize
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-
-                    return View(GetPageViewModel(uploadModel.Data, "Sign in"));
+                    return InvalidAttempt(uploadModel);
             }
         }
 
@@ -153,7 +177,7 @@ namespace MedioClinic.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        private void AddErrors(IdentityResult result)
+        protected void AddErrors(IdentityResult result)
         {
             foreach (var error in result.Errors)
             {
@@ -161,7 +185,7 @@ namespace MedioClinic.Controllers
             }
         }
 
-        private ActionResult RedirectToLocal(string returnUrl)
+        protected ActionResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))
             {
@@ -169,6 +193,14 @@ namespace MedioClinic.Controllers
             }
 
             return RedirectToAction("Index", "Home");
+        }
+
+        protected ActionResult InvalidAttempt(PageViewModel<SigninViewModel> uploadModel)
+        {
+            // TODO: Localize
+            ModelState.AddModelError(string.Empty, "Invalid sign in attempt.");
+
+            return View(GetPageViewModel(uploadModel.Data, "Sign in"));
         }
     }
 }

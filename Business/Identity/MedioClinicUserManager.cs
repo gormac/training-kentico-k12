@@ -18,6 +18,8 @@ namespace Business.Identity
             UserLockoutEnabledByDefault = false;
             EmailService = new EmailService();
             UserValidator = new UserValidator<MedioClinicUser, int>(this);
+
+            // Registration: Confirmed registration
             UserTokenProvider = new EmailTokenProvider<MedioClinicUser, int>();
         }
 

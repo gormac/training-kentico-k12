@@ -750,7 +750,7 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Account\Signin.cshtml" />
-    <Content Include="Views\Account\ConfirmUser.cshtml" />
+    <Content Include="Views\Account\SimpleMessage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Business\Business.csproj">
