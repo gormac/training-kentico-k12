@@ -11,32 +11,32 @@
                 <div class="col l6 m12 s12">
                     <h4>Register</h4>
                     <p>
-                        <a href="@Url.Action("SignIn", "Account")" class="kn-smaller">Already registered?</a>
+                        <a href="@Url.Action("Signin", "Account")" class="kn-smaller">Already registered?</a>
                         @* TODO: Style error messages *@
                         @Html.ValidationSummary()
                         <div class="row kn-row-margin">
-                            <div class="input-field col s6">
+                            <div class="input-field col s10">
                                 @*TODO: Custom HTML helper*@
                                 @Html.TextBoxFor(m => m.Data.FirstName, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.FirstName) })
                             </div>
                         </div>
                         <div class="row kn-row-margin">
-                            <div class="input-field col s6">
+                            <div class="input-field col s10">
                                 @Html.TextBoxFor(m => m.Data.LastName, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.LastName) })
                             </div>
                         </div>
                         <div class="row kn-row-margin">
-                            <div class="input-field col s6">
+                            <div class="input-field col s10">
                                 @Html.TextBoxFor(m => m.Data.Email, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.Email) })
                             </div>
                         </div>
                         <div class="row kn-row-margin">
-                            <div class="input-field col s6">
+                            <div class="input-field col s10">
                                 @Html.PasswordFor(m => m.Data.Password, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.Password) })
                             </div>
                         </div>
                         <div class="row kn-row-margin">
-                            <div class="input-field col s6">
+                            <div class="input-field col s10">
                                 @Html.PasswordFor(m => m.Data.ConfirmPassword, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.ConfirmPassword) })
                             </div>
                         </div>

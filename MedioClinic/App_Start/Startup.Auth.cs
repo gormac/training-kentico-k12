@@ -33,7 +33,7 @@ namespace MedioClinic
                         regenerateIdentityCallback: (manager, user) => manager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie),
                         getUserIdCallback: ((claimsIdentity) => int.Parse(claimsIdentity.GetUserId()))),
                     // Redirect to logon page with return url
-                    OnApplyRedirect = context => context.Response.Redirect(urlHelper.Action("Login", "Account") + new Uri(context.RedirectUri).Query)
+                    OnApplyRedirect = context => context.Response.Redirect(urlHelper.Action("Signin", "Account") + new Uri(context.RedirectUri).Query)
                 },
                 ExpireTimeSpan = TimeSpan.FromDays(14),
                 SlidingExpiration = true
