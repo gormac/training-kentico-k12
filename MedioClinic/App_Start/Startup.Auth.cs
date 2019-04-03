@@ -38,6 +38,8 @@ namespace MedioClinic
                 ExpireTimeSpan = TimeSpan.FromDays(14),
                 SlidingExpiration = true
             });
+
+            // TODO: Necessary?
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
         }
     }

@@ -54,26 +54,26 @@ namespace MedioClinic.Controllers
             {
                 var user = new MedioClinicUser
                 {
-                    UserName = uploadModel.Data.Email,
-                    Email = uploadModel.Data.Email,
+                    UserName = uploadModel.Data.EmailViewModel.Email,
+                    Email = uploadModel.Data.EmailViewModel.Email,
                     FirstName = uploadModel.Data.FirstName,
                     LastName = uploadModel.Data.LastName,
 
                     // Registration: Confirmed registration
                     Enabled = false
-                    
+
                     // Registration: Direct sign in
                     //Enabled = true
                 };
 
-                var result = await UserManager.CreateAsync(user, uploadModel.Data.Password);
+                var result = await UserManager.CreateAsync(user, uploadModel.Data.PasswordConfirmationViewModel.Password);
 
                 if (result.Succeeded)
                 {
                     // Registration: Confirmed registration (begin)
                     var token = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    //var confirmationUrl = Url.Action("ConfirmUser", "Account", new { userId = user.Id, token });
-                    var confirmationUrl = Url.AbsoluteUrl(Request, "ConfirmUser", "Account", new { userId = user.Id, token });
+                    //var confirmationUrl = Url.Action("ConfirmUser", new { userId = user.Id, token });
+                    var confirmationUrl = Url.AbsoluteUrl(Request, "ConfirmUser", routeValues: new { userId = user.Id, token });
 
                     // TODO: Localize
                     await UserManager.SendEmailAsync(user.Id, "Confirm your new account",
@@ -114,12 +114,12 @@ namespace MedioClinic.Controllers
                 }
                 catch (InvalidOperationException)
                 {
-                    ViewBag.Message = "The user was not found.";
+                    return InvalidToken();
                 }
 
                 if (confirmResult.Succeeded)
                 {
-                    ViewBag.Message = $"Your registration was successfull. You can now <a href=\"{Url.Action("Signin", "Account")}\">sign in</a> to your account.";
+                    ViewBag.Message = $"Your registration was successfull. You can now <a href=\"{Url.Action("Signin")}\">sign in</a> to your account.";
                 }
             }
 
@@ -145,7 +145,7 @@ namespace MedioClinic.Controllers
                 return View(GetPageViewModel(uploadModel.Data, "Sign in"));
             }
 
-            var user = await UserManager.FindByEmailAsync(uploadModel.Data.Email);
+            var user = await UserManager.FindByEmailAsync(uploadModel.Data.EmailViewModel.Email);
 
             // Registration: Confirmed registration (begin)
             if (user != null && !await UserManager.IsEmailConfirmedAsync(user.Id))
@@ -154,7 +154,7 @@ namespace MedioClinic.Controllers
             }
             // Registration: Confirmed registration (end)
 
-            var result = await SignInManager.PasswordSignInAsync(uploadModel.Data.Email, uploadModel.Data.Password, uploadModel.Data.StaySignedIn, false);
+            var result = await SignInManager.PasswordSignInAsync(uploadModel.Data.EmailViewModel.Email, uploadModel.Data.PasswordViewModel.Password, uploadModel.Data.StaySignedIn, false);
 
             switch (result)
             {
@@ -175,6 +175,101 @@ namespace MedioClinic.Controllers
 
             // TODO: Constant
             return RedirectToAction("Index", "Home");
+        }
+
+        // GET: /Account/ForgotPassword
+        [AllowAnonymous]
+        public ActionResult ForgotPassword()
+        {
+            return View(GetPageViewModel("Reset password"));
+        }
+
+        // POST: /Account/ForgotPassword
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ForgotPassword(PageViewModel<EmailViewModel> uploadModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await UserManager.FindByEmailAsync(uploadModel.Data.Email);
+
+                if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
+                {
+                    // Don't reveal that the user does not exist or is not confirmed
+                    return CheckEmailResetPassword();
+                }
+
+                var token = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+                var resetUrl = Url.AbsoluteUrl(Request, "ResetPassword", "Account", new { userId = user.Id, token });
+                await UserManager.SendEmailAsync(user.Id, "Reset your password",
+                    $"Please reset your password by clicking this <a href=\"{resetUrl}\">link</a>");
+
+                return CheckEmailResetPassword();
+            }
+
+            return View(GetPageViewModel(uploadModel.Data, "Reset password"));
+        }
+
+        // GET: /Account/ResetPassword
+        [AllowAnonymous]
+        public async Task<ActionResult> ResetPassword(int? userId, string token)
+        {
+            var tokenVerified = false;
+
+            try
+            {
+                tokenVerified = await UserManager.VerifyUserTokenAsync(userId.Value, "ResetPassword", token);
+            }
+            catch (InvalidOperationException)
+            {
+                return InvalidToken();
+            }
+
+            var model = new ResetPasswordViewModel
+            {
+                UserId = userId.Value,
+                Token = token
+            };
+
+            return View(GetPageViewModel(model, "Reset password"));
+        }
+
+        // POST: /Account/ResetPassword
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ResetPassword(PageViewModel<ResetPasswordViewModel> uploadModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(GetPageViewModel(uploadModel.Data, "Reset password"));
+            }
+
+            var result = IdentityResult.Failed();
+
+            try
+            {
+                result = await UserManager.ResetPasswordAsync(
+                        uploadModel.Data.UserId,
+                        uploadModel.Data.Token,
+                        uploadModel.Data.PasswordConfirmationViewModel.Password);
+
+            }
+            catch (InvalidOperationException)
+            {
+                ViewBag.Message = "User was not found.";
+            }
+
+            if (result.Succeeded)
+            {
+                ViewBag.Message = $"Your password was successfully reset. You can now <a href\"{Url.Action("Signin")}\">sign in</a>.";
+
+                return View("SimpleMessage", GetPageViewModel("Success"));
+            }
+            else
+            {
+                return InvalidToken();
+            }
         }
 
         protected void AddErrors(IdentityResult result)
@@ -201,6 +296,21 @@ namespace MedioClinic.Controllers
             ModelState.AddModelError(string.Empty, "Invalid sign in attempt.");
 
             return View(GetPageViewModel(uploadModel.Data, "Sign in"));
+        }
+
+        protected ActionResult CheckEmailResetPassword()
+        {
+            // TODO: Localize
+            ViewBag.Message = "Please check your email to reset your password.";
+
+            return View("SimpleMessage", GetPageViewModel("Check email"));
+        }
+
+        protected ActionResult InvalidToken()
+        {
+            ViewBag.Message = "The operation cannot be done. The security token is incorrect.";
+
+            return View("SimpleMessage", GetPageViewModel("Invalid token"));
         }
     }
 }

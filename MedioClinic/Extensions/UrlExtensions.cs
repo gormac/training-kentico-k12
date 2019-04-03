@@ -21,11 +21,13 @@ namespace MedioClinic.Extensions
         public static string KenticoImageUrl(this UrlHelper helper, string path, IImageSizeConstraint size = null) =>
             helper.Kentico().ImageUrl(path, size?.GetSizeConstraint() ?? SizeConstraint.Empty);
 
-        public static string AbsoluteUrl(this UrlHelper helper, HttpRequestBase request, string action, string controller, object routeValues)
+        public static string AbsoluteUrl(this UrlHelper helper, HttpRequestBase request, string action, string controller = null, object routeValues = null)
         {
             var scheme = request?.Url?.Scheme;
             var domain = request?.Url?.Host;
-            var relativePath = helper.Action(action, controller, routeValues);
+            var relativePath = string.IsNullOrEmpty(controller)
+                ? helper.Action(action, routeValues)
+                : helper.Action(action, controller, routeValues);
 
             return $"{scheme}://{domain}{relativePath}";
         }

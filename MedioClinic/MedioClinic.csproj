@@ -715,8 +715,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\Account\LoginViewModel.cs" />
+    <Compile Include="Helpers\ViewModelHelper.cs" />
+    <Compile Include="Models\Account\EmailViewModel.cs" />
+    <Compile Include="Models\Account\PasswordViewModel.cs" />
+    <Compile Include="Models\Account\SigninViewModel.cs" />
+    <Compile Include="Models\Account\PasswordConfirmationViewModel.cs" />
     <Compile Include="Models\Account\RegisterViewModel.cs" />
+    <Compile Include="Models\Account\ResetPasswordViewModel.cs" />
     <Compile Include="Models\Contact\ContactViewModel.cs" />
     <Compile Include="Models\Doctors\DoctorDetailViewModel.cs" />
     <Compile Include="Models\Doctors\DoctorsViewModel.cs" />
@@ -750,7 +755,9 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Account\Signin.cshtml" />
-    <Content Include="Views\Account\SimpleMessage.cshtml" />
+    <Content Include="Views\Shared\SimpleMessage.cshtml" />
+    <Content Include="Views\Account\ForgotPassword.cshtml" />
+    <Content Include="Views\Account\ResetPassword.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Business\Business.csproj">
