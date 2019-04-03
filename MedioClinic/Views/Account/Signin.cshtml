@@ -16,12 +16,12 @@
                         <div class="col s12">
                             <div class="row kn-row-margin">
                                 <div class="input-field col s10">
-                                    @Html.TextBoxFor(m => m.Data.Email, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.Email) })
+                                    @Html.TextBoxFor(m => m.Data.EmailViewModel.Email, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.EmailViewModel.Email) })
                                 </div>
                             </div>
                             <div class="row kn-row-margin">
                                 <div class="input-field col s10">
-                                    @Html.PasswordFor(m => m.Data.Password, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.Password) })
+                                    @Html.PasswordFor(m => m.Data.PasswordViewModel.Password, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.PasswordViewModel.Password) })
                                 </div>
                             </div>
                             <div class="row kn-row-margin">
