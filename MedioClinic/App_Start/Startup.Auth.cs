@@ -16,15 +16,16 @@ namespace MedioClinic
     {
         public void ConfigureAuth(IAppBuilder app)
         {
-            app.CreatePerOwinContext(() => DependencyResolver.Current.GetService<IMedioClinicUserManager>() as MedioClinicUserManager);
-            app.CreatePerOwinContext<MedioClinicSignInManager>(MedioClinicSignInManager.Create);
+            app.CreatePerOwinContext(() => DependencyResolver.Current.GetService<IMedioClinicUserManager<MedioClinicUser, int>>() as MedioClinicUserManager);
+            //app.CreatePerOwinContext(() => DependencyResolver.Current.GetService<IMedioClinicSignInManager<MedioClinicUser, int>>() as MedioClinicSignInManager);
 
             // Configure the sign in cookie
             UrlHelper urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);
+
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
-                LoginPath = new PathString("/"),
+                LoginPath = new PathString(urlHelper.Action("Signin", "Account")),
                 Provider = new CookieAuthenticationProvider
                 {
                     OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<MedioClinicUserManager, MedioClinicUser, int>(

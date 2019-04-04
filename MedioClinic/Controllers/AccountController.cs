@@ -16,23 +16,21 @@ namespace MedioClinic.Controllers
 {
     public class AccountController : BaseController
     {
-        // TODO: Underscores?
-        private MedioClinicSignInManager _signInManager;
+        public IMedioClinicUserManager<MedioClinicUser, int> UserManager { get; }
 
-        public MedioClinicUserManager UserManager { get; }
-
-        public MedioClinicSignInManager SignInManager
-        {
-            get => _signInManager ?? HttpContext.GetOwinContext().Get<MedioClinicSignInManager>();
-            private set => _signInManager = value;
-        }
+        public IMedioClinicSignInManager<MedioClinicUser, int> SignInManager { get; }
 
         private IAuthenticationManager AuthenticationManager =>
             HttpContext.GetOwinContext().Authentication;
 
-        public AccountController(IMedioClinicUserManager userManager, IBusinessDependencies dependencies) : base(dependencies)
+        public AccountController(
+            IMedioClinicUserManager<MedioClinicUser, int> userManager, 
+            IMedioClinicSignInManager<MedioClinicUser, int> signInManager, 
+            IBusinessDependencies dependencies) 
+            : base(dependencies)
         {
-            UserManager = userManager as MedioClinicUserManager ?? throw new ArgumentNullException(nameof(UserManager));
+            UserManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            SignInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
         }
 
         // GET: /Account/Register
@@ -72,7 +70,6 @@ namespace MedioClinic.Controllers
                 {
                     // Registration: Confirmed registration (begin)
                     var token = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    //var confirmationUrl = Url.Action("ConfirmUser", new { userId = user.Id, token });
                     var confirmationUrl = Url.AbsoluteUrl(Request, "ConfirmUser", routeValues: new { userId = user.Id, token });
 
                     // TODO: Localize
@@ -102,6 +99,7 @@ namespace MedioClinic.Controllers
 
         // Registration: Confirmed registration (begin)
         // GET: /Account/ConfirmUser
+        [AllowAnonymous]
         public async Task<ActionResult> ConfirmUser(int? userId, string token)
         {
             if (userId.HasValue)
@@ -134,8 +132,8 @@ namespace MedioClinic.Controllers
         }
 
         // POST: /Account/Signin
-        [HttpPost]
         [AllowAnonymous]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Signin(PageViewModel<SigninViewModel> uploadModel, string returnUrl)
         {
@@ -156,16 +154,12 @@ namespace MedioClinic.Controllers
 
             var result = await SignInManager.PasswordSignInAsync(uploadModel.Data.EmailViewModel.Email, uploadModel.Data.PasswordViewModel.Password, uploadModel.Data.StaySignedIn, false);
 
-            switch (result)
+            if (result == SignInStatus.Success)
             {
-                case SignInStatus.Success:
-                    var actionResult = string.IsNullOrEmpty(returnUrl) ? RedirectToAction("Index", "Home") : RedirectToLocal(returnUrl);
-
-                    return actionResult;
-                case SignInStatus.Failure:
-                default:
-                    return InvalidAttempt(uploadModel);
+                return RedirectToLocal(Server.UrlDecode(returnUrl));
             }
+
+            return InvalidAttempt(uploadModel);
         }
 
         // GET: /Account/Signout
@@ -185,6 +179,7 @@ namespace MedioClinic.Controllers
         }
 
         // POST: /Account/ForgotPassword
+        [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ForgotPassword(PageViewModel<EmailViewModel> uploadModel)
@@ -235,8 +230,8 @@ namespace MedioClinic.Controllers
         }
 
         // POST: /Account/ResetPassword
-        [HttpPost]
         [AllowAnonymous]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ResetPassword(PageViewModel<ResetPasswordViewModel> uploadModel)
         {
@@ -282,7 +277,7 @@ namespace MedioClinic.Controllers
 
         protected ActionResult RedirectToLocal(string returnUrl)
         {
-            if (Url.IsLocalUrl(returnUrl))
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
             }

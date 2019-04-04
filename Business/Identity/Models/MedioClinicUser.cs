@@ -4,7 +4,7 @@ using CMS.Membership;
 
 namespace Business.Identity.Models
 {
-    public class MedioClinicUser : Kentico.Membership.User
+    public class MedioClinicUser : Kentico.Membership.User//, IMedioClinicUser
     {
         public DateTime DateOfBirth { get; set; }
         public Gender Gender { get; set; }

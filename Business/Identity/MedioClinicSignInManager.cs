@@ -4,30 +4,27 @@ using Microsoft.Owin.Security;
 
 using Business.Identity.Models;
 using Microsoft.AspNet.Identity;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Business.Identity
 {
-    public class MedioClinicSignInManager : SignInManager<MedioClinicUser, int>, IMedioClinicSignInManager
+    public class MedioClinicSignInManager : SignInManager<MedioClinicUser, int>, IMedioClinicSignInManager<MedioClinicUser, int>
     {
         /// <summary>
         /// Creates the instance of <see cref="MedioClinicSignInManager"/>.
         /// </summary>
         /// <param name="userManager">User manager.</param>
         /// <param name="authenticationManager">Authentication manager.</param>
-        public MedioClinicSignInManager(IMedioClinicUserManager userManager, IAuthenticationManager authenticationManager)
+        public MedioClinicSignInManager(IMedioClinicUserManager<MedioClinicUser, int> userManager, IAuthenticationManager authenticationManager)
         : base(userManager as UserManager<MedioClinicUser, int>, authenticationManager)
         {
         }
 
-
-        /// <summary>
-        /// Factory method that creates the <see cref="MedioClinicSignInManager"/> instance.
-        /// </summary>
-        /// <param name="options">Identity factory options.</param>
-        /// <param name="context">OWIN context.</param>
-        public static MedioClinicSignInManager Create(IdentityFactoryOptions<MedioClinicSignInManager> options, IOwinContext context)
+        IMedioClinicUserManager<MedioClinicUser, int> IMedioClinicSignInManager<MedioClinicUser, int>.UserManager
         {
-            return new MedioClinicSignInManager(context.GetUserManager<MedioClinicUserManager>(), context.Authentication);
+            get => UserManager as IMedioClinicUserManager<MedioClinicUser, int>;
+            set => UserManager = value as UserManager<MedioClinicUser, int>;
         }
     }
 }

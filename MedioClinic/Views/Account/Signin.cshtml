@@ -2,7 +2,7 @@
 
 @model MedioClinic.Models.PageViewModel<SigninViewModel>
 
-@using (Html.BeginForm("Signin", "Account"))
+@using (Html.BeginForm(new { ReturnUrl = Request.QueryString["ReturnUrl"] }))
 {
     @Html.AntiForgeryToken()
     <div class="container">

@@ -1,17 +1,17 @@
-﻿using System.Globalization;
-using System.Web.Mvc;
-
-using Autofac;
+﻿using Autofac;
 using Autofac.Integration.Mvc;
-
 using Business.DependencyInjection;
 using Business.Identity;
+using Business.Identity.Models;
 using Business.Identity.Proxies;
 using Business.Repository;
 using Business.Services;
 using Business.Services.Context;
 using MedioClinic.Config;
 using MedioClinic.Utils;
+using Microsoft.Owin;
+using System.Globalization;
+using System.Web.Mvc;
 
 namespace MedioClinic
 {
@@ -61,7 +61,18 @@ namespace MedioClinic
                 .InstancePerRequest();
 
             builder.RegisterType<MedioClinicUserManager>()
-                .As<IMedioClinicUserManager>()
+                .As<IMedioClinicUserManager<MedioClinicUser, int>>()
+                .InstancePerRequest();
+
+            builder.Register(context =>
+                {
+                    context.TryResolve(out IOwinContext owinContext);
+
+                    return new MedioClinicSignInManager(
+                        context.Resolve<IMedioClinicUserManager<MedioClinicUser, int>>(),
+                        owinContext?.Authentication ?? new OwinContext().Authentication);
+                })
+                .As<IMedioClinicSignInManager<MedioClinicUser, int>>()
                 .InstancePerRequest();
 
             // Resolves the dependencies

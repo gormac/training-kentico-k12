@@ -26,6 +26,7 @@ namespace MedioClinic.Controllers
             MediaLibraryService = mediaLibraryService;
         }
 
+        [Authorize]
         public ActionResult Index()
         {
             var contactSection = ContactSectionRepository.GetContactSection();
