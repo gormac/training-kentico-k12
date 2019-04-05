@@ -7,6 +7,9 @@ using Kentico.Membership;
 
 namespace Business.Identity.Proxies
 {
+    /// <summary>
+    /// Interface that wraps the <see cref="UserStore"/> implementation for DI purposes.
+    /// </summary>
     public interface IKenticoUserStore
     {
         Task AddLoginAsync(User user, UserLoginInfo login);

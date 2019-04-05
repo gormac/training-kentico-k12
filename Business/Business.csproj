@@ -565,7 +565,6 @@
     <Compile Include="Identity\MedioClinicUserManager.cs" />
     <Compile Include="Identity\MedioClinicUserStore.cs" />
     <Compile Include="Identity\Models\Gender.cs" />
-    <Compile Include="Identity\Models\IMedioClinicUser.cs" />
     <Compile Include="Identity\Models\MedioClinicUser.cs" />
     <Compile Include="Identity\Proxies\IKenticoUserStore.cs" />
     <Compile Include="Identity\Proxies\KenticoUserStore.cs" />

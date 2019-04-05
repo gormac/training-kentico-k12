@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 
 using Business.Identity.Models;
-using Microsoft.AspNet.Identity;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Business.Identity
 {

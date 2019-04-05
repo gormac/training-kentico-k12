@@ -1,36 +1,38 @@
-﻿using Business.DependencyInjection;
+﻿using System;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security;
+
+using Business.DependencyInjection;
 using Business.Identity;
 using Business.Identity.Models;
 using MedioClinic.Extensions;
 using MedioClinic.Models;
 using MedioClinic.Models.Account;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
-using System;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
 
 namespace MedioClinic.Controllers
 {
+    // TODO: Improve robustness (try-catch'es, null checks, logging, etc.)
     public class AccountController : BaseController
     {
         public IMedioClinicUserManager<MedioClinicUser, int> UserManager { get; }
 
         public IMedioClinicSignInManager<MedioClinicUser, int> SignInManager { get; }
 
-        private IAuthenticationManager AuthenticationManager =>
-            HttpContext.GetOwinContext().Authentication;
+        protected IAuthenticationManager AuthenticationManager { get; }
 
         public AccountController(
-            IMedioClinicUserManager<MedioClinicUser, int> userManager, 
-            IMedioClinicSignInManager<MedioClinicUser, int> signInManager, 
+            IMedioClinicUserManager<MedioClinicUser, int> userManager,
+            IMedioClinicSignInManager<MedioClinicUser, int> signInManager,
+            IAuthenticationManager authenticationManager,
             IBusinessDependencies dependencies) 
             : base(dependencies)
         {
             UserManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
             SignInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
+            AuthenticationManager = authenticationManager ?? throw new ArgumentNullException(nameof(authenticationManager));
         }
 
         // GET: /Account/Register

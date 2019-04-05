@@ -1,5 +1,11 @@
-﻿using Autofac;
+﻿using System.Globalization;
+using System.Web;
+using System.Web.Mvc;
+using Microsoft.Owin.Security;
+
+using Autofac;
 using Autofac.Integration.Mvc;
+
 using Business.DependencyInjection;
 using Business.Identity;
 using Business.Identity.Models;
@@ -9,9 +15,6 @@ using Business.Services;
 using Business.Services.Context;
 using MedioClinic.Config;
 using MedioClinic.Utils;
-using Microsoft.Owin;
-using System.Globalization;
-using System.Web.Mvc;
 
 namespace MedioClinic
 {
@@ -52,25 +55,32 @@ namespace MedioClinic
                 .AsImplementedInterfaces()
                 .InstancePerRequest();
 
+            // Registers the class that wraps the Kentico.Membership.UserStore class.
             builder.Register(context => new KenticoUserStore(context.Resolve<ISiteContextService>().SiteName))
                 .As<IKenticoUserStore>()
                 .InstancePerRequest();
 
+            // Registers the application-level user store.
             builder.RegisterType<MedioClinicUserStore>()
                 .As<IMedioClinicUserStore>()
                 .InstancePerRequest();
 
+            // Registers the application-level user manager.
             builder.RegisterType<MedioClinicUserManager>()
                 .As<IMedioClinicUserManager<MedioClinicUser, int>>()
                 .InstancePerRequest();
 
+            // Registers the authentication manager of the OWIN context for DI retrieval.
+            builder.Register(context =>
+                HttpContext.Current.GetOwinContext().Authentication)
+                .As<IAuthenticationManager>();
+
+            // Registers the application-level sign in manager.
             builder.Register(context =>
                 {
-                    context.TryResolve(out IOwinContext owinContext);
-
                     return new MedioClinicSignInManager(
                         context.Resolve<IMedioClinicUserManager<MedioClinicUser, int>>(),
-                        owinContext?.Authentication ?? new OwinContext().Authentication);
+                        context.Resolve<IAuthenticationManager>());
                 })
                 .As<IMedioClinicSignInManager<MedioClinicUser, int>>()
                 .InstancePerRequest();

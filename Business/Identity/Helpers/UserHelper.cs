@@ -5,23 +5,28 @@ namespace Business.Identity.Helpers
 {
     public static class UserHelper
     {
-        public static void UpdateUserInfo(ref UserInfo userInfo, MedioClinicUser user)
+        /// <summary>
+        /// Updates the custom fields of the <see cref="UserInfo"/> object with strongly-typed properties of the <see cref="MedioClinicUser"/> object.
+        /// </summary>
+        /// <param name="userInfo">The object to update.</param>
+        /// <param name="medioClinicUser">The input object.</param>
+        public static void UpdateUserInfo(ref UserInfo userInfo, MedioClinicUser medioClinicUser)
         {
-            userInfo.UserName = user.UserName;
-            userInfo.FullName = UserInfoProvider.GetFullName(user.FirstName, null, user.LastName);
-            userInfo.FirstName = user.FirstName;
-            userInfo.LastName = user.LastName;
-            userInfo.Email = user.Email;
-            userInfo.Enabled = user.Enabled;
-            userInfo.UserSecurityStamp = user.SecurityStamp;
+            userInfo.UserName = medioClinicUser.UserName;
+            userInfo.FullName = UserInfoProvider.GetFullName(medioClinicUser.FirstName, null, medioClinicUser.LastName);
+            userInfo.FirstName = medioClinicUser.FirstName;
+            userInfo.LastName = medioClinicUser.LastName;
+            userInfo.Email = medioClinicUser.Email;
+            userInfo.Enabled = medioClinicUser.Enabled;
+            userInfo.UserSecurityStamp = medioClinicUser.SecurityStamp;
             userInfo.UserNickName = userInfo.GetFormattedUserName(true);
-            userInfo.SetValue("UserPassword", user.PasswordHash);
-            userInfo.SetValue("DateOfBirth", user.DateOfBirth);
-            userInfo.UserSettings.UserGender = (int)user.Gender;
-            userInfo.SetValue("City", user.City);
-            userInfo.SetValue("Street", user.Street);
-            userInfo.UserSettings.UserPhone = user.Phone;
-            userInfo.SetValue("Nationality", user.Nationality);
+            userInfo.SetValue("UserPassword", medioClinicUser.PasswordHash);
+            userInfo.SetValue("DateOfBirth", medioClinicUser.DateOfBirth);
+            userInfo.UserSettings.UserGender = (int)medioClinicUser.Gender;
+            userInfo.SetValue("City", medioClinicUser.City);
+            userInfo.SetValue("Street", medioClinicUser.Street);
+            userInfo.UserSettings.UserPhone = medioClinicUser.Phone;
+            userInfo.SetValue("Nationality", medioClinicUser.Nationality);
         }
     }
 }

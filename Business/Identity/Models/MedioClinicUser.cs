@@ -4,7 +4,11 @@ using CMS.Membership;
 
 namespace Business.Identity.Models
 {
-    public class MedioClinicUser : Kentico.Membership.User//, IMedioClinicUser
+    // TODO: Allow for retrieval of other UserInfo and UserSettingsInfo properties.
+    /// <summary>
+    /// A derived <see cref="Kentico.Membership.User"/> class created for the purpose of the Medio Clinic website.
+    /// </summary>
+    public class MedioClinicUser : Kentico.Membership.User
     {
         public DateTime DateOfBirth { get; set; }
         public Gender Gender { get; set; }
@@ -17,6 +21,10 @@ namespace Business.Identity.Models
         {
         }
 
+        /// <summary>
+        /// Creates a <see cref="MedioClinicUser"/> object out of a <see cref="UserInfo"/> one.
+        /// </summary>
+        /// <param name="userInfo">The input object.</param>
         public MedioClinicUser(UserInfo userInfo) : base(userInfo)
         {
             if (userInfo == null)

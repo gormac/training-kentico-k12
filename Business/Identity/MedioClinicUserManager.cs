@@ -1,13 +1,12 @@
-﻿using Business.Identity.Models;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.AspNet.Identity;
+
 using CMS.Helpers;
 using CMS.Membership;
+
+using Business.Identity.Models;
 using Kentico.Membership;
-using Microsoft.AspNet.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Business.Identity
 {
@@ -15,7 +14,6 @@ namespace Business.Identity
     {
         public MedioClinicUserManager(IMedioClinicUserStore medioClinicUserStore) : base(medioClinicUserStore)
         {
-            // TODO: Configure rules
             PasswordValidator = new PasswordValidator
             {
                 RequireDigit = true,
@@ -28,7 +26,6 @@ namespace Business.Identity
             UserLockoutEnabledByDefault = false;
             EmailService = new EmailService();
 
-            // TODO: Configure rules
             UserValidator = new UserValidator<MedioClinicUser, int>(this)
             {
                 RequireUniqueEmail = true
@@ -37,51 +34,6 @@ namespace Business.Identity
             // Registration: Confirmed registration
             UserTokenProvider = new EmailTokenProvider<MedioClinicUser, int>();
         }
-
-        //IIdentityValidator<MedioClinicUser> IMedioClinicUserManager<MedioClinicUser, int>.UserValidator
-        //{
-        //    get => UserValidator as IIdentityValidator<MedioClinicUser>;
-        //    set => UserValidator = value as IIdentityValidator<MedioClinicUser>;
-        //}
-
-        //IClaimsIdentityFactory<IMedioClinicUser, int> IMedioClinicUserManager<IMedioClinicUser, int>.ClaimsIdentityFactory
-        //{
-        //    get => ClaimsIdentityFactory as IClaimsIdentityFactory<IMedioClinicUser, int>;
-        //    set => ClaimsIdentityFactory = value as IClaimsIdentityFactory<MedioClinicUser, int>;
-        //}
-
-        //IUserTokenProvider<IMedioClinicUser, int> IMedioClinicUserManager<IMedioClinicUser, int>.UserTokenProvider
-        //{
-        //    get => UserTokenProvider as IUserTokenProvider<IMedioClinicUser, int>;
-        //    set => UserTokenProvider = value as IUserTokenProvider<MedioClinicUser, int>;
-        //}
-
-        //IQueryable<IMedioClinicUser> IMedioClinicUserManager<IMedioClinicUser, int>.Users =>
-        //    Users as IQueryable<IMedioClinicUser>;
-
-        //IDictionary<string, IUserTokenProvider<IMedioClinicUser, int>> IMedioClinicUserManager<IMedioClinicUser, int>.TwoFactorProviders =>
-        //    TwoFactorProviders as IDictionary<string, IUserTokenProvider<IMedioClinicUser, int>>;
-
-        //public Task<bool> CheckPasswordAsync(IMedioClinicUser user, string password) =>
-        //    CheckPasswordAsync(user, password);
-
-        //public Task<IdentityResult> CreateAsync(IMedioClinicUser user) =>
-        //    CreateAsync(user);
-
-        //public Task<IdentityResult> CreateAsync(IMedioClinicUser user, string password) =>
-        //    CreateAsync(user, password);
-
-        //public Task<ClaimsIdentity> CreateIdentityAsync(IMedioClinicUser user, string authenticationType) =>
-        //    CreateIdentityAsync(user, authenticationType);
-
-        //public Task<IdentityResult> DeleteAsync(IMedioClinicUser user) =>
-        //    DeleteAsync(user);
-
-        //public void RegisterTwoFactorProvider(string twoFactorProvider, IUserTokenProvider<IMedioClinicUser, int> provider) =>
-        //    RegisterTwoFactorProvider(twoFactorProvider, provider);
-
-        //public Task<IdentityResult> UpdateAsync(IMedioClinicUser user) =>
-        //    UpdateAsync(user);
 
         /// <summary>
         /// Updates the user password.
@@ -122,7 +74,6 @@ namespace Business.Identity
             return IdentityResult.Success;
         }
 
-
         /// <summary>
         /// Verifies the user password.
         /// </summary>
@@ -142,7 +93,6 @@ namespace Business.Identity
             return Task.FromResult(result);
         }
 
-
         /// <summary>
         /// Updates the security stamp if the store supports it.
         /// </summary>
@@ -154,29 +104,6 @@ namespace Business.Identity
                 await GetSecurityStore().SetSecurityStampAsync(user, NewSecurityStamp());
             }
         }
-
-        //Task<IMedioClinicUser> IMedioClinicUserManager<IMedioClinicUser, int>.FindAsync(string userName, string password) =>
-        //    FindAsync(userName, password);
-
-        //Task<IMedioClinicUser> IMedioClinicUserManager<IMedioClinicUser, int>.FindAsync(UserLoginInfo login)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //Task<IMedioClinicUser> IMedioClinicUserManager<IMedioClinicUser, int>.FindByEmailAsync(string email)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //Task<IMedioClinicUser> IMedioClinicUserManager<IMedioClinicUser, int>.FindByIdAsync(int userId)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //Task<IMedioClinicUser> IMedioClinicUserManager<IMedioClinicUser, int>.FindByNameAsync(string userName)
-        //{
-        //    throw new NotImplementedException();
-        //}
 
         private IUserSecurityStampStore<MedioClinicUser, int> GetSecurityStore()
         {
@@ -190,20 +117,9 @@ namespace Business.Identity
             return cast;
         }
 
-
         private string NewSecurityStamp()
         {
             return Guid.NewGuid().ToString();
         }
-
-        //Task<IdentityResult> IMedioClinicUserManager<IMedioClinicUser, int>.UpdatePassword(IUserPasswordStore<MedioClinicUser, int> passwordStore, MedioClinicUser user, string newPassword)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //Task<bool> IMedioClinicUserManager<IMedioClinicUser, int>.VerifyPasswordAsync(IUserPasswordStore<MedioClinicUser, int> store, MedioClinicUser user, string password)
-        //{
-        //    throw new NotImplementedException();
-        //}
     }
 }
