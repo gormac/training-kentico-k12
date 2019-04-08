@@ -1,8 +1,12 @@
-﻿using CMS.Membership;
+﻿using System.Collections.Generic;
 
+using CMS.Membership;
+
+using Business.Config;
 using Business.Services.Context;
 using Business.Identity.Models;
 using Business.Identity.Helpers;
+using System;
 
 namespace Business.Identity.Extensions
 {
@@ -28,6 +32,28 @@ namespace Business.Identity.Extensions
             UserHelper.UpdateUserInfo(ref userInfo, medioClinicUser);
 
             return userInfo;
+        }
+
+        // TODO: Document
+        public static bool IsDoctor(this MedioClinicUser user, string siteName) =>
+            UserInfoProvider.IsUserInRole(user.UserName, BusinessConfig.DoctorRoleName, siteName);
+
+        public static bool IsPatient(this MedioClinicUser user, string siteName) =>
+            UserInfoProvider.IsUserInRole(user.UserName, BusinessConfig.PatientRoleName, siteName);
+
+        public static Roles ToMedioClinicRoles(this IEnumerable<string> roles)
+        {
+            Roles foundRoles = Roles.None;
+
+            foreach (var role in roles)
+            {
+                if (Enum.TryParse(role, out Roles mcRole))
+                {
+                    foundRoles |= mcRole;
+                }
+            }
+
+            return foundRoles;
         }
     }
 }

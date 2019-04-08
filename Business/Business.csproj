@@ -516,6 +516,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\MedioClinicAuthorizeAttribute.cs" />
+    <Compile Include="Config\BusinessConfig.cs" />
     <Compile Include="DependencyInjection\BusinessDependencies.cs" />
     <Compile Include="DependencyInjection\CmsRegistrationSource.cs" />
     <Compile Include="DependencyInjection\IBusinessDependencies.cs" />
@@ -566,6 +568,7 @@
     <Compile Include="Identity\MedioClinicUserStore.cs" />
     <Compile Include="Identity\Models\Gender.cs" />
     <Compile Include="Identity\Models\MedioClinicUser.cs" />
+    <Compile Include="Identity\Models\Roles.cs" />
     <Compile Include="Identity\Proxies\IKenticoUserStore.cs" />
     <Compile Include="Identity\Proxies\KenticoUserStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

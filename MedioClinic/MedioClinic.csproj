@@ -15,7 +15,7 @@
     <RootNamespace>MedioClinic</RootNamespace>
     <AssemblyName>MedioClinic</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -614,6 +614,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Profile\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Css\Master\icon.css" />
@@ -710,6 +711,7 @@
     <Compile Include="Controllers\DoctorsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\NotFoundController.cs" />
+    <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Extensions\LocalizationExtensions.cs" />
     <Compile Include="Extensions\UrlExtensions.cs" />
     <Compile Include="Global.asax.cs">
@@ -722,6 +724,7 @@
     <Compile Include="Models\Account\PasswordConfirmationViewModel.cs" />
     <Compile Include="Models\Account\RegisterViewModel.cs" />
     <Compile Include="Models\Account\ResetPasswordViewModel.cs" />
+    <Compile Include="Models\Account\UserViewModel.cs" />
     <Compile Include="Models\Contact\ContactViewModel.cs" />
     <Compile Include="Models\Doctors\DoctorDetailViewModel.cs" />
     <Compile Include="Models\Doctors\DoctorsViewModel.cs" />
@@ -781,7 +784,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>50542</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:50542/</IISUrl>
+          <IISUrl>http://localhost/Kentico12_MedioClinic</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
