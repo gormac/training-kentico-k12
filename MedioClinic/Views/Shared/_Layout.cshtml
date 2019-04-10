@@ -52,7 +52,7 @@
             @if (Context.User.Identity.IsAuthenticated)
             {
                 <ul id="user-account" class="dropdown-content">
-                    <li><a href="@Url.Action("Profile", "Account")">Profile</a></li>
+                    <li><a href="@Url.Action("Index", "Profile")">Profile</a></li>
                     <li><a href="@Url.Action("Signout", "Account")">Sign out</a></li>
                 </ul>
             }

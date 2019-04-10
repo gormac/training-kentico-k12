@@ -1,0 +1,92 @@
+﻿@using MedioClinic.Models.Profile
+
+@model MedioClinic.Models.PageViewModel<UserViewModel>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="container">
+        <div class="row">
+                <h4>Patient's Profile Page</h4>
+            <div class="kn-profile-wrapper">@* TODO: CSS *@
+                <div class="col s12 m4">
+                    <div class="kn-profile-infobox kn-text-center">
+                        @* TODO: Glyph *@
+                        <img src="assets/Sign-In photo/patientsprofile.jpg" alt="Ossip Zadkine" class="responsive-img" />
+                        <div class="row">
+                            <div class="col s12">
+                                <div class="row">
+                                    <div class="kn-margin-m kn-padding-m kn-text-medium">
+                                        @Html.DisplayFor(m => m.Data.FirstName) @Html.DisplayFor(m => m.Data.LastName)
+                                    </div>
+                                </div>
+                                @* TODO: Consents *@
+                                <div class="row">
+                                    <div class="kn-smaller">You are not subscribed to any newsletter.</div>
+                                </div>
+                                <div class="row">
+                                    <div class="kn-small">
+                                        <a href="@Url.Action("ForgotPassword", "Account")">Reset password</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col s12 m4">
+                    <div class="kn-profile-additional-info grey lighten-3">
+                        <i class="material-icons kn-profile-additional-info-menu">more_vert</i>
+                        <div class="kn-row">
+                            <div class="col s12 m12">
+                                <h6 class="blue-grey-text text-lighten-2 kn-bold">
+                                    General information
+                                </h6>
+                            </div>
+                            <div class="col s12 m6">
+                                <div class="kn-row">
+                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.Data.FirstName)</div>
+                                    <div>@Html.DisplayFor(m => m.Data.FirstName)</div>
+                                </div>
+                                <div class="kn-row">
+                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.Data.LastName)</div>
+                                    <div>@Html.DisplayFor(m => m.Data.LastName)</div>
+                                </div>
+                                <div class="kn-row">
+                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.Data.DateOfBirth)</div>
+                                    <div>@Html.DisplayFor(m => m.Data.DateOfBirth)</div>
+                                </div>
+                                <div class="kn-row">
+                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.Data.Gender)</div>
+                                    <div>@Html.DisplayFor(m => m.Data.Gender)</div>
+                                </div>
+                            </div>
+                            <div class="col s12 m6">
+                                <div class="kn-row">
+                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.Data.City)</div>
+                                    <div>@Html.DisplayFor(m => m.Data.City)</div>
+                                </div>
+                                <div class="kn-row">
+                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.Data.Street)</div>
+                                    <div>@Html.DisplayFor(m => m.Data.Street)</div>
+                                </div>
+                                <div class="kn-row">
+                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.Data.EmailViewModel.Email)</div>
+                                    <div>@Html.DisplayFor(m => m.Data.EmailViewModel.Email)</div>
+                                </div>
+                                <div class="kn-row">
+                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.Data.Phone)</div>
+                                    <div>@Html.DisplayFor(m => m.Data.Phone)</div>
+                                </div>
+                                <div class="kn-row">
+                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.Data.Nationality)</div>
+                                    <div>@Html.DisplayFor(m => m.Data.Nationality)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}

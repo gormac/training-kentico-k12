@@ -36,7 +36,6 @@ namespace MedioClinic.Controllers
         }
 
         // GET: /Account/Register
-        [AllowAnonymous]
         public ActionResult Register()
         {
             var model = GetPageViewModel(new RegisterViewModel(), "Register");
@@ -46,7 +45,6 @@ namespace MedioClinic.Controllers
 
         // POST: /Account/Register
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(PageViewModel<RegisterViewModel> uploadModel)
         {
@@ -101,7 +99,6 @@ namespace MedioClinic.Controllers
 
         // Registration: Confirmed registration (begin)
         // GET: /Account/ConfirmUser
-        [AllowAnonymous]
         public async Task<ActionResult> ConfirmUser(int? userId, string token)
         {
             if (userId.HasValue)
@@ -134,7 +131,6 @@ namespace MedioClinic.Controllers
         }
 
         // POST: /Account/Signin
-        [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Signin(PageViewModel<SigninViewModel> uploadModel, string returnUrl)
@@ -165,6 +161,7 @@ namespace MedioClinic.Controllers
         }
 
         // GET: /Account/Signout
+        [Authorize]
         public ActionResult Signout()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
@@ -174,14 +171,12 @@ namespace MedioClinic.Controllers
         }
 
         // GET: /Account/ForgotPassword
-        [AllowAnonymous]
         public ActionResult ForgotPassword()
         {
             return View(GetPageViewModel("Reset password"));
         }
 
         // POST: /Account/ForgotPassword
-        [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ForgotPassword(PageViewModel<EmailViewModel> uploadModel)
@@ -208,7 +203,6 @@ namespace MedioClinic.Controllers
         }
 
         // GET: /Account/ResetPassword
-        [AllowAnonymous]
         public async Task<ActionResult> ResetPassword(int? userId, string token)
         {
             var tokenVerified = false;
@@ -232,7 +226,6 @@ namespace MedioClinic.Controllers
         }
 
         // POST: /Account/ResetPassword
-        [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ResetPassword(PageViewModel<ResetPasswordViewModel> uploadModel)

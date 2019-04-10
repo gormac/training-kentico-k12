@@ -12,7 +12,8 @@ using Business.Identity;
 using Business.Identity.Extensions;
 using Business.Identity.Models;
 using MedioClinic.Config;
-using MedioClinic.Models.Account;
+using MedioClinic.Models;
+using MedioClinic.Models.Profile;
 
 namespace MedioClinic.Controllers
 {
@@ -33,7 +34,7 @@ namespace MedioClinic.Controllers
 
             if (user != null)
             {
-                var roles = (await UserManager.GetRolesAsync(user.Id)).ToMedioClinicRoles();
+                var roles = user.Roles.ToMedioClinicRoles();
                 var viewName = "Patient";
                 var title = viewName;
 
@@ -43,9 +44,34 @@ namespace MedioClinic.Controllers
                     title = viewName;
                 }
 
-                var model = GetPageViewModel(user as UserViewModel, title);
+                var model = GetPageViewModel(new UserViewModel
+                {
+                    City = user.City,
+                    DateOfBirth = user.DateOfBirth,
+                    EmailViewModel = new Models.Account.EmailViewModel { Email = user.Email },
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Gender = user.Gender,
+                    Id = user.Id.ToString(),
+                    Nationality = user.Nationality,
+                    Phone = user.Phone,
+                    Street = user.Street
+                }, title);
 
                 return View(viewName, model);
+            }
+
+            return HttpNotFound();
+        }
+
+        // POST: Profile
+        [MedioClinicAuthorize(Roles = Roles.Doctor | Roles.Patient, SiteName = AppConfig.Sitename)]
+        [HttpPost]
+        public async Task<ActionResult> Index(PageViewModel<UserViewModel> uploadModel)
+        {
+            if (ModelState.IsValid)
+            {
+                return HttpNotFound();
             }
 
             return HttpNotFound();

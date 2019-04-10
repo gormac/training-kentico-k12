@@ -18,8 +18,8 @@ namespace Business.Identity.Extensions
         /// <param name="userInfo">The original object.</param>
         /// <param name="siteContextService">Service that supplies the site name.</param>
         /// <returns>The <see cref="MedioClinicUser"/> object.</returns>
-        public static MedioClinicUser ToMedioClinicUser(this UserInfo userInfo, ISiteContextService siteContextService) =>
-            new MedioClinicUser(UserInfoProvider.CheckUserBelongsToSite(userInfo, siteContextService.SiteName));
+        public static MedioClinicUser ToMedioClinicUser(this UserInfo userInfo, string siteName) =>
+            new MedioClinicUser(UserInfoProvider.CheckUserBelongsToSite(userInfo, siteName));
 
         /// <summary>
         /// Creates a <see cref="UserInfo"/> out of a <see cref="MedioClinicUser"/> one.

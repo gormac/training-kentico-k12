@@ -12,7 +12,7 @@ namespace Business.Attributes
 {
     public class MedioClinicAuthorizeAttribute : AuthorizeAttribute
     {
-        public Roles Roles { get; set; }
+        public new Roles Roles { get; set; }
 
         public string SiteName { get; set; }
 

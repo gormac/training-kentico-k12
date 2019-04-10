@@ -11,10 +11,15 @@ namespace Business.Identity.Models
     public class MedioClinicUser : Kentico.Membership.User
     {
         public DateTime DateOfBirth { get; set; }
+
         public Gender Gender { get; set; }
+
         public string City { get; set; }
+
         public string Street { get; set; }
+
         public string Phone { get; set; }
+
         public string Nationality { get; set; }
 
         public MedioClinicUser()
