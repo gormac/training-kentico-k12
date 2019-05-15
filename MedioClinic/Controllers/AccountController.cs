@@ -11,7 +11,7 @@ using Business.Identity.Models;
 using MedioClinic.Extensions;
 using MedioClinic.Models;
 using MedioClinic.Models.Account;
-using CMS.EventLog;
+using MedioClinic.Utils;
 
 namespace MedioClinic.Controllers
 {
@@ -24,16 +24,20 @@ namespace MedioClinic.Controllers
 
         protected IAuthenticationManager AuthenticationManager { get; }
 
+        protected IErrorHelper ErrorHelper { get; }
+
         public AccountController(
             IMedioClinicUserManager<MedioClinicUser, int> userManager,
             IMedioClinicSignInManager<MedioClinicUser, int> signInManager,
             IAuthenticationManager authenticationManager,
+            IErrorHelper errorHelper,
             IBusinessDependencies dependencies) 
             : base(dependencies)
         {
             UserManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
             SignInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
             AuthenticationManager = authenticationManager ?? throw new ArgumentNullException(nameof(authenticationManager));
+            ErrorHelper = errorHelper ?? throw new ArgumentNullException(nameof(errorHelper));
         }
 
         // GET: /Account/Register
@@ -73,7 +77,7 @@ namespace MedioClinic.Controllers
                 }
                 catch (Exception ex)
                 {
-                    EventLogProvider.LogException(nameof(AccountController), nameof(Register), ex);
+                    ErrorHelper.LogException(nameof(AccountController), nameof(Register), ex);
                 }
 
                 if (result != null && result.Succeeded)
@@ -168,7 +172,7 @@ namespace MedioClinic.Controllers
             }
             catch (Exception ex)
             {
-                EventLogProvider.LogException(nameof(AccountController), nameof(Signin), ex);
+                ErrorHelper.LogException(nameof(AccountController), nameof(Signin), ex);
             }
 
             if (status == SignInStatus.Success)
@@ -189,7 +193,7 @@ namespace MedioClinic.Controllers
             }
             catch (Exception ex)
             {
-                EventLogProvider.LogException(nameof(AccountController), nameof(Signout), ex);
+                ErrorHelper.LogException(nameof(AccountController), nameof(Signout), ex);
             }
 
             // TODO: Constant
@@ -227,7 +231,7 @@ namespace MedioClinic.Controllers
                 }
                 catch (Exception ex)
                 {
-                    EventLogProvider.LogException(nameof(AccountController), nameof(ForgotPassword), ex);
+                    ErrorHelper.LogException(nameof(AccountController), nameof(ForgotPassword), ex);
                 }
 
                 var resetUrl = Url.AbsoluteUrl(Request, "ResetPassword", "Account", new { userId = user.Id, token });
@@ -251,7 +255,7 @@ namespace MedioClinic.Controllers
             }
             catch (InvalidOperationException ex)
             {
-                EventLogProvider.LogException(nameof(AccountController), nameof(ResetPassword), ex);
+                ErrorHelper.LogException(nameof(AccountController), nameof(ResetPassword), ex);
 
                 return InvalidToken();
             }
@@ -287,7 +291,7 @@ namespace MedioClinic.Controllers
             }
             catch (InvalidOperationException ex)
             {
-                EventLogProvider.LogException(nameof(AccountController), nameof(ResetPassword), ex);
+                ErrorHelper.LogException(nameof(AccountController), nameof(ResetPassword), ex);
                 ViewBag.Message = "User was not found.";
             }
 

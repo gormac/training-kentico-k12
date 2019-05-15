@@ -733,6 +733,8 @@
     <Compile Include="Models\PageViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Utils\ErrorHelper.cs" />
+    <Compile Include="Utils\IErrorHelper.cs" />
     <Compile Include="Utils\MultiCultureMvcRouteHandler.cs" />
     <Compile Include="Utils\SiteContextService.cs" />
     <Compile Include="Utils\SiteCultureConstraint.cs" />

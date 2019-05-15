@@ -85,6 +85,10 @@ namespace MedioClinic
                 .As<IMedioClinicSignInManager<MedioClinicUser, int>>()
                 .InstancePerRequest();
 
+            // Registers the common error handler
+            builder.RegisterType<ErrorHelper>().As<IErrorHelper>()
+                .InstancePerRequest();
+
             // Resolves the dependencies
             DependencyResolver.SetResolver(new AutofacDependencyResolver(builder.Build()));
         }
