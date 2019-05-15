@@ -757,7 +757,7 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Account\Signin.cshtml" />
-    <Content Include="Views\Shared\SimpleMessage.cshtml" />
+    <Content Include="Views\Shared\ViewbagMessage.cshtml" />
     <Content Include="Views\Account\ForgotPassword.cshtml" />
     <Content Include="Views\Account\ResetPassword.cshtml" />
     <Content Include="Views\Profile\Patient.cshtml" />

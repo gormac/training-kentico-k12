@@ -68,7 +68,7 @@ namespace Business.Identity
             {
                 UserInfoProvider.SetPassword(userInfo, newPassword);
                 user.PasswordHash = ValidationHelper.GetString(userInfo.GetValue("UserPassword"), string.Empty);
-                await UpdateSecurityStampInternal(user);
+                await UpdateSecurityStampInternalAsync(user);
             }
 
             return IdentityResult.Success;
@@ -97,7 +97,7 @@ namespace Business.Identity
         /// Updates the security stamp if the store supports it.
         /// </summary>
         /// <param name="user">User whose stamp should be updated.</param>
-        internal async Task UpdateSecurityStampInternal(MedioClinicUser user)
+        internal async Task UpdateSecurityStampInternalAsync(MedioClinicUser user)
         {
             if (SupportsUserSecurityStamp)
             {

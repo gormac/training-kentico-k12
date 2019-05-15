@@ -11,6 +11,7 @@ using Business.Identity.Models;
 using MedioClinic.Extensions;
 using MedioClinic.Models;
 using MedioClinic.Models.Account;
+using CMS.EventLog;
 
 namespace MedioClinic.Controllers
 {
@@ -64,9 +65,18 @@ namespace MedioClinic.Controllers
                     //Enabled = true
                 };
 
-                var result = await UserManager.CreateAsync(user, uploadModel.Data.PasswordConfirmationViewModel.Password);
+                IdentityResult result = null;
 
-                if (result.Succeeded)
+                try
+                {
+                    result = await UserManager.CreateAsync(user, uploadModel.Data.PasswordConfirmationViewModel.Password);
+                }
+                catch (Exception ex)
+                {
+                    EventLogProvider.LogException(nameof(AccountController), nameof(Register), ex);
+                }
+
+                if (result != null && result.Succeeded)
                 {
                     // Registration: Confirmed registration (begin)
                     var token = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
@@ -78,7 +88,7 @@ namespace MedioClinic.Controllers
 
                     ViewBag.Message = "Thank you for registering at Medio Clinic! Please check your mailbox and click the confirmation link in the message we've just sent to you.";
 
-                    return View("SimpleMessage", GetPageViewModel("Registration started"));
+                    return View("ViewbagMessage", GetPageViewModel("Registration started"));
                     // Registration: Confirmed registration (end)
 
                     // Registration: Direct sign in (begin)
@@ -120,7 +130,7 @@ namespace MedioClinic.Controllers
                 }
             }
 
-            return View("SimpleMessage", GetPageViewModel("Account confirmed"));
+            return View("ViewbagMessage", GetPageViewModel("Account confirmed"));
         }
         // Registration: Confirmed registration (end)
 
@@ -150,9 +160,18 @@ namespace MedioClinic.Controllers
             }
             // Registration: Confirmed registration (end)
 
-            var result = await SignInManager.PasswordSignInAsync(uploadModel.Data.EmailViewModel.Email, uploadModel.Data.PasswordViewModel.Password, uploadModel.Data.StaySignedIn, false);
+            SignInStatus status = SignInStatus.Failure;
 
-            if (result == SignInStatus.Success)
+            try
+            {
+                status = await SignInManager.PasswordSignInAsync(uploadModel.Data.EmailViewModel.Email, uploadModel.Data.PasswordViewModel.Password, uploadModel.Data.StaySignedIn, false);
+            }
+            catch (Exception ex)
+            {
+                EventLogProvider.LogException(nameof(AccountController), nameof(Signin), ex);
+            }
+
+            if (status == SignInStatus.Success)
             {
                 return RedirectToLocal(Server.UrlDecode(returnUrl));
             }
@@ -164,7 +183,14 @@ namespace MedioClinic.Controllers
         [Authorize]
         public ActionResult Signout()
         {
-            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            try
+            {
+                AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            }
+            catch (Exception ex)
+            {
+                EventLogProvider.LogException(nameof(AccountController), nameof(Signout), ex);
+            }
 
             // TODO: Constant
             return RedirectToAction("Index", "Home");
@@ -173,7 +199,9 @@ namespace MedioClinic.Controllers
         // GET: /Account/ForgotPassword
         public ActionResult ForgotPassword()
         {
-            return View(GetPageViewModel("Reset password"));
+            var model = new EmailViewModel();
+
+            return View(GetPageViewModel(model, "Reset password"));
         }
 
         // POST: /Account/ForgotPassword
@@ -187,11 +215,21 @@ namespace MedioClinic.Controllers
 
                 if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
                 {
-                    // Don't reveal that the user does not exist or is not confirmed
+                    // Don't reveal that the user does not exist or is not confirmed.
                     return CheckEmailResetPassword();
                 }
 
-                var token = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+                string token = null;
+
+                try
+                {
+                    token = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+                }
+                catch (Exception ex)
+                {
+                    EventLogProvider.LogException(nameof(AccountController), nameof(ForgotPassword), ex);
+                }
+
                 var resetUrl = Url.AbsoluteUrl(Request, "ResetPassword", "Account", new { userId = user.Id, token });
                 await UserManager.SendEmailAsync(user.Id, "Reset your password",
                     $"Please reset your password by clicking this <a href=\"{resetUrl}\">link</a>");
@@ -211,8 +249,10 @@ namespace MedioClinic.Controllers
             {
                 tokenVerified = await UserManager.VerifyUserTokenAsync(userId.Value, "ResetPassword", token);
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException ex)
             {
+                EventLogProvider.LogException(nameof(AccountController), nameof(ResetPassword), ex);
+
                 return InvalidToken();
             }
 
@@ -245,21 +285,20 @@ namespace MedioClinic.Controllers
                         uploadModel.Data.PasswordConfirmationViewModel.Password);
 
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException ex)
             {
+                EventLogProvider.LogException(nameof(AccountController), nameof(ResetPassword), ex);
                 ViewBag.Message = "User was not found.";
             }
 
             if (result.Succeeded)
             {
-                ViewBag.Message = $"Your password was successfully reset. You can now <a href\"{Url.Action("Signin")}\">sign in</a>.";
+                ViewBag.Message = $"Your password was successfully reset. You can now <a href=\"{Url.Action("Signin")}\">sign in</a>.";
 
-                return View("SimpleMessage", GetPageViewModel("Success"));
+                return View("ViewbagMessage", GetPageViewModel("Success"));
             }
-            else
-            {
-                return InvalidToken();
-            }
+
+            return InvalidToken();
         }
 
         protected void AddErrors(IdentityResult result)
@@ -293,14 +332,14 @@ namespace MedioClinic.Controllers
             // TODO: Localize
             ViewBag.Message = "Please check your email to reset your password.";
 
-            return View("SimpleMessage", GetPageViewModel("Check email"));
+            return View("ViewbagMessage", GetPageViewModel("Check email"));
         }
 
         protected ActionResult InvalidToken()
         {
             ViewBag.Message = "The operation cannot be done. The security token is incorrect.";
 
-            return View("SimpleMessage", GetPageViewModel("Invalid token"));
+            return View("ViewbagMessage", GetPageViewModel("Invalid token"));
         }
     }
 }

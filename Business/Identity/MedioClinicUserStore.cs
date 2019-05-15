@@ -101,7 +101,6 @@ namespace Business.Identity
             }
 
             UserHelper.UpdateUserInfo(ref userInfo, user);
-
             UserInfoProvider.SetUserInfo(userInfo);
 
             return Task.FromResult(0);
