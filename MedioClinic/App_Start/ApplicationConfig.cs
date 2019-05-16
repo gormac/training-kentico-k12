@@ -10,6 +10,7 @@ namespace MedioClinic
             // Enable required Kentico features
 
             builder.UsePreview();
+            builder.UseDataAnnotationsLocalization();
         }
     }
 }

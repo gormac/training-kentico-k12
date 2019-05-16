@@ -7,54 +7,56 @@
     @Html.AntiForgeryToken()
     <div class="container">
         <div class="row">
-            <div class="section">
-                <div class="col l6 m12 s12">
-                    <h4>Register</h4>
-                    <p>
-                        <a href="@Url.Action("Signin", "Account")" class="kn-smaller">Already registered?</a>
-                        @* TODO: Style error messages *@
-                        @Html.ValidationSummary()
-                        <div class="row kn-row-margin">
-                            <div class="input-field col s10">
-                                @*TODO: Custom HTML helper*@
-                                @Html.TextBoxFor(m => m.Data.FirstName, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.FirstName) })
-                            </div>
-                        </div>
-                        <div class="row kn-row-margin">
-                            <div class="input-field col s10">
-                                @Html.TextBoxFor(m => m.Data.LastName, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.LastName) })
-                            </div>
-                        </div>
-                        <div class="row kn-row-margin">
-                            <div class="input-field col s10">
-                                @Html.TextBoxFor(m => m.Data.EmailViewModel.Email, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.EmailViewModel.Email) })
-                            </div>
-                        </div>
-                        <div class="row kn-row-margin">
-                            <div class="input-field col s10">
-                                @Html.PasswordFor(m => m.Data.PasswordConfirmationViewModel.Password, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.PasswordConfirmationViewModel.Password) })
-                            </div>
-                        </div>
-                        <div class="row kn-row-margin">
-                            <div class="input-field col s10">
-                                @Html.PasswordFor(m => m.Data.PasswordConfirmationViewModel.ConfirmPassword, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.PasswordConfirmationViewModel.ConfirmPassword) })
-                            </div>
-                        </div>
-                        <div class="row kn-row-margin">
-                            <div>
-                                <button class="btn waves-effect waves-light red darken-3" type="submit">Create my account</button>
-                            </div>
-                        </div>
-                    </p>
-                </div>
-            </div>
-            <p>
-                @Html.CheckBoxFor(m => m.Data.MarketingConsent)
-            </p>
-
+            <h4>Register</h4>
         </div>
-        <div class="col l6 m12 s12">
-            <img class="responsive-img kn-img-margin" src="assets/Sign-In%20photo/signinphoto.jpg">
+        <div class="row section">
+            <div class="col l6 m12 s12">
+                <p>
+                    <a href="@Url.Action("Signin", "Account")" class="kn-smaller">Already registered?</a>
+                    @* TODO: Style error messages *@
+                    @Html.ValidationSummary()
+                    <div class="row kn-row-margin">
+                        <div class="input-field col s10">
+                            @*TODO: Custom HTML helper*@
+                            @Html.TextBoxFor(m => m.Data.FirstName, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.FirstName) })
+                        </div>
+                    </div>
+                    <div class="row kn-row-margin">
+                        <div class="input-field col s10">
+                            @Html.TextBoxFor(m => m.Data.LastName, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.LastName) })
+                        </div>
+                    </div>
+                    <div class="row kn-row-margin">
+                        <div class="input-field col s10">
+                            @Html.TextBoxFor(m => m.Data.EmailViewModel.Email, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.EmailViewModel.Email) })
+                        </div>
+                    </div>
+                    <div class="row kn-row-margin">
+                        <div class="input-field col s10">
+                            @Html.PasswordFor(m => m.Data.PasswordConfirmationViewModel.Password, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.PasswordConfirmationViewModel.Password) })
+                        </div>
+                    </div>
+                    <div class="row kn-row-margin">
+                        <div class="input-field col s10">
+                            @Html.PasswordFor(m => m.Data.PasswordConfirmationViewModel.ConfirmPassword, new { @class = "validate", placeholder = Html.DisplayNameFor(m => m.Data.PasswordConfirmationViewModel.ConfirmPassword) })
+                        </div>
+                    </div>
+                    <div class="row kn-row-margin">
+                        <div class="input-field col s10">
+                            @Html.CheckBoxFor(m => m.Data.MarketingConsent)
+                            @Html.LabelFor(m => m.Data.MarketingConsent)
+                        </div>
+                    </div>
+                    <div class="row kn-row-margin">
+                        <div>
+                            <button class="btn waves-effect waves-light red darken-3" type="submit">Create my account</button>
+                        </div>
+                    </div>
+                </p>
+            </div>
+            <div class="col l6 m12 s12">
+                <img class="responsive-img kn-img-margin" src="@Url.Content("~/Content/Images/register-signin.jpg")">
+            </div>
         </div>
     </div>
 }

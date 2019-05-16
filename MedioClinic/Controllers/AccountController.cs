@@ -5,6 +5,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 
+using CMS.Helpers;
 using Business.DependencyInjection;
 using Business.Identity;
 using Business.Identity.Models;
@@ -43,7 +44,7 @@ namespace MedioClinic.Controllers
         // GET: /Account/Register
         public ActionResult Register()
         {
-            var model = GetPageViewModel(new RegisterViewModel(), "Register");
+            var model = GetPageViewModel(new RegisterViewModel(), ResHelper.GetString("Controllers.Account.Register.Title"));
 
             return View(model);
         }
@@ -86,13 +87,13 @@ namespace MedioClinic.Controllers
                     var token = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     var confirmationUrl = Url.AbsoluteUrl(Request, "ConfirmUser", routeValues: new { userId = user.Id, token });
 
-                    // TODO: Localize
-                    await UserManager.SendEmailAsync(user.Id, "Confirm your new account",
-                        $"To finish the registration process at Medio Clinic, please <a href=\"{confirmationUrl}\">confirm your new account</a>.");
+                    await UserManager.SendEmailAsync(user.Id, 
+                        ResHelper.GetString("Controllers.Account.Register.Email.Confirm.Subject"),
+                        ResHelper.GetStringFormat("Controllers.Account.Register.Email.Confirm.Body", confirmationUrl));
 
-                    ViewBag.Message = "Thank you for registering at Medio Clinic! Please check your mailbox and click the confirmation link in the message we've just sent to you.";
+                    ViewBag.Message = ResHelper.GetString("Controllers.Account.Register.ViewbagMessage");
 
-                    return View("ViewbagMessage", GetPageViewModel("Registration started"));
+                    return View("ViewbagMessage", GetPageViewModel(ResHelper.GetString("Controllers.Account.Register.RegistrationStarted")));
                     // Registration: Confirmed registration (end)
 
                     // Registration: Direct sign in (begin)
@@ -105,8 +106,7 @@ namespace MedioClinic.Controllers
                 AddErrors(result);
             }
 
-            // TODO: Localize
-            var viewModel = GetPageViewModel(uploadModel.Data, "Error");
+            var viewModel = GetPageViewModel(uploadModel.Data, ResHelper.GetString("general.error"));
 
             return View(viewModel);
         }
@@ -130,18 +130,18 @@ namespace MedioClinic.Controllers
 
                 if (confirmResult.Succeeded)
                 {
-                    ViewBag.Message = $"Your registration was successfull. You can now <a href=\"{Url.Action("Signin")}\">sign in</a> to your account.";
+                    ViewBag.Message = ResHelper.GetStringFormat("Controllers.Account.ConfirmUser.ViewbagMessage", Url.Action("Signin"));
                 }
             }
 
-            return View("ViewbagMessage", GetPageViewModel("Account confirmed"));
+            return View("ViewbagMessage", GetPageViewModel(ResHelper.GetString("Controllers.Account.ConfirmUser.Title")));
         }
         // Registration: Confirmed registration (end)
 
         // GET: /Account/Signin
         public ActionResult Signin()
         {
-            return View(GetPageViewModel(new SigninViewModel(), "Sign in"));
+            return View(GetPageViewModel(new SigninViewModel(), ResHelper.GetString("logonform.logonbutton")));
         }
 
         // POST: /Account/Signin
@@ -151,8 +151,7 @@ namespace MedioClinic.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // TODO: Localize
-                return View(GetPageViewModel(uploadModel.Data, "Sign in"));
+                return View(GetPageViewModel(uploadModel.Data, ResHelper.GetString("logonform.logonbutton")));
             }
 
             var user = await UserManager.FindByEmailAsync(uploadModel.Data.EmailViewModel.Email);
@@ -205,7 +204,7 @@ namespace MedioClinic.Controllers
         {
             var model = new EmailViewModel();
 
-            return View(GetPageViewModel(model, "Reset password"));
+            return View(GetPageViewModel(model, ResHelper.GetString("passreset.title")));
         }
 
         // POST: /Account/ForgotPassword
@@ -235,13 +234,13 @@ namespace MedioClinic.Controllers
                 }
 
                 var resetUrl = Url.AbsoluteUrl(Request, "ResetPassword", "Account", new { userId = user.Id, token });
-                await UserManager.SendEmailAsync(user.Id, "Reset your password",
-                    $"Please reset your password by clicking this <a href=\"{resetUrl}\">link</a>");
+                await UserManager.SendEmailAsync(user.Id, ResHelper.GetString("passreset.title"),
+                    ResHelper.GetStringFormat("Controllers.Account.ForgotPassword.Email.Body", resetUrl));
 
                 return CheckEmailResetPassword();
             }
 
-            return View(GetPageViewModel(uploadModel.Data, "Reset password"));
+            return View(GetPageViewModel(uploadModel.Data, ResHelper.GetString("passreset.title")));
         }
 
         // GET: /Account/ResetPassword
@@ -266,7 +265,7 @@ namespace MedioClinic.Controllers
                 Token = token
             };
 
-            return View(GetPageViewModel(model, "Reset password"));
+            return View(GetPageViewModel(model, ResHelper.GetString("passreset.title")));
         }
 
         // POST: /Account/ResetPassword
@@ -276,7 +275,7 @@ namespace MedioClinic.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(GetPageViewModel(uploadModel.Data, "Reset password"));
+                return View(GetPageViewModel(uploadModel.Data, ResHelper.GetString("passreset.title")));
             }
 
             var result = IdentityResult.Failed();
@@ -292,24 +291,28 @@ namespace MedioClinic.Controllers
             catch (InvalidOperationException ex)
             {
                 ErrorHelper.LogException(nameof(AccountController), nameof(ResetPassword), ex);
-                ViewBag.Message = "User was not found.";
+                ViewBag.Message = ResHelper.GetString("general.usernotfound");
+
+                return View("ViewbagMessage", GetPageViewModel(ViewBag.Message));
             }
 
             if (result.Succeeded)
             {
-                ViewBag.Message = $"Your password was successfully reset. You can now <a href=\"{Url.Action("Signin")}\">sign in</a>.";
+                ViewBag.Message = ResHelper.GetStringFormat("Controllers.Account.ResetPassword.ViewbagMessage", Url.Action("Signin"));
 
-                return View("ViewbagMessage", GetPageViewModel("Success"));
+                return View("ViewbagMessage", GetPageViewModel(ResHelper.GetString("general.success")));
             }
 
-            return InvalidToken();
+            AddErrors(result);
+
+            return View(GetPageViewModel(uploadModel.Data, ResHelper.GetString("general.error")));
         }
 
         protected void AddErrors(IdentityResult result)
         {
             foreach (var error in result.Errors)
             {
-                ModelState.AddModelError("", error);
+                ModelState.AddModelError(string.Empty, error);
             }
         }
 
@@ -325,25 +328,23 @@ namespace MedioClinic.Controllers
 
         protected ActionResult InvalidAttempt(PageViewModel<SigninViewModel> uploadModel)
         {
-            // TODO: Localize
-            ModelState.AddModelError(string.Empty, "Invalid sign in attempt.");
+            ModelState.AddModelError(string.Empty, ResHelper.GetString("Controllers.Account.InvalidAttempt"));
 
-            return View(GetPageViewModel(uploadModel.Data, "Sign in"));
+            return View(GetPageViewModel(uploadModel.Data, ResHelper.GetString("logonform.logonbutton")));
         }
 
         protected ActionResult CheckEmailResetPassword()
         {
-            // TODO: Localize
-            ViewBag.Message = "Please check your email to reset your password.";
+            ViewBag.Message = ResHelper.GetString("Controllers.Account.CheckEmailResetPassword.ViewbagMessage");
 
-            return View("ViewbagMessage", GetPageViewModel("Check email"));
+            return View("ViewbagMessage", GetPageViewModel(ResHelper.GetString("Controllers.Account.CheckEmailResetPassword.Title")));
         }
 
         protected ActionResult InvalidToken()
         {
-            ViewBag.Message = "The operation cannot be done. The security token is incorrect.";
+            ViewBag.Message = ResHelper.GetString("Controllers.Account.InvalidToken.ViewbagMessage");
 
-            return View("ViewbagMessage", GetPageViewModel("Invalid token"));
+            return View("ViewbagMessage", GetPageViewModel(ResHelper.GetString("Controllers.Account.InvalidToken.Title")));
         }
     }
 }

@@ -5,8 +5,8 @@ namespace MedioClinic.Models.Account
     public class PasswordConfirmationViewModel : PasswordViewModel
     {
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [Display(Name = "general.confirmpassword")]
+        [Compare("Password", ErrorMessage = "changepassword.errornewpassword")]
         public string ConfirmPassword { get; set; }
     }
 }

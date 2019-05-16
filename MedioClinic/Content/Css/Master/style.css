@@ -763,3 +763,28 @@ span.kn-badge.closed {
 .kn-text-medium {
     font-size: 1.8rem;
 }
+
+/* OVERRIDES OF MATERIALIZECSS FORM STYLES */
+
+[type="checkbox"] {
+    padding: initial;
+}
+
+    [type="checkbox"]:not(:checked),
+    [type="checkbox"]:checked {
+        position: initial;
+        opacity: initial;
+        pointer-events: initial;
+    }
+
+label {
+    font-size: initial;
+}
+
+span.ktc-checkbox {
+    line-height: 3rem;
+}
+
+.input-field > label {
+    position: initial;
+}
