@@ -261,6 +261,9 @@
     <Reference Include="DotNetOpenAuth, Version=4.0.0.11165, Culture=neutral, PublicKeyToken=2780ccd10d57b246, processorArchitecture=MSIL">
       <HintPath>..\packages\Kentico.Libraries.12.0.15\lib\net461\DotNetOpenAuth.dll</HintPath>
     </Reference>
+    <Reference Include="Enums.NET, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7ea1c1650d506225, processorArchitecture=MSIL">
+      <HintPath>..\packages\Enums.NET.2.3.2\lib\net45\Enums.NET.dll</HintPath>
+    </Reference>
     <Reference Include="Facebook, Version=6.0.10.0, Culture=neutral, PublicKeyToken=58cb4f2111d1e6de, processorArchitecture=MSIL">
       <HintPath>..\packages\Facebook.6.4.2\lib\net45\Facebook.dll</HintPath>
     </Reference>
@@ -430,6 +433,7 @@
       <HintPath>..\packages\Kentico.Libraries.12.0.15\lib\net461\PreMailer.Net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.HashFunction.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=80c9288e394c1322, processorArchitecture=MSIL">
@@ -534,6 +538,7 @@
     <Compile Include="Dto\Menu\MenuItemDto.cs" />
     <Compile Include="Dto\Page\PageMetadataDto.cs" />
     <Compile Include="Dto\Social\SocialLinkDto.cs" />
+    <Compile Include="Dto\Country\CountryDto.cs" />
     <Compile Include="Generated\Pages\Company.generated.cs" />
     <Compile Include="Generated\Pages\CompanyProvider.generated.cs" />
     <Compile Include="Generated\Pages\CompanyService.generated.cs" />
@@ -579,6 +584,7 @@
     <Compile Include="Repository\Company\ICompanyServiceRepository.cs" />
     <Compile Include="Repository\Contact\ContactSectionRepository.cs" />
     <Compile Include="Repository\Contact\IContactSectionRepository.cs" />
+    <Compile Include="Services\Country\CountryService.cs" />
     <Compile Include="Services\Culture\CultureService.cs" />
     <Compile Include="Services\Culture\ICultureService.cs" />
     <Compile Include="Repository\Doctor\DoctorRepository.cs" />
@@ -604,6 +610,9 @@
     <Compile Include="Services\MediaLibrary\MediaLibraryService.cs" />
     <Compile Include="Services\Query\DocumentQueryService.cs" />
     <Compile Include="Services\Query\IDocumentQueryService.cs" />
+    <Compile Include="Services\Country\ICountryService.cs" />
+    <Compile Include="Services\ViewModel\IUserModelService.cs" />
+    <Compile Include="Services\ViewModel\UserModelService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

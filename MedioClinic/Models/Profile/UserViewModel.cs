@@ -21,13 +21,15 @@ namespace MedioClinic.Models.Profile
         public string LastName { get; set; }
 
         [Display(Name = "Date of birth")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime DateOfBirth { get; set; }
 
         public Gender Gender { get; set; }
 
         [Display(Name = "ID")]
-        [ReadOnly(true)]
-        public string Id { get; set; }
+        //[ReadOnly(true)]
+        public int Id { get; set; }
 
         public string City { get; set; }
 

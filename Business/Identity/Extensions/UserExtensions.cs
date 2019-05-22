@@ -47,9 +47,9 @@ namespace Business.Identity.Extensions
 
             foreach (var role in roles)
             {
-                if (Enum.TryParse(role, out Roles mcRole))
+                if (Enum.TryParse(role, out Roles parsedRole))
                 {
-                    foundRoles |= mcRole;
+                    foundRoles |= parsedRole;
                 }
             }
 

@@ -1,14 +1,16 @@
-﻿@using MedioClinic.Models.Profile
-
-@model MedioClinic.Models.PageViewModel<UserViewModel>
+﻿@model MedioClinic.Models.Profile.PatientViewModel
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
     <div class="container">
         <div class="row">
-                <h4>Patient's Profile Page</h4>
-            <div class="kn-profile-wrapper">@* TODO: CSS *@
+            <h4>Doctor's Profile Page</h4>
+        </div>
+        <div class="row section">
+            <div class="kn-profile-wrapper">
+                <p>@Html.Raw(ViewBag.Message)</p>
+                @* TODO: CSS *@
                 <div class="col s12 m4">
                     <div class="kn-profile-infobox kn-text-center">
                         @* TODO: Glyph *@
@@ -17,7 +19,7 @@
                             <div class="col s12">
                                 <div class="row">
                                     <div class="kn-margin-m kn-padding-m kn-text-medium">
-                                        @Html.DisplayFor(m => m.Data.FirstName) @Html.DisplayFor(m => m.Data.LastName)
+                                        @Html.DisplayFor(m => m.FirstName) @Html.DisplayFor(m => m.LastName)
                                     </div>
                                 </div>
                                 @* TODO: Consents *@
@@ -35,53 +37,56 @@
                 </div>
                 <div class="col s12 m4">
                     <div class="kn-profile-additional-info grey lighten-3">
-                        <i class="material-icons kn-profile-additional-info-menu">more_vert</i>
                         <div class="kn-row">
                             <div class="col s12 m12">
-                                <h6 class="blue-grey-text text-lighten-2 kn-bold">
+                                <h6 class="blue-grey-text text-lighten-2 kn-bold section">
                                     General information
                                 </h6>
                             </div>
                             <div class="col s12 m6">
+                                @*<div>@Html.HiddenFor(m => m.Id)</div>*@
                                 <div class="kn-row">
-                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.Data.FirstName)</div>
-                                    <div>@Html.DisplayFor(m => m.Data.FirstName)</div>
+                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.FirstName)</div>
+                                    <div>@Html.EditorFor(m => m.FirstName)</div>
                                 </div>
                                 <div class="kn-row">
-                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.Data.LastName)</div>
-                                    <div>@Html.DisplayFor(m => m.Data.LastName)</div>
+                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.LastName)</div>
+                                    <div>@Html.EditorFor(m => m.LastName)</div>
                                 </div>
                                 <div class="kn-row">
-                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.Data.DateOfBirth)</div>
-                                    <div>@Html.DisplayFor(m => m.Data.DateOfBirth)</div>
+                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.DateOfBirth)</div>
+                                    <div>@Html.EditorFor(m => m.DateOfBirth)</div>
                                 </div>
                                 <div class="kn-row">
-                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.Data.Gender)</div>
-                                    <div>@Html.DisplayFor(m => m.Data.Gender)</div>
+                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.Gender)</div>
+                                    <div>@Html.EditorFor(m => m.Gender)</div>
                                 </div>
                             </div>
                             <div class="col s12 m6">
                                 <div class="kn-row">
-                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.Data.City)</div>
-                                    <div>@Html.DisplayFor(m => m.Data.City)</div>
+                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.City)</div>
+                                    <div>@Html.EditorFor(m => m.City)</div>
                                 </div>
                                 <div class="kn-row">
-                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.Data.Street)</div>
-                                    <div>@Html.DisplayFor(m => m.Data.Street)</div>
+                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.Street)</div>
+                                    <div>@Html.EditorFor(m => m.Street)</div>
                                 </div>
                                 <div class="kn-row">
-                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.Data.EmailViewModel.Email)</div>
-                                    <div>@Html.DisplayFor(m => m.Data.EmailViewModel.Email)</div>
+                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.EmailViewModel.Email)</div>
+                                    <div>@Html.EditorFor(m => m.EmailViewModel.Email)</div>
                                 </div>
                                 <div class="kn-row">
-                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.Data.Phone)</div>
-                                    <div>@Html.DisplayFor(m => m.Data.Phone)</div>
+                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.Phone)</div>
+                                    <div>@Html.EditorFor(m => m.Phone)</div>
                                 </div>
                                 <div class="kn-row">
-                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.Data.Nationality)</div>
-                                    <div>@Html.DisplayFor(m => m.Data.Nationality)</div>
+                                    <div class="kn-bold">@Html.DisplayNameFor(m => m.Nationality)</div>
+                                    <div>@Html.EditorFor(m => m.Nationality, "CountrySelector")</div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="kn-row">
+                            <button class="btn waves-effect waves-light red darken-3" type="submit" name="action">@Html.Localize("general.savechanges")</button>
                         </div>
                     </div>
                 </div>

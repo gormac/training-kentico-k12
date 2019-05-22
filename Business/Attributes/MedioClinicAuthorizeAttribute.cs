@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Web;
-using System.Web.Http;
-using System.Web.Http.Controllers;
+using System.Web.Mvc;
 
+using EnumsNET;
 using CMS.Membership;
-
 using Business.Identity.Extensions;
 using Business.Identity.Models;
 
@@ -16,24 +15,20 @@ namespace Business.Attributes
 
         public string SiteName { get; set; }
 
-        protected override bool IsAuthorized(HttpActionContext actionContext)
+        public override void OnAuthorization(AuthorizationContext filterContext)
         {
-            if (actionContext == null)
+            if (filterContext == null)
             {
-                throw new ArgumentNullException(nameof(actionContext));
+                throw new ArgumentNullException(nameof(filterContext));
             }
 
             var user = HttpContext.Current.User;
-
-            // TODO: Double-check
-            if (user?.Identity?.IsAuthenticated == false)
-            {
-                return false;
-            }
-
             var userRoles = UserInfoProvider.GetRolesForUser(user?.Identity?.Name, SiteName).ToMedioClinicRoles();
 
-            return Roles.HasFlag(userRoles);
+            if (user?.Identity?.IsAuthenticated == false || !FlagEnums.HasAnyFlags(Roles, userRoles))
+            {
+                HandleUnauthorizedRequest(filterContext);
+            }
         }
     }
 }

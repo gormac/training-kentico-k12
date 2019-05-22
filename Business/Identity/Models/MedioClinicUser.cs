@@ -4,7 +4,6 @@ using CMS.Membership;
 
 namespace Business.Identity.Models
 {
-    // TODO: Allow for retrieval of other UserInfo and UserSettingsInfo properties.
     /// <summary>
     /// A derived <see cref="Kentico.Membership.User"/> class created for the purpose of the Medio Clinic website.
     /// </summary>
@@ -37,7 +36,7 @@ namespace Business.Identity.Models
                 return;
             }
 
-            DateOfBirth = userInfo.GetDateTimeValue("DateOfBirth", DateTime.MinValue);
+            DateOfBirth = userInfo.GetDateTimeValue("UserDateOfBirth", DateTime.MinValue);
             Gender = (Gender)userInfo.UserSettings.UserGender;
             City = userInfo.GetStringValue("City", string.Empty);
             Street = userInfo.GetStringValue("Street", string.Empty);

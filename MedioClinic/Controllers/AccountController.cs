@@ -308,14 +308,6 @@ namespace MedioClinic.Controllers
             return View(GetPageViewModel(uploadModel.Data, ResHelper.GetString("general.error")));
         }
 
-        protected void AddErrors(IdentityResult result)
-        {
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error);
-            }
-        }
-
         protected ActionResult RedirectToLocal(string returnUrl)
         {
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))

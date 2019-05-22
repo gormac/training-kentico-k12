@@ -284,6 +284,9 @@
     <Reference Include="DotNetOpenAuth, Version=4.0.0.11165, Culture=neutral, PublicKeyToken=2780ccd10d57b246, processorArchitecture=MSIL">
       <HintPath>..\packages\Kentico.Libraries.12.0.15\lib\net461\DotNetOpenAuth.dll</HintPath>
     </Reference>
+    <Reference Include="Enums.NET, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7ea1c1650d506225, processorArchitecture=MSIL">
+      <HintPath>..\packages\Enums.NET.2.3.2\lib\net45\Enums.NET.dll</HintPath>
+    </Reference>
     <Reference Include="Facebook, Version=6.0.10.0, Culture=neutral, PublicKeyToken=58cb4f2111d1e6de">
       <HintPath>..\packages\Facebook.6.4.2\lib\net45\Facebook.dll</HintPath>
       <Private>True</Private>
@@ -721,6 +724,8 @@
     <Compile Include="Models\Account\PasswordConfirmationViewModel.cs" />
     <Compile Include="Models\Account\RegisterViewModel.cs" />
     <Compile Include="Models\Account\ResetPasswordViewModel.cs" />
+    <Compile Include="Models\Profile\DoctorViewModel.cs" />
+    <Compile Include="Models\Profile\PatientViewModel.cs" />
     <Compile Include="Models\Profile\UserViewModel.cs" />
     <Compile Include="Models\Contact\ContactViewModel.cs" />
     <Compile Include="Models\Doctors\DoctorDetailViewModel.cs" />
@@ -736,6 +741,7 @@
     <Compile Include="Utils\MultiCultureMvcRouteHandler.cs" />
     <Compile Include="Utils\SiteContextService.cs" />
     <Compile Include="Utils\SiteCultureConstraint.cs" />
+    <Compile Include="Views\Shared\EditorTemplates\CountrySelector.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config">
@@ -760,7 +766,11 @@
     <Content Include="Views\Shared\ViewbagMessage.cshtml" />
     <Content Include="Views\Account\ForgotPassword.cshtml" />
     <Content Include="Views\Account\ResetPassword.cshtml" />
-    <Content Include="Views\Profile\Patient.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\PatientViewModel.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Gender.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\CountrySelector.cshtml" />
+    <Content Include="Views\Profile\Index.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\DoctorViewModel.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Business\Business.csproj">

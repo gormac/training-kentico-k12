@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
+using Microsoft.AspNet.Identity;
+
 using Business.DependencyInjection;
 using Business.Dto.Company;
 using Business.Dto.Menu;
@@ -40,6 +42,14 @@ namespace MedioClinic.Controllers
                 SocialLinks = GetSocialLinks(),
                 Data = data
             };
+        }
+
+        protected void AddErrors(IdentityResult result)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error);
+            }
         }
 
         private IEnumerable<SocialLinkDto> GetSocialLinks()

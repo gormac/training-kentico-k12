@@ -788,3 +788,7 @@ span.ktc-checkbox {
 .input-field > label {
     position: initial;
 }
+
+select {
+    display: initial;
+}
