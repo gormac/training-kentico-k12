@@ -8,8 +8,8 @@ namespace Business.Services.ViewModel
     // TODO: Document.
     public interface IUserModelService : IService
     {
-        object MapToViewModel(MedioClinicUser user, Type targetViewModelType, Dictionary<(string propertyName, Type propertyType), object> customMappings);
+        object MapToViewModel(MedioClinicUser user, Type targetViewModelType, Dictionary<(string propertyName, Type propertyType), object> customMappings = null);
 
-        MedioClinicUser MapToMedioClinicUser(object viewModel, MedioClinicUser userToMapTo, Dictionary<(string propertyName, Type propertyType), object> customMappings);
+        MedioClinicUser MapToMedioClinicUser(object viewModel, MedioClinicUser userToMapTo, Dictionary<(string propertyName, Type propertyType), object> customMappings = null);
     }
 }

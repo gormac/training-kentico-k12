@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 
 using EnumsNET;
@@ -19,11 +16,17 @@ using MedioClinic.Models;
 using MedioClinic.Models.Account;
 using MedioClinic.Models.Profile;
 using MedioClinic.Utils;
+using Business.Repository.Avatar;
 
 namespace MedioClinic.Controllers
 {
+    [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
     public class ProfileController : BaseController
     {
+        public string ContentFolder => "~/Content/";
+
+        public string AvatarFolder => "Avatar";
+
         public IMedioClinicUserManager<MedioClinicUser, int> UserManager { get; set; }
 
         public IMedioClinicUserStore UserStore { get; set; }
@@ -32,17 +35,25 @@ namespace MedioClinic.Controllers
 
         public IErrorHelper ErrorHelper { get; set; }
 
+        public IFileManagementHelper FileManagementHelper { get; set; }
+
+        public IAvatarRepository AvatarRepository { get; set; }
+
         public ProfileController(
             IMedioClinicUserManager<MedioClinicUser, int> userManager,
             IMedioClinicUserStore userStore,
             IUserModelService userModelService,
             IErrorHelper errorHelper,
+            IFileManagementHelper fileManagementHelper,
+            IAvatarRepository avatarRepository,
             IBusinessDependencies dependencies) : base(dependencies)
         {
             UserManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
             UserStore = userStore ?? throw new ArgumentNullException(nameof(userStore));
             UserModelService = userModelService ?? throw new ArgumentNullException(nameof(userModelService));
             ErrorHelper = errorHelper ?? throw new ArgumentNullException(nameof(errorHelper));
+            FileManagementHelper = fileManagementHelper ?? throw new ArgumentNullException(nameof(fileManagementHelper));
+            AvatarRepository = avatarRepository ?? throw new ArgumentNullException(nameof(avatarRepository));
         }
 
         // GET: Profile
@@ -62,23 +73,35 @@ namespace MedioClinic.Controllers
         // POST: Profile
         [MedioClinicAuthorize(Roles = Roles.Doctor | Roles.Patient, SiteName = AppConfig.Sitename)]
         [HttpPost]
-        public async Task<ActionResult> Index(PageViewModel<UserViewModel> uploadModel)
+        public async Task<ActionResult> Index(PageViewModel<IUserViewModel> uploadModel)
         {
             if (ModelState.IsValid)
             {
-                var userById = await UserManager.FindByIdAsync(uploadModel.Data.Id);
+                var userById = await UserManager.FindByIdAsync(uploadModel.Data.CommonUserViewModel.Id);
 
-                var customMappings = new Dictionary<(string propertyName, Type propertyType), object>
+                var commonUserModelCustomMappings = new Dictionary<(string propertyName, Type propertyType), object>
                 {
-                    { (nameof(MedioClinicUser.Email), typeof(string)), uploadModel.Data.EmailViewModel.Email },
+                    { (nameof(MedioClinicUser.Email), typeof(string)), uploadModel.Data.CommonUserViewModel.EmailViewModel.Email },
                 };
 
-                userById = UserModelService.MapToMedioClinicUser(uploadModel.Data, userById, customMappings);
+                // Map the common user properties.
+                userById = UserModelService.MapToMedioClinicUser(uploadModel.Data.CommonUserViewModel, userById, commonUserModelCustomMappings);
+
+                // Map all other potential properties of specific models (patient, doctor, etc.)
+                userById = UserModelService.MapToMedioClinicUser(uploadModel.Data, userById);
 
                 try
                 {
-                    // We need to use the user store directly due to a questionable design of Microsoft.AspNet.Identity.Core.UserManager.UpdateAsync().
+                    // We need to use the user store directly due to the design of Microsoft.AspNet.Identity.Core.UserManager.UpdateAsync().
                     await UserStore.UpdateAsync(userById);
+
+                    var avatarFile = uploadModel.Data.CommonUserViewModel.AvatarFile;
+
+                    if (avatarFile != null)
+                    {
+                        var avatarBinary = FileManagementHelper.GetPostedFileBinary(avatarFile);
+                        AvatarRepository.UploadUserAvatar(userById, avatarBinary);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -87,7 +110,7 @@ namespace MedioClinic.Controllers
 
                 ViewBag.Message = ResHelper.GetString("Controllers.Profile.Index.SavedChanges");
 
-                return View(GetViewModelByUserRoles(userById));
+                return View(GetViewModelByUserRoles(userById, true));
             }
 
             var user = await UserManager.FindByNameAsync(HttpContext.User.Identity.Name);
@@ -100,20 +123,40 @@ namespace MedioClinic.Controllers
             return HttpNotFound();
         }
 
-        protected PageViewModel<IViewModel> GetViewModelByUserRoles(MedioClinicUser user)
+        protected static string GetTitle(Roles roles) =>
+            FlagEnums.HasAnyFlags(roles, Roles.Doctor)
+                ? ResHelper.GetString("Controllers.Profile.Index.Title.Doctor")
+                : ResHelper.GetString("Controllers.Profile.Index.Title.Patient");
+
+
+        protected PageViewModel<IUserViewModel> GetViewModelByUserRoles(MedioClinicUser user, bool forceAvatarFileOverwrite = false)
         {
             if (user != null)
             {
                 var roles = user.Roles.ToMedioClinicRoles();
-                Type userViewModelType = FlagEnums.HasAnyFlags(roles, Roles.Doctor) ? typeof(DoctorViewModel) : typeof(PatientViewModel);
+                string avatarPhysicalPath = EnsureAvatarPhysicalPath(user, forceAvatarFileOverwrite);
+                var avatarRelativePath = FileManagementHelper.GetServerRelativePath(Request, avatarPhysicalPath);
 
-                var customMappings = new Dictionary<(string propertyName, Type propertyType), object>
+                var commonUserModelCustomMappings = new Dictionary<(string propertyName, Type propertyType), object>
                 {
-                    { (nameof(UserViewModel.EmailViewModel), typeof(EmailViewModel)), new EmailViewModel { Email = user.Email } },
+                    { (nameof(CommonUserViewModel.EmailViewModel), typeof(EmailViewModel)), new EmailViewModel { Email = user.Email } },
+                    { (nameof(CommonUserViewModel.AvatarContentPath), typeof(string)), avatarRelativePath }
                 };
 
-                var mappedUserViewModel = UserModelService.MapToViewModel(user, userViewModelType, customMappings);
-                var finalViewModel = GetPageViewModel((IViewModel)mappedUserViewModel, GetTitle(roles));
+                // Map the common user properties.
+                var mappedCommonUserModel = UserModelService.MapToViewModel(user, typeof(CommonUserViewModel), commonUserModelCustomMappings);
+
+                Type userViewModelType = FlagEnums.HasAnyFlags(roles, Roles.Doctor) ? typeof(DoctorViewModel) : typeof(PatientViewModel);
+
+                var parentModelCustomMappings = new Dictionary<(string propertyName, Type propertyType), object>
+                {
+                    { (nameof(CommonUserViewModel), typeof(CommonUserViewModel)), mappedCommonUserModel }
+                };
+
+                // Map all other potential properties of specific models (patient, doctor, etc.)
+                var mappedParentModel = UserModelService.MapToViewModel(user, userViewModelType, parentModelCustomMappings);
+
+                var finalViewModel = GetPageViewModel((IUserViewModel)mappedParentModel, GetTitle(roles));
 
                 return finalViewModel;
             }
@@ -121,9 +164,22 @@ namespace MedioClinic.Controllers
             return null;
         }
 
-        protected static string GetTitle(Roles roles) =>
-            FlagEnums.HasAnyFlags(roles, Roles.Doctor)
-                ? ResHelper.GetString("Controllers.Profile.Index.Title.Doctor")
-                : ResHelper.GetString("Controllers.Profile.Index.Title.Patient");
+        protected string EnsureAvatarPhysicalPath(MedioClinicUser user, bool forceOverwrite = false)
+        {
+            (var avatarFileName, var avatarBinary) = AvatarRepository.GetUserAvatar(user);
+            string avatarPhysicalPath = GetAvatarContentPath(avatarFileName);
+            FileManagementHelper.WriteFileIfDoesntExist(avatarPhysicalPath, avatarBinary, forceOverwrite);
+
+            return avatarPhysicalPath;
+        }
+
+        protected string GetAvatarContentPath(string avatarFileName)
+        {
+            var physicalPath = Server.MapPath($"{ContentFolder}{AvatarFolder}");
+            var folder = FileManagementHelper.EnsureFilePath(physicalPath);
+            var fileName = FileManagementHelper.MakeStringUrlCompliant(avatarFileName);
+
+            return $"{folder}\\{fileName}";
+        }
     }
 }

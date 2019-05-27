@@ -1,4 +1,4 @@
-﻿namespace MedioClinic.Helpers
+﻿namespace MedioClinic.Utils
 {
     public static class ViewModelHelper
     {

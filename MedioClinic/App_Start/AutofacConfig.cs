@@ -92,6 +92,10 @@ namespace MedioClinic
             // Registers a view registration source so that views can take advantage of DI.
             builder.RegisterSource(new ViewRegistrationSource());
 
+            // Registers the common file management helper
+            builder.RegisterType<FileManagementHelper>().As<IFileManagementHelper>()
+                .InstancePerRequest();
+
             // Resolves the dependencies
             DependencyResolver.SetResolver(new AutofacDependencyResolver(builder.Build()));
         }

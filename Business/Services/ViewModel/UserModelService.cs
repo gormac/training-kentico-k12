@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using CMS.EventLog;
+using CMS.Membership;
 using CMS.SiteProvider;
 using Business.Identity.Models;
 
@@ -17,7 +18,7 @@ namespace Business.Services.ViewModel
         /// <param name="viewModelType">The type of the output object.</param>
         /// <param name="customMappings">Custom mappings of properties with different names and/or types.</param>
         /// <returns>The <paramref name="viewModelType"/> object with mapped properties.</returns>
-        public object MapToViewModel(MedioClinicUser user, Type viewModelType, Dictionary<(string propertyName, Type propertyType), object> customMappings)
+        public object MapToViewModel(MedioClinicUser user, Type viewModelType, Dictionary<(string propertyName, Type propertyType), object> customMappings = null)
         {
             var userProperties = user.GetType().GetProperties();
             var targetProperties = viewModelType.GetProperties();
@@ -27,7 +28,11 @@ namespace Business.Services.ViewModel
             {
                 var propertyToMatch = (propertyName: targetProperty.Name, propertyType: targetProperty.PropertyType);
 
-                if (customMappings.Keys.Contains(propertyToMatch))
+                var sourceProperty = userProperties.FirstOrDefault(
+                    prop => prop.Name.Equals(targetProperty.Name, StringComparison.OrdinalIgnoreCase)
+                    && prop.PropertyType == targetProperty.PropertyType);
+
+                if (customMappings != null && customMappings.Keys.Contains(propertyToMatch))
                 {
                     try
                     {
@@ -38,15 +43,11 @@ namespace Business.Services.ViewModel
                         LogException(ex, nameof(MapToViewModel));
                     }
                 }
-                else
+                else if (sourceProperty != null)
                 {
-                    var property = userProperties.FirstOrDefault(
-                        prop => prop.Name.Equals(targetProperty.Name, StringComparison.OrdinalIgnoreCase)
-                        && prop.PropertyType == targetProperty.PropertyType);
-
                     try
                     {
-                        targetProperty.SetValue(viewModel, property.GetValue(user));
+                        targetProperty.SetValue(viewModel, sourceProperty.GetValue(user));
                     }
                     catch (Exception ex)
                     {
@@ -59,7 +60,8 @@ namespace Business.Services.ViewModel
         }
 
         // TODO: Document
-        public MedioClinicUser MapToMedioClinicUser(object viewModel, MedioClinicUser userToMapTo, Dictionary<(string propertyName, Type propertyType), object> customMappings)
+        // Doesn't copy, uses references.
+        public MedioClinicUser MapToMedioClinicUser(object viewModel, MedioClinicUser userToMapTo, Dictionary<(string propertyName, Type propertyType), object> customMappings = null)
         {
             var viewModelProperties = viewModel.GetType().GetProperties();
             var userProperties = userToMapTo.GetType().GetProperties();
@@ -68,7 +70,11 @@ namespace Business.Services.ViewModel
             {
                 var propertyToMatch = (propertyName: userProperty.Name, propertyType: userProperty.PropertyType);
 
-                if (customMappings.Keys.Contains(propertyToMatch))
+                var sourceProperty = viewModelProperties.FirstOrDefault(prop =>
+                    prop.Name.Equals(userProperty.Name, StringComparison.OrdinalIgnoreCase)
+                    && prop.PropertyType == userProperty.PropertyType);
+
+                if (customMappings != null && customMappings.Keys.Contains(propertyToMatch))
                 {
                     try
                     {
@@ -79,22 +85,15 @@ namespace Business.Services.ViewModel
                         LogException(ex, nameof(MapToMedioClinicUser));
                     }
                 }
-                else
+                else if (sourceProperty != null)
                 {
-                    var sourceProperty = viewModelProperties.FirstOrDefault(prop =>
-                        prop.Name.Equals(userProperty.Name, StringComparison.OrdinalIgnoreCase)
-                        && prop.PropertyType == userProperty.PropertyType);
-
-                    if (sourceProperty != null)
+                    try
                     {
-                        try
-                        {
-                            userProperty.SetValue(userToMapTo, sourceProperty.GetValue(viewModel));
-                        }
-                        catch (Exception ex)
-                        {
-                            LogException(ex, nameof(MapToMedioClinicUser));
-                        }
+                        userProperty.SetValue(userToMapTo, sourceProperty.GetValue(viewModel));
+                    }
+                    catch (Exception ex)
+                    {
+                        LogException(ex, nameof(MapToMedioClinicUser));
                     }
                 }
             }

@@ -55,12 +55,12 @@ namespace Business.Identity
         public Task<MedioClinicUser> FindByIdAsync(int userId) =>
             Task.FromResult(UserInfoProvider
                 .GetUserInfo(userId)
-                .ToMedioClinicUser(SiteContextService.SiteName));
+                .ToMedioClinicUser());
 
         public Task<MedioClinicUser> FindByNameAsync(string userName) =>
             Task.FromResult(UserInfoProvider
                 .GetUserInfo(userName)
-                .ToMedioClinicUser(SiteContextService.SiteName));
+                .ToMedioClinicUser());
 
         public Task<MedioClinicUser> FindByEmailAsync(string email) =>
             Task.FromResult(UserInfoProvider
@@ -68,7 +68,7 @@ namespace Business.Identity
                 .WhereEquals("Email", email)
                 .TopN(1)
                 .FirstOrDefault()
-                .ToMedioClinicUser(SiteContextService.SiteName));
+                .ToMedioClinicUser());
 
         public Task<MedioClinicUser> FindAsync(UserLoginInfo login)
         {

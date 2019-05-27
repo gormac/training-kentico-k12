@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-using MedioClinic.Helpers;
+using MedioClinic.Utils;
 
 namespace MedioClinic.Models.Account
 {

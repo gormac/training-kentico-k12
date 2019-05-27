@@ -1,6 +1,7 @@
 ﻿namespace MedioClinic.Models.Profile
 {
-    public class PatientViewModel : UserViewModel
+    public class PatientViewModel : IUserViewModel
     {
+        public CommonUserViewModel CommonUserViewModel { get; set; }
     }
 }

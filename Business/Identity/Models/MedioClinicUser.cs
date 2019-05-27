@@ -21,6 +21,8 @@ namespace Business.Identity.Models
 
         public string Nationality { get; set; }
 
+        public int AvatarId { get; set; }
+
         public MedioClinicUser()
         {
         }
@@ -42,6 +44,7 @@ namespace Business.Identity.Models
             Street = userInfo.GetStringValue("Street", string.Empty);
             Phone = userInfo.UserSettings.UserPhone;
             Nationality = userInfo.GetStringValue("Nationality", string.Empty);
+            AvatarId = userInfo.UserAvatarID;
         }
     }
 }

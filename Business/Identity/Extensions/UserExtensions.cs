@@ -3,7 +3,6 @@
 using CMS.Membership;
 
 using Business.Config;
-using Business.Services.Context;
 using Business.Identity.Models;
 using Business.Identity.Helpers;
 using System;
@@ -18,8 +17,9 @@ namespace Business.Identity.Extensions
         /// <param name="userInfo">The original object.</param>
         /// <param name="siteContextService">Service that supplies the site name.</param>
         /// <returns>The <see cref="MedioClinicUser"/> object.</returns>
-        public static MedioClinicUser ToMedioClinicUser(this UserInfo userInfo, string siteName) =>
-            new MedioClinicUser(UserInfoProvider.CheckUserBelongsToSite(userInfo, siteName));
+        public static MedioClinicUser ToMedioClinicUser(this UserInfo userInfo) =>
+            new MedioClinicUser(UserInfoProvider.CheckUserBelongsToSite(userInfo, CMS.SiteProvider.SiteContext.CurrentSiteName));
+
 
         /// <summary>
         /// Creates a <see cref="UserInfo"/> out of a <see cref="MedioClinicUser"/> one.

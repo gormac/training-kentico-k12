@@ -1,14 +1,15 @@
 ﻿using System;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Web;
+using System.Web.Mvc;
 
 using Business.Identity.Models;
-using MedioClinic.Helpers;
 using MedioClinic.Models.Account;
+using MedioClinic.Utils;
 
 namespace MedioClinic.Models.Profile
 {
-    public class UserViewModel : IViewModel
+    public class CommonUserViewModel
     {
         [Required]
         [Display(Name = "First name")]
@@ -19,6 +20,9 @@ namespace MedioClinic.Models.Profile
         [Display(Name = "Last name")]
         [MaxLength(100, ErrorMessage = ViewModelHelper.MaxLengthMessage)]
         public string LastName { get; set; }
+
+        [Display(Name = "Full name")]
+        public string FullName => $"{FirstName} {LastName}";
 
         [Display(Name = "Date of birth")]
         [DataType(DataType.Date)]
@@ -42,5 +46,11 @@ namespace MedioClinic.Models.Profile
         public string Phone { get; set; }
 
         public string Nationality { get; set; }
+
+        [HiddenInput]
+        public string AvatarContentPath { get; set; }
+
+        [Display(Name = "Upload an avatar")]
+        public HttpPostedFileBase AvatarFile { get; set; }
     }
 }

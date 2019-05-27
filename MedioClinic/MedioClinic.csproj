@@ -702,6 +702,7 @@
     <Compile Include="App_Start\ApplicationConfig.cs" />
     <Compile Include="App_Start\AutofacConfig.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\ModelBindingConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Config\AppConfig.cs" />
@@ -712,12 +713,17 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\NotFoundController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
+    <Compile Include="Extensions\FormExtensions.cs" />
     <Compile Include="Extensions\LocalizationExtensions.cs" />
     <Compile Include="Extensions\UrlExtensions.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\ViewModelHelper.cs" />
+    <Compile Include="Models\Profile\IUserViewModel.cs" />
+    <Compile Include="Utils\FileManagementHelper.cs" />
+    <Compile Include="Utils\IFileManagementHelper.cs" />
+    <Compile Include="Utils\UserViewModelBinder.cs" />
+    <Compile Include="Utils\ViewModelHelper.cs" />
     <Compile Include="Models\Account\EmailViewModel.cs" />
     <Compile Include="Models\Account\PasswordViewModel.cs" />
     <Compile Include="Models\Account\SigninViewModel.cs" />
@@ -726,7 +732,7 @@
     <Compile Include="Models\Account\ResetPasswordViewModel.cs" />
     <Compile Include="Models\Profile\DoctorViewModel.cs" />
     <Compile Include="Models\Profile\PatientViewModel.cs" />
-    <Compile Include="Models\Profile\UserViewModel.cs" />
+    <Compile Include="Models\Profile\CommonUserViewModel.cs" />
     <Compile Include="Models\Contact\ContactViewModel.cs" />
     <Compile Include="Models\Doctors\DoctorDetailViewModel.cs" />
     <Compile Include="Models\Doctors\DoctorsViewModel.cs" />
@@ -771,6 +777,7 @@
     <Content Include="Views\Shared\EditorTemplates\CountrySelector.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\DoctorViewModel.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\CommonUserViewModel.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Business\Business.csproj">
