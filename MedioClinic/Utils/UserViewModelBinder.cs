@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 using EnumsNET;
@@ -23,6 +20,13 @@ namespace MedioClinic.Utils
             UserManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         }
 
+        /// <summary>
+        /// Looks up roles of the authenticated user and selects a user view model type accordingly.
+        /// </summary>
+        /// <param name="controllerContext">Controller context.</param>
+        /// <param name="bindingContext">Binding context.</param>
+        /// <returns>Specific user view model, based on the highest role.</returns>
+        /// <exception cref="Exception">Thrown when no user identity is found in the HTTP context.</exception>
         public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
         {
             if (bindingContext.ModelType != typeof(IUserViewModel))
@@ -55,21 +59,5 @@ namespace MedioClinic.Utils
                 }
             }
         }
-
-        //protected CommonUserViewModel MapCommonUserModel(ModelBindingContext bindingContext)
-        //{
-        //    var properties = typeof(CommonUserViewModel).GetProperties();
-
-        //    foreach (var property in properties)
-        //    {
-        //        var prefix = "Data.CommonUserViewModel.";
-
-        //        var valueResult = bindingContext.ValueProvider.GetValue($"{prefix}{property.Name}");
-
-        //        ;
-        //    }
-
-        //    return new CommonUserViewModel();
-        //}
     }
 }

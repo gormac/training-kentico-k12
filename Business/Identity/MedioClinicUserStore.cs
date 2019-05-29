@@ -15,18 +15,34 @@ using Business.Identity.Proxies;
 
 namespace Business.Identity
 {
+    /// <summary>
+    /// App-level implementation of the ASP.NET Identity interfaces wrapped in <see cref="IMedioClinicUserStore"/>.
+    /// </summary>
     public class MedioClinicUserStore : IMedioClinicUserStore
     {
         private ISiteContextService SiteContextService { get; }
 
         private IKenticoUserStore KenticoUserStore { get; }
 
+        /// <summary>
+        /// Creates a new instance of the class with required dependencies.
+        /// </summary>
+        /// <param name="siteContextService">Service that mainly provides the current site name and ID.</param>
+        /// <param name="kenticoUserStore">The <see cref="Kentico.Membership.UserStore"/> wrapped in <see cref="IKenticoUserStore"/>.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="siteContextService"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="kenticoUserStore"/> is <see langword="null"/>.</exception>
         public MedioClinicUserStore(ISiteContextService siteContextService, IKenticoUserStore kenticoUserStore)
         {
             SiteContextService = siteContextService ?? throw new ArgumentNullException(nameof(siteContextService));
             KenticoUserStore = kenticoUserStore ?? throw new ArgumentNullException(nameof(kenticoUserStore));
         }
 
+        /// <summary>
+        /// Create a user.
+        /// </summary>
+        /// <param name="user">A user to create.</param>
+        /// <returns>A <see cref="Task"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <see langword="null"/>.</exception>
         public Task CreateAsync(MedioClinicUser user)
         {
             if (user == null)
@@ -70,6 +86,12 @@ namespace Business.Identity
                 .FirstOrDefault()
                 .ToMedioClinicUser());
 
+        /// <summary>
+        /// Gets a user by an external login.
+        /// </summary>
+        /// <param name="login">The external login.</param>
+        /// <returns>The user.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="login"/> is <see langword="null"/>.</exception>
         public Task<MedioClinicUser> FindAsync(UserLoginInfo login)
         {
             if (login == null)
@@ -86,6 +108,13 @@ namespace Business.Identity
             return loginInfo != null ? FindByIdAsync(loginInfo.UserID) : Task.FromResult<MedioClinicUser>(null);
         }
 
+        /// <summary>
+        /// Updates the user in Kentico.
+        /// </summary>
+        /// <param name="user">The user to update.</param>
+        /// <returns>A <see cref="Task"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <see langword="null"/>.</exception>
+        /// <exception cref="Exception">Thrown when there's no <see cref="UserInfo"/> for the <paramref name="user"/>.</exception>
         public Task UpdateAsync(MedioClinicUser user)
         {
             if (user == null)
@@ -181,14 +210,26 @@ namespace Business.Identity
         public Task<string> GetSecurityStampAsync(MedioClinicUser user) =>
             KenticoUserStore.GetSecurityStampAsync(user);
 
+        /// <summary>
+        /// Implementation of the Dispose pattern (https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose).
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Implementation of the Dispose pattern (https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose).
+        /// </summary>
+        /// <param name="disposing">Flag that signals an explicit method call.</param>
         protected virtual void Dispose(bool disposing)
         {
+            if (disposing)
+            {
+                // Cleanup of a managed component.
+                KenticoUserStore.Dispose(true);
+            }
         }
     }
 }

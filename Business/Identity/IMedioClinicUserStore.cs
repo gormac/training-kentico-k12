@@ -4,6 +4,9 @@ using Business.Identity.Models;
 
 namespace Business.Identity
 {
+    /// <summary>
+    /// Wrapper around all ASP.NET Identity store interfaces supported in the app.
+    /// </summary>
     public interface IMedioClinicUserStore :
         IUserPasswordStore<MedioClinicUser, int>,
         IUserLockoutStore<MedioClinicUser, int>,

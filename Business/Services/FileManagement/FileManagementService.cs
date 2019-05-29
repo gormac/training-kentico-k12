@@ -5,9 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Web;
 
-namespace MedioClinic.Utils
+using Business.Services.Errors;
+
+namespace Business.Services.FileManagement
 {
-    public class FileManagementHelper : IFileManagementHelper
+    public class FileManagementService : BaseService, IFileManagementService
     {
         public static HashSet<string> AllowedExtensions =>
             new HashSet<string>(new[]
@@ -20,9 +22,9 @@ namespace MedioClinic.Utils
                     ".tif"
                 }, StringComparer.OrdinalIgnoreCase);
 
-        IErrorHelper ErrorHelper { get; set; }
+        IErrorHelperService ErrorHelper { get; set; }
 
-        public FileManagementHelper(IErrorHelper errorHelper)
+        public FileManagementService(IErrorHelperService errorHelper)
         {
             ErrorHelper = errorHelper ?? throw new ArgumentNullException(nameof(errorHelper));
         }
@@ -48,7 +50,7 @@ namespace MedioClinic.Utils
                 }
                 catch (Exception ex)
                 {
-                    ErrorHelper.LogException(nameof(FileManagementHelper), nameof(EnsureFilePath), ex);
+                    ErrorHelper.LogException(nameof(FileManagementService), nameof(EnsureFilePath), ex);
 
                     throw;
                 }
@@ -81,7 +83,7 @@ namespace MedioClinic.Utils
                 }
                 catch (Exception ex)
                 {
-                    ErrorHelper.LogException(nameof(FileManagementHelper), nameof(WriteFileIfDoesntExist), ex);
+                    ErrorHelper.LogException(nameof(FileManagementService), nameof(WriteFileIfDoesntExist), ex);
 
                     throw;
                 } 

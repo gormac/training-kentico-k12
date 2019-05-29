@@ -10,8 +10,8 @@ namespace MedioClinic.Models.Account
         [Required(ErrorMessage = "general.requireemail")]
         [DisplayName("general.emailaddress")]
         [DataType(DataType.EmailAddress)]
-        [EmailAddress(ErrorMessage = ViewModelHelper.EmailFormatMessage)]
-        [MaxLength(100, ErrorMessage = ViewModelHelper.MaxLengthMessage)]
+        [EmailAddress(ErrorMessage = "Models.EmailFormat")]
+        [MaxLength(100, ErrorMessage = "Models.MaxLength")]
         public string Email { get; set; }
     }
 }

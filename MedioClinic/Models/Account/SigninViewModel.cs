@@ -8,7 +8,7 @@ namespace MedioClinic.Models.Account
 
         public PasswordViewModel PasswordViewModel { get; set; }
 
-        [DisplayName("Stay signed in")]
+        [DisplayName("Models.Account.StaySignedIn")]
         public bool StaySignedIn { get; set; }
     }
 }

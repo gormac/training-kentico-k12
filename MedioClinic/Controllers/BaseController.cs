@@ -13,7 +13,14 @@ namespace MedioClinic.Controllers
 {
     public class BaseController : Controller
     {
+        public string ContentFolder => "~/Content";
+
+        public string AvatarFolder => "Avatar";
+
+        public string DefaultAvatarFileName => "AvatarTemplate.jpg";
+
         protected IBusinessDependencies Dependencies { get; }
+
         protected BaseController(IBusinessDependencies dependencies)
         {
             Dependencies = dependencies;
@@ -44,14 +51,6 @@ namespace MedioClinic.Controllers
             };
         }
 
-        protected void AddErrors(IdentityResult result)
-        {
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error);
-            }
-        }
-
         private IEnumerable<SocialLinkDto> GetSocialLinks()
         {
             return Dependencies.SocialLinkRepository.GetSocialLinks();
@@ -69,6 +68,14 @@ namespace MedioClinic.Controllers
         private CompanyDto GetCompany()
         {
             return Dependencies.CompanyRepository.GetCompany();
+        }
+
+        protected void AddErrors(IdentityResult result)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error);
+            }
         }
     }
 }

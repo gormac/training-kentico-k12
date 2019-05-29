@@ -4,14 +4,21 @@ using Microsoft.AspNet.Identity;
 
 using CMS.Helpers;
 using CMS.Membership;
+using Kentico.Membership;
 
 using Business.Identity.Models;
-using Kentico.Membership;
 
 namespace Business.Identity
 {
+    /// <summary>
+    /// App-level implementation of the ASP.NET Identity <see cref="UserManager{TUser, TKey}"/> base class.
+    /// </summary>
     public class MedioClinicUserManager : UserManager<MedioClinicUser, int>, IMedioClinicUserManager<MedioClinicUser, int>
     {
+        /// <summary>
+        /// Creates a new instance of the class and configures its internals.
+        /// </summary>
+        /// <param name="medioClinicUserStore">User store passed onto the base class.</param>
         public MedioClinicUserManager(IMedioClinicUserStore medioClinicUserStore) : base(medioClinicUserStore)
         {
             PasswordValidator = new PasswordValidator
@@ -41,11 +48,19 @@ namespace Business.Identity
         /// <param name="passwordStore">Unused implementation of UserPasswordStore.</param>
         /// <param name="user">User.</param>
         /// <param name="newPassword">New password in plain text format.</param>
+        /// <returns><see cref="IdentityResult.Failed(string[])"/> if the new password is either <see langword="null"/>, empty, or not valid. Otherwise <see cref="IdentityResult.Success"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="newPassword"/> is either <see langword="null"/> or empty.</exception>
         protected override async Task<IdentityResult> UpdatePassword(IUserPasswordStore<MedioClinicUser, int> passwordStore, MedioClinicUser user, string newPassword)
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
+            }
+
+            if (string.IsNullOrEmpty(newPassword))
+            {
+                throw new ArgumentException($"The {nameof(newPassword)} argument must not be null or empty.");
             }
 
             var result = await PasswordValidator.ValidateAsync(newPassword);
@@ -80,6 +95,7 @@ namespace Business.Identity
         /// <param name="store">Unused implementation of UserPasswordStore.</param>
         /// <param name="user">User.</param>
         /// <param name="password">Password in plain text format.</param>
+        /// <returns><see langword="true"/> if <paramref name="password"/> matches the one in the database. Otherwise <see langword="false"/>.</returns>
         protected override Task<bool> VerifyPasswordAsync(IUserPasswordStore<MedioClinicUser, int> store, MedioClinicUser user, string password)
         {
             if (user == null)
@@ -97,11 +113,17 @@ namespace Business.Identity
         /// Updates the security stamp if the store supports it.
         /// </summary>
         /// <param name="user">User whose stamp should be updated.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <see langword="null"/>.</exception>
         internal async Task UpdateSecurityStampInternalAsync(MedioClinicUser user)
         {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
             if (SupportsUserSecurityStamp)
             {
-                await GetSecurityStore().SetSecurityStampAsync(user, NewSecurityStamp());
+                await GetSecurityStore()?.SetSecurityStampAsync(user, NewSecurityStamp());
             }
         }
 

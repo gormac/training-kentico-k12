@@ -1,4 +1,5 @@
 ﻿using CMS.Membership;
+
 using Business.Identity.Models;
 
 namespace Business.Identity.Helpers
@@ -10,6 +11,7 @@ namespace Business.Identity.Helpers
         /// </summary>
         /// <param name="userInfo">The object to update.</param>
         /// <param name="medioClinicUser">The input object.</param>
+        /// <remarks>Omits properties that need special handling (e.g. <see cref="MedioClinicUser.AvatarId"/>).</remarks>
         public static void UpdateUserInfo(ref UserInfo userInfo, MedioClinicUser medioClinicUser)
         {
             userInfo.UserName = medioClinicUser.UserName;
@@ -20,12 +22,13 @@ namespace Business.Identity.Helpers
             userInfo.Enabled = medioClinicUser.Enabled;
             userInfo.UserSecurityStamp = medioClinicUser.SecurityStamp;
             userInfo.UserNickName = userInfo.GetFormattedUserName(true);
+            userInfo.UserAvatarID = medioClinicUser.AvatarId;
             userInfo.SetValue("UserPassword", medioClinicUser.PasswordHash);
-            userInfo.SetValue("DateOfBirth", medioClinicUser.DateOfBirth);
+            userInfo.UserSettings.UserDateOfBirth = medioClinicUser.DateOfBirth;
             userInfo.UserSettings.UserGender = (int)medioClinicUser.Gender;
+            userInfo.UserSettings.UserPhone = medioClinicUser.Phone;
             userInfo.SetValue("City", medioClinicUser.City);
             userInfo.SetValue("Street", medioClinicUser.Street);
-            userInfo.UserSettings.UserPhone = medioClinicUser.Phone;
             userInfo.SetValue("Nationality", medioClinicUser.Nationality);
         }
     }

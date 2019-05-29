@@ -1,16 +1,10 @@
 ﻿@model MedioClinic.Models.Profile.CommonUserViewModel
 
-@{
-    var avatarElementId = Guid.NewGuid();
-}
-
 <div class="kn-profile-wrapper">
-    @* TODO: CSS *@
     <div class="col s12 m4">
         <div class="kn-profile-infobox kn-text-center">
-            @* TODO: Glyph *@
             <div>
-                <img src="@Url.Content(Model.AvatarContentPath)" alt="@Model.FullName" class="responsive-img" id="@Html.Raw(avatarElementId)" />
+                <img src="@Url.Content(Model.AvatarContentPath)" alt="@Model.FullName" class="responsive-img" />
             </div>
             <div>
                 @Html.TextBoxFor(m => m.AvatarFile, new { type = "file" })
@@ -22,10 +16,6 @@
                         <div class="kn-margin-m kn-padding-m kn-text-medium">
                             @Html.DisplayFor(m => m.FullName)
                         </div>
-                    </div>
-                    @* TODO: Consents *@
-                    <div class="row">
-                        <div class="kn-smaller">You are not subscribed to any newsletter.</div>
                     </div>
                     <div class="row">
                         <div class="kn-small">

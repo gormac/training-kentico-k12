@@ -85,16 +85,9 @@ namespace MedioClinic
                 .As<IMedioClinicSignInManager<MedioClinicUser, int>>()
                 .InstancePerRequest();
 
-            // Registers the common error handler.
-            builder.RegisterType<ErrorHelper>().As<IErrorHelper>()
-                .InstancePerRequest();
-
             // Registers a view registration source so that views can take advantage of DI.
+            // See https://autofaccn.readthedocs.io/en/latest/integration/mvc.html#enable-property-injection-for-view-pages
             builder.RegisterSource(new ViewRegistrationSource());
-
-            // Registers the common file management helper
-            builder.RegisterType<FileManagementHelper>().As<IFileManagementHelper>()
-                .InstancePerRequest();
 
             // Resolves the dependencies
             DependencyResolver.SetResolver(new AutofacDependencyResolver(builder.Build()));

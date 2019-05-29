@@ -168,8 +168,32 @@
   <data name="Controllers.Profile.Index.Title.Patient" xml:space="preserve">
     <value>Patient</value>
   </data>
-  <data name="Models.Account.RegisterViewModel.MarketingConsent" xml:space="preserve">
-    <value>I hereby accept that these provided information can be used for marketing purposes and targeted website content.</value>
+  <data name="Models.Profile.CommonUserViewModel.AvatarFile" xml:space="preserve">
+    <value>Upload an avatar</value>
+  </data>
+  <data name="Models.Profile.CommonUserViewModel.DateOfBirth" xml:space="preserve">
+    <value>Date of birth</value>
+  </data>
+  <data name="Models.Profile.CommonUserViewModel.FirstName" xml:space="preserve">
+    <value>First name</value>
+  </data>
+  <data name="Models.Profile.CommonUserViewModel.FullName" xml:space="preserve">
+    <value>Full name</value>
+  </data>
+  <data name="Models.Profile.CommonUserViewModel.Id" xml:space="preserve">
+    <value>ID</value>
+  </data>
+  <data name="Models.Profile.CommonUserViewModel.LastName" xml:space="preserve">
+    <value>Last name</value>
+  </data>
+  <data name="Models.EmailFormat" xml:space="preserve">
+    <value>The field accepts only valid email addresses.</value>
+  </data>
+  <data name="Models.MaxLength" xml:space="preserve">
+    <value>The text shouldn't exceed 100 characters in total.</value>
+  </data>
+  <data name="Models.PhoneFormat" xml:space="preserve">
+    <value>The field accepts only valid phone numbers.</value>
   </data>
   <data name="Views.Account.DontRememberPassword" xml:space="preserve">
     <value>Don't remember your password?</value>
@@ -182,5 +206,20 @@
   </data>
   <data name="Views.Account.Signin.Heading" xml:space="preserve">
     <value>Sign In to Your Account</value>
+  </data>
+  <data name="Models.Account.Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Models.Account.StaySignedIn" xml:space="preserve">
+    <value>Stay signed in</value>
+  </data>
+  <data name="Models.Profile.CommonUserViewModel.City" xml:space="preserve">
+    <value>City</value>
+  </data>
+  <data name="Models.Profile.CommonUserViewModel.Nationality" xml:space="preserve">
+    <value>Nationality</value>
+  </data>
+  <data name="Models.Profile.CommonUserViewModel.Street" xml:space="preserve">
+    <value>Street</value>
   </data>
 </root>

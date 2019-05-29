@@ -16,9 +16,9 @@ namespace MedioClinic
     {
         public void ConfigureAuth(IAppBuilder app)
         {
-            // Configure the sign in cookie
             UrlHelper urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);
 
+            // Configure the sign in cookie
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,

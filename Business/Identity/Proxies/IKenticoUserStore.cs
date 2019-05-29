@@ -8,15 +8,14 @@ using Kentico.Membership;
 namespace Business.Identity.Proxies
 {
     /// <summary>
-    /// Interface that wraps the <see cref="UserStore"/> implementation for DI purposes.
+    /// Wrapper around the <see cref="UserStore"/> implementation for DI purposes.
     /// </summary>
-    public interface IKenticoUserStore
+    public interface IKenticoUserStore : IDisposable
     {
         Task AddLoginAsync(User user, UserLoginInfo login);
         Task AddToRoleAsync(User user, string roleName);
         Task CreateAsync(User user);
         Task DeleteAsync(User user);
-        void Dispose();
         Task<User> FindAsync(UserLoginInfo login);
         Task<User> FindByEmailAsync(string email);
         Task<User> FindByIdAsync(int userId);
@@ -45,5 +44,12 @@ namespace Business.Identity.Proxies
         Task SetSecurityStampAsync(User user, string stamp);
         Task SetTwoFactorEnabledAsync(User user, bool enabled);
         Task UpdateAsync(User user);
+
+        /// <summary>
+        /// Explicit method signature to satisfy requirements of the Dispose pattern 
+        /// (https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose).
+        /// </summary>
+        /// <param name="disposing">Flag to signal an explicit method call.</param>
+        void Dispose(bool disposing);
     }
 }

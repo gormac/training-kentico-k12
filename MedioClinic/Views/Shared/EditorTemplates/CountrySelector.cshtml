@@ -5,9 +5,9 @@
         .GetCountries()
         .Select(country => new SelectListItem
         {
-            Value = country.CountryName,
+            Value = country.CountryCodeName,
             Text = country.CountryDisplayName,
-            Selected = country.CountryName.Equals(Model, StringComparison.OrdinalIgnoreCase)
+            Selected = country.CountryCodeName.Equals(Model, StringComparison.OrdinalIgnoreCase)
         });
 }
 

@@ -9,8 +9,8 @@ namespace MedioClinic.Models.Account
     {
         [Required]
         [DataType(DataType.Password)]
-        [DisplayName("Password")]
-        [MaxLength(100, ErrorMessage = ViewModelHelper.MaxLengthMessage)]
+        [DisplayName("Models.Account.Password")]
+        [MaxLength(100, ErrorMessage = "Models.MaxLength")]
         public string Password { get; set; }
     }
 }

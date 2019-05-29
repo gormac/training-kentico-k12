@@ -3,7 +3,7 @@
     /// <summary>
     /// User's gender.
     /// </summary>
-    /// <remarks>The order is aligned to <see cref="CMS.Membership.UserSettingsInfo.UserGender"/>.</remarks>
+    /// <remarks>The ordering is deliberately aligned to that of <see cref="CMS.Membership.UserSettingsInfo.UserGender"/>.</remarks>
     public enum Gender
     {
         Unknown,

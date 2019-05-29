@@ -1,12 +1,11 @@
-﻿
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
+
 using CMS.Helpers;
 
 namespace MedioClinic.Extensions
 {
     public static class LocalizationExtensions
     {
-
         /// <summary>
         /// Custom extension method that localizes text based on a given key
         /// </summary>

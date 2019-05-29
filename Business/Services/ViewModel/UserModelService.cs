@@ -2,27 +2,30 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using CMS.EventLog;
-using CMS.Membership;
-using CMS.SiteProvider;
 using Business.Identity.Models;
 
 namespace Business.Services.ViewModel
 {
     class UserModelService : BaseService, IUserModelService
     {
-        /// <summary>
-        /// Maps properties of a <see cref="MedioClinicUser"/> object to properties with the same name and type of the <paramref name="viewModelType"/> object.
-        /// </summary>
-        /// <param name="user">The user object to map.</param>
-        /// <param name="viewModelType">The type of the output object.</param>
-        /// <param name="customMappings">Custom mappings of properties with different names and/or types.</param>
-        /// <returns>The <paramref name="viewModelType"/> object with mapped properties.</returns>
-        public object MapToViewModel(MedioClinicUser user, Type viewModelType, Dictionary<(string propertyName, Type propertyType), object> customMappings = null)
+        public object MapToViewModel(
+            MedioClinicUser user,
+            Type targetViewModelType,
+            Dictionary<(string propertyName, Type propertyType), object> customMappings = null)
         {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (targetViewModelType == null)
+            {
+                throw new ArgumentNullException(nameof(targetViewModelType));
+            }
+
             var userProperties = user.GetType().GetProperties();
-            var targetProperties = viewModelType.GetProperties();
-            var viewModel = Activator.CreateInstance(viewModelType);
+            var targetProperties = targetViewModelType.GetProperties();
+            var viewModel = Activator.CreateInstance(targetViewModelType);
 
             foreach (var targetProperty in targetProperties)
             {
@@ -34,35 +37,32 @@ namespace Business.Services.ViewModel
 
                 if (customMappings != null && customMappings.Keys.Contains(propertyToMatch))
                 {
-                    try
-                    {
-                        targetProperty.SetValue(viewModel, customMappings[propertyToMatch]);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogException(ex, nameof(MapToViewModel));
-                    }
+                    targetProperty.SetValue(viewModel, customMappings[propertyToMatch]);
                 }
                 else if (sourceProperty != null)
                 {
-                    try
-                    {
-                        targetProperty.SetValue(viewModel, sourceProperty.GetValue(user));
-                    }
-                    catch (Exception ex)
-                    {
-                        LogException(ex, nameof(MapToViewModel));
-                    }
+                    targetProperty.SetValue(viewModel, sourceProperty.GetValue(user));
                 }
             }
 
             return viewModel;
         }
 
-        // TODO: Document
-        // Doesn't copy, uses references.
-        public MedioClinicUser MapToMedioClinicUser(object viewModel, MedioClinicUser userToMapTo, Dictionary<(string propertyName, Type propertyType), object> customMappings = null)
+        public MedioClinicUser MapToMedioClinicUser(
+            object viewModel,
+            MedioClinicUser userToMapTo,
+            Dictionary<(string propertyName, Type propertyType), object> customMappings = null)
         {
+            if (viewModel == null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
+            }
+
+            if (userToMapTo == null)
+            {
+                throw new ArgumentNullException(nameof(userToMapTo));
+            }
+
             var viewModelProperties = viewModel.GetType().GetProperties();
             var userProperties = userToMapTo.GetType().GetProperties();
 
@@ -76,32 +76,15 @@ namespace Business.Services.ViewModel
 
                 if (customMappings != null && customMappings.Keys.Contains(propertyToMatch))
                 {
-                    try
-                    {
-                        userProperty.SetValue(userToMapTo, customMappings[propertyToMatch]);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogException(ex, nameof(MapToMedioClinicUser));
-                    }
+                    userProperty.SetValue(userToMapTo, customMappings[propertyToMatch]);
                 }
                 else if (sourceProperty != null)
                 {
-                    try
-                    {
-                        userProperty.SetValue(userToMapTo, sourceProperty.GetValue(viewModel));
-                    }
-                    catch (Exception ex)
-                    {
-                        LogException(ex, nameof(MapToMedioClinicUser));
-                    }
+                    userProperty.SetValue(userToMapTo, sourceProperty.GetValue(viewModel));
                 }
             }
 
             return userToMapTo;
         }
-
-        protected void LogException(Exception ex, string methodName) =>
-            EventLogProvider.LogException(nameof(UserModelService), methodName, ex, SiteContext.CurrentSiteID);
     }
 }

@@ -521,7 +521,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\MedioClinicAuthorizeAttribute.cs" />
-    <Compile Include="Config\BusinessConfig.cs" />
     <Compile Include="DependencyInjection\BusinessDependencies.cs" />
     <Compile Include="DependencyInjection\CmsRegistrationSource.cs" />
     <Compile Include="DependencyInjection\IBusinessDependencies.cs" />
@@ -607,12 +606,18 @@
     <Compile Include="Services\Cache\CacheService.cs" />
     <Compile Include="Services\Cache\ICacheService.cs" />
     <Compile Include="Services\Context\ISiteContextService.cs" />
+    <Compile Include="Services\Errors\ErrorHelperService.cs" />
+    <Compile Include="Services\Errors\IErrorHelperService.cs" />
+    <Compile Include="Services\FileManagement\FileManagementService.cs" />
+    <Compile Include="Services\FileManagement\IFileManagementService.cs" />
     <Compile Include="Services\IService.cs" />
+    <Compile Include="Services\Localization\LocalizationService.cs" />
     <Compile Include="Services\MediaLibrary\IMediaLibraryService.cs" />
     <Compile Include="Services\MediaLibrary\MediaLibraryService.cs" />
     <Compile Include="Services\Query\DocumentQueryService.cs" />
     <Compile Include="Services\Query\IDocumentQueryService.cs" />
     <Compile Include="Services\Country\ICountryService.cs" />
+    <Compile Include="Services\Localization\ILocalizationService.cs" />
     <Compile Include="Services\ViewModel\IUserModelService.cs" />
     <Compile Include="Services\ViewModel\UserModelService.cs" />
   </ItemGroup>

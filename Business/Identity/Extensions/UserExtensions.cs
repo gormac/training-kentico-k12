@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using CMS.Membership;
 
-using Business.Config;
 using Business.Identity.Models;
 using Business.Identity.Helpers;
-using System;
 
 namespace Business.Identity.Extensions
 {
@@ -24,7 +23,7 @@ namespace Business.Identity.Extensions
         /// <summary>
         /// Creates a <see cref="UserInfo"/> out of a <see cref="MedioClinicUser"/> one.
         /// </summary>
-        /// <param name="medioClinicUser">The original object.</param>
+        /// <param name="medioClinicUser">The original <see cref="MedioClinicUser"/> object.</param>
         /// <returns>The <see cref="UserInfo"/> object.</returns>
         public static UserInfo ToUserInfo(this MedioClinicUser medioClinicUser)
         {
@@ -34,26 +33,32 @@ namespace Business.Identity.Extensions
             return userInfo;
         }
 
-        // TODO: Document
-        public static bool IsDoctor(this MedioClinicUser user, string siteName) =>
-            UserInfoProvider.IsUserInRole(user.UserName, BusinessConfig.DoctorRoleName, siteName);
-
-        public static bool IsPatient(this MedioClinicUser user, string siteName) =>
-            UserInfoProvider.IsUserInRole(user.UserName, BusinessConfig.PatientRoleName, siteName);
-
+        /// <summary>
+        /// Converts standard ASP.NET Identity <see cref="string"/> roles to <see cref="Roles"/>.
+        /// </summary>
+        /// <param name="roles">ASP.NET Identity roles.</param>
+        /// <returns>Strongly-typed <see cref="Roles"/> roles.</returns>
         public static Roles ToMedioClinicRoles(this IEnumerable<string> roles)
         {
             Roles foundRoles = Roles.None;
 
-            foreach (var role in roles)
+            if (roles != null)
             {
-                if (Enum.TryParse(role, out Roles parsedRole))
+                foreach (var role in roles)
                 {
-                    foundRoles |= parsedRole;
-                }
+                    if (Enum.TryParse(role, out Roles parsedRole))
+                    {
+                        foundRoles |= parsedRole;
+                    }
+                } 
             }
 
             return foundRoles;
         }
+
+        //public static IEnumerable<string> ToStringRoles(this Roles roles)
+        //{
+        //    var test = roles.ToString()
+        //}
     }
 }

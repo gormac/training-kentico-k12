@@ -5,52 +5,53 @@ using System.Web.Mvc;
 
 using Business.Identity.Models;
 using MedioClinic.Models.Account;
-using MedioClinic.Utils;
 
 namespace MedioClinic.Models.Profile
 {
     public class CommonUserViewModel
     {
         [Required]
-        [Display(Name = "First name")]
-        [MaxLength(100, ErrorMessage = ViewModelHelper.MaxLengthMessage)]
+        [Display(Name = "Models.Profile.CommonUserViewModel.FirstName")]
+        [MaxLength(100, ErrorMessage = "Models.MaxLength")]
         public string FirstName { get; set; }
 
         [Required]
-        [Display(Name = "Last name")]
-        [MaxLength(100, ErrorMessage = ViewModelHelper.MaxLengthMessage)]
+        [Display(Name = "Models.Profile.CommonUserViewModel.LastName")]
+        [MaxLength(100, ErrorMessage = "Models.MaxLength")]
         public string LastName { get; set; }
 
-        [Display(Name = "Full name")]
+        [Display(Name = "Models.Profile.CommonUserViewModel.FullName")]
         public string FullName => $"{FirstName} {LastName}";
 
-        [Display(Name = "Date of birth")]
+        [Display(Name = "Models.Profile.CommonUserViewModel.DateOfBirth")]
         [DataType(DataType.Date)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime DateOfBirth { get; set; }
 
         public Gender Gender { get; set; }
 
-        [Display(Name = "ID")]
-        //[ReadOnly(true)]
+        [Display(Name = "Models.Profile.CommonUserViewModel.Id")]
         public int Id { get; set; }
 
+        [Display(Name = "Models.Profile.CommonUserViewModel.City")]
         public string City { get; set; }
 
+        [Display(Name = "Models.Profile.CommonUserViewModel.Street")]
         public string Street { get; set; }
 
         public EmailViewModel EmailViewModel { get; set; }
 
         [DataType(DataType.PhoneNumber)]
-        [Phone(ErrorMessage = ViewModelHelper.PhoneFormatMessage)]
+        [Phone(ErrorMessage = "Models.PhoneFormat")]
         public string Phone { get; set; }
 
+        [Display(Name = "Models.Profile.CommonUserViewModel.Nationality")]
         public string Nationality { get; set; }
 
         [HiddenInput]
         public string AvatarContentPath { get; set; }
 
-        [Display(Name = "Upload an avatar")]
+        [Display(Name = "Models.Profile.CommonUserViewModel.AvatarFile")]
         public HttpPostedFileBase AvatarFile { get; set; }
     }
 }

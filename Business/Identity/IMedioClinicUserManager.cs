@@ -8,8 +8,10 @@ using Microsoft.AspNet.Identity;
 namespace Business.Identity
 {
     /// <summary>
-    /// Interface that wraps the <see cref="MedioClinicUserStore"/> and its <see cref="Kentico.Membership.UserStore"/> main component for DI purposes.
+    /// Wrapper around the <see cref="MedioClinicUserStore"/> and its <see cref="Kentico.Membership.UserStore"/> main component for DI purposes.
     /// </summary>
+    /// <typeparam name="TUser">The type of the user object.</typeparam>
+    /// <typeparam name="TKey">The unique key.</typeparam>
     public interface IMedioClinicUserManager<TUser, TKey> : IDisposable
         where TUser : class, IUser<TKey>
         where TKey : IEquatable<TKey>

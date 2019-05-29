@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Web.Mvc;
 
-namespace MedioClinic.Utils
+namespace Business.Services.Errors
 {
     /// <summary>
     /// A common error helper for controller actions
     /// </summary>
-    public interface IErrorHelper
+    public interface IErrorHelperService : IService
     {
         /// <summary>
         /// HTTP status code of an unprocessable entity.

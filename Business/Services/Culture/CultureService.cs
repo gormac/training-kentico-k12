@@ -2,6 +2,7 @@
 using System.Linq;
 
 using CMS.SiteProvider;
+
 using Business.Dto.Culture;
 using Business.Services.Context;
 
@@ -16,16 +17,17 @@ namespace Business.Services.Culture
             SiteContextService = siteContextService;
         }
 
-        public IEnumerable<CultureDto> GetSiteCultures()
-        {
-            return CultureSiteInfoProvider.GetSiteCultures(SiteContextService.SiteName).Items.Select(m =>
-                new CultureDto()
-                {
-                    CultureCode = m.CultureCode,
-                    CultureName = m.CultureName,
-                    CultureShortName = m.CultureShortName
-                }
+        public IEnumerable<CultureDto> GetSiteCultures() =>
+            CultureSiteInfoProvider.GetSiteCultures(SiteContextService.SiteName)
+                .Items
+                .Select(culture =>
+                    new CultureDto()
+                    {
+                        CultureGuid = culture.CultureGUID,
+                        CultureCode = culture.CultureCode,
+                        CultureName = culture.CultureName,
+                        CultureShortName = culture.CultureShortName
+                    }
             );
-        }
     }
 }

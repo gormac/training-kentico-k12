@@ -8,7 +8,7 @@ using Microsoft.Owin.Security;
 namespace Business.Identity
 {
     /// <summary>
-    /// Interface that wraps the <see cref="MedioClinicSignInManager"/> and its <see cref="SignInManager{TUser, TKey}"/> base class for DI purposes.
+    /// Wrapper around the <see cref="MedioClinicSignInManager"/> and its <see cref="Microsoft.AspNet.Identity.Owin.SignInManager{TUser, TKey}"/> base class for DI purposes.
     /// </summary>
     /// <typeparam name="TUser">The type of the user object.</typeparam>
     /// <typeparam name="TKey">The unique key.</typeparam>

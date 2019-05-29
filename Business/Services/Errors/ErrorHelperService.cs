@@ -4,9 +4,9 @@ using System.Web.Mvc;
 using CMS.EventLog;
 using CMS.SiteProvider;
 
-namespace MedioClinic.Utils
+namespace Business.Services.Errors
 {
-    public class ErrorHelper : IErrorHelper
+    public class ErrorHelperService : BaseService, IErrorHelperService
     {
         public int UnprocessableStatusCode => 422;
 

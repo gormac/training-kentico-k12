@@ -1,3 +1,12 @@
 ﻿@model MedioClinic.Models.PageViewModel<MedioClinic.Models.Profile.IUserViewModel>
 
+@if (!string.IsNullOrEmpty(ViewBag.Message))
+{
+    <div class="container">
+        <div class="section">
+            <p>@Html.Raw(ViewBag.Message)</p>
+        </div>
+    </div>
+}
+
 @Html.DisplayFor(m => m.Data)

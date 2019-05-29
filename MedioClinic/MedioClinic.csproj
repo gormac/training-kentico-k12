@@ -617,6 +617,9 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="Content\Avatar\AvatarTemplate.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Css\Master\icon.css" />
     <Content Include="Content\Css\Master\materialize.min.css" />
     <Content Include="Content\Css\Master\style.css" />
@@ -713,17 +716,13 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\NotFoundController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
-    <Compile Include="Extensions\FormExtensions.cs" />
     <Compile Include="Extensions\LocalizationExtensions.cs" />
     <Compile Include="Extensions\UrlExtensions.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Profile\IUserViewModel.cs" />
-    <Compile Include="Utils\FileManagementHelper.cs" />
-    <Compile Include="Utils\IFileManagementHelper.cs" />
     <Compile Include="Utils\UserViewModelBinder.cs" />
-    <Compile Include="Utils\ViewModelHelper.cs" />
     <Compile Include="Models\Account\EmailViewModel.cs" />
     <Compile Include="Models\Account\PasswordViewModel.cs" />
     <Compile Include="Models\Account\SigninViewModel.cs" />
@@ -742,8 +741,6 @@
     <Compile Include="Models\PageViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="Utils\ErrorHelper.cs" />
-    <Compile Include="Utils\IErrorHelper.cs" />
     <Compile Include="Utils\MultiCultureMvcRouteHandler.cs" />
     <Compile Include="Utils\SiteContextService.cs" />
     <Compile Include="Utils\SiteCultureConstraint.cs" />
@@ -786,7 +783,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="App_Data\Global\Resources\MedioClinic.resx" />
+    <EmbeddedResource Include="App_Data\Global\Resources\MedioClinic.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -1,9 +1,9 @@
 ﻿using System.Web;
 
-namespace MedioClinic.Utils
+namespace Business.Services.FileManagement
 {
     // TODO: Document.
-    public interface IFileManagementHelper
+    public interface IFileManagementService : IService
     {
         byte[] GetPostedFileBinary(HttpPostedFileBase file);
 

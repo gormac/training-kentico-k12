@@ -5,46 +5,55 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 
-using CMS.Helpers;
 using Business.DependencyInjection;
 using Business.Identity;
 using Business.Identity.Models;
+using Business.Repository.Avatar;
+using Business.Services.Errors;
+using Business.Services.Localization;
 using MedioClinic.Extensions;
 using MedioClinic.Models;
 using MedioClinic.Models.Account;
-using MedioClinic.Utils;
 
 namespace MedioClinic.Controllers
 {
-    // TODO: Improve robustness (try-catch'es, null checks, logging, etc.)
+    [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
     public class AccountController : BaseController
     {
         public IMedioClinicUserManager<MedioClinicUser, int> UserManager { get; }
 
         public IMedioClinicSignInManager<MedioClinicUser, int> SignInManager { get; }
 
-        protected IAuthenticationManager AuthenticationManager { get; }
+        public ILocalizationService LocalizationService { get; }
 
-        protected IErrorHelper ErrorHelper { get; }
+        public IAuthenticationManager AuthenticationManager { get; }
+
+        public IErrorHelperService ErrorHelperService { get; }
+
+        public IAvatarRepository AvatarRepository { get; }
 
         public AccountController(
             IMedioClinicUserManager<MedioClinicUser, int> userManager,
             IMedioClinicSignInManager<MedioClinicUser, int> signInManager,
             IAuthenticationManager authenticationManager,
-            IErrorHelper errorHelper,
+            IErrorHelperService errorHelperService,
+            ILocalizationService localizationService,
+            IAvatarRepository avatarRepository,
             IBusinessDependencies dependencies) 
             : base(dependencies)
         {
             UserManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
             SignInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
             AuthenticationManager = authenticationManager ?? throw new ArgumentNullException(nameof(authenticationManager));
-            ErrorHelper = errorHelper ?? throw new ArgumentNullException(nameof(errorHelper));
+            ErrorHelperService = errorHelperService ?? throw new ArgumentNullException(nameof(errorHelperService));
+            LocalizationService = localizationService ?? throw new ArgumentNullException(nameof(localizationService));
+            AvatarRepository = avatarRepository ?? throw new ArgumentNullException(nameof(avatarRepository));
         }
 
         // GET: /Account/Register
         public ActionResult Register()
         {
-            var model = GetPageViewModel(new RegisterViewModel(), ResHelper.GetString("Controllers.Account.Register.Title"));
+            var model = GetPageViewModel(new RegisterViewModel(), LocalizationService.Localize("Controllers.Account.Register.Title"));
 
             return View(model);
         }
@@ -78,7 +87,7 @@ namespace MedioClinic.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ErrorHelper.LogException(nameof(AccountController), nameof(Register), ex);
+                    ErrorHelperService.LogException(nameof(AccountController), nameof(Register), ex);
                 }
 
                 if (result != null && result.Succeeded)
@@ -87,17 +96,19 @@ namespace MedioClinic.Controllers
                     var token = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     var confirmationUrl = Url.AbsoluteUrl(Request, "ConfirmUser", routeValues: new { userId = user.Id, token });
 
-                    await UserManager.SendEmailAsync(user.Id, 
-                        ResHelper.GetString("Controllers.Account.Register.Email.Confirm.Subject"),
-                        ResHelper.GetStringFormat("Controllers.Account.Register.Email.Confirm.Body", confirmationUrl));
+                    await UserManager.SendEmailAsync(user.Id,
+                        LocalizationService.Localize("Controllers.Account.Register.Email.Confirm.Subject"),
+                        LocalizationService.LocalizeFormat("Controllers.Account.Register.Email.Confirm.Body", confirmationUrl));
 
-                    ViewBag.Message = ResHelper.GetString("Controllers.Account.Register.ViewbagMessage");
+                    ViewBag.Message = LocalizationService.Localize("Controllers.Account.Register.ViewbagMessage");
 
-                    return View("ViewbagMessage", GetPageViewModel(ResHelper.GetString("Controllers.Account.Register.RegistrationStarted")));
+                    return View("ViewbagMessage", GetPageViewModel(LocalizationService.Localize("Controllers.Account.Register.RegistrationStarted")));
                     // Registration: Confirmed registration (end)
 
                     // Registration: Direct sign in (begin)
-                    /*await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                    /*result = await AddToPatientRole(user.Id);
+                    await CreateNewAvatar(user);
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
 
                     return RedirectToAction("Index", "Home");*/
                     // Registration: Direct sign in (end)
@@ -106,7 +117,7 @@ namespace MedioClinic.Controllers
                 AddErrors(result);
             }
 
-            var viewModel = GetPageViewModel(uploadModel.Data, ResHelper.GetString("general.error"));
+            var viewModel = GetPageViewModel(uploadModel.Data, LocalizationService.Localize("general.error"));
 
             return View(viewModel);
         }
@@ -117,31 +128,35 @@ namespace MedioClinic.Controllers
         {
             if (userId.HasValue)
             {
-                IdentityResult confirmResult = IdentityResult.Failed();
+                IdentityResult result = IdentityResult.Failed();
 
                 try
                 {
-                    confirmResult = await UserManager.ConfirmEmailAsync(userId.Value, token);
+                    result = await UserManager.ConfirmEmailAsync(userId.Value, token);
                 }
                 catch (InvalidOperationException)
                 {
                     return InvalidToken();
                 }
 
-                if (confirmResult.Succeeded)
+                if (result.Succeeded && (await AddToPatientRole(userId.Value)).Succeeded)
                 {
-                    ViewBag.Message = ResHelper.GetStringFormat("Controllers.Account.ConfirmUser.ViewbagMessage", Url.Action("Signin"));
+                    var user = await UserManager.FindByIdAsync(userId.Value);
+                    await CreateNewAvatar(user);
+                    ViewBag.Message = LocalizationService.LocalizeFormat("Controllers.Account.ConfirmUser.ViewbagMessage", Url.Action("Signin"));
                 }
+
+                AddErrors(result);
             }
 
-            return View("ViewbagMessage", GetPageViewModel(ResHelper.GetString("Controllers.Account.ConfirmUser.Title")));
+            return View("ViewbagMessage", GetPageViewModel(LocalizationService.Localize("Controllers.Account.ConfirmUser.Title")));
         }
         // Registration: Confirmed registration (end)
 
         // GET: /Account/Signin
         public ActionResult Signin()
         {
-            return View(GetPageViewModel(new SigninViewModel(), ResHelper.GetString("logonform.logonbutton")));
+            return View(GetPageViewModel(new SigninViewModel(), LocalizationService.Localize("logonform.logonbutton")));
         }
 
         // POST: /Account/Signin
@@ -151,10 +166,21 @@ namespace MedioClinic.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(GetPageViewModel(uploadModel.Data, ResHelper.GetString("logonform.logonbutton")));
+                return View(GetPageViewModel(uploadModel.Data, LocalizationService.Localize("logonform.logonbutton")));
             }
 
-            var user = await UserManager.FindByEmailAsync(uploadModel.Data.EmailViewModel.Email);
+            MedioClinicUser user = null;
+
+            try
+            {
+                user = await UserManager.FindByNameAsync(uploadModel.Data.EmailViewModel.Email);
+            }
+            catch (Exception ex)
+            {
+                ErrorHelperService.LogException(nameof(AccountController), nameof(Signin), ex);
+
+                return InvalidAttempt(uploadModel);
+            }
 
             // Registration: Confirmed registration (begin)
             if (user != null && !await UserManager.IsEmailConfirmedAsync(user.Id))
@@ -171,7 +197,9 @@ namespace MedioClinic.Controllers
             }
             catch (Exception ex)
             {
-                ErrorHelper.LogException(nameof(AccountController), nameof(Signin), ex);
+                ErrorHelperService.LogException(nameof(AccountController), nameof(Signin), ex);
+
+                return InvalidAttempt(uploadModel);
             }
 
             if (status == SignInStatus.Success)
@@ -192,10 +220,9 @@ namespace MedioClinic.Controllers
             }
             catch (Exception ex)
             {
-                ErrorHelper.LogException(nameof(AccountController), nameof(Signout), ex);
+                ErrorHelperService.LogException(nameof(AccountController), nameof(Signout), ex);
             }
 
-            // TODO: Constant
             return RedirectToAction("Index", "Home");
         }
 
@@ -204,7 +231,7 @@ namespace MedioClinic.Controllers
         {
             var model = new EmailViewModel();
 
-            return View(GetPageViewModel(model, ResHelper.GetString("passreset.title")));
+            return View(GetPageViewModel(model, LocalizationService.Localize("passreset.title")));
         }
 
         // POST: /Account/ForgotPassword
@@ -214,7 +241,16 @@ namespace MedioClinic.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await UserManager.FindByEmailAsync(uploadModel.Data.Email);
+                MedioClinicUser user = null;
+
+                try
+                {
+                    user = await UserManager.FindByEmailAsync(uploadModel.Data.Email);
+                }
+                catch (Exception ex)
+                {
+                    ErrorHelperService.LogException(nameof(AccountController), nameof(ForgotPassword), ex);
+                }
 
                 if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
                 {
@@ -230,17 +266,20 @@ namespace MedioClinic.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ErrorHelper.LogException(nameof(AccountController), nameof(ForgotPassword), ex);
+                    ErrorHelperService.LogException(nameof(AccountController), nameof(ForgotPassword), ex);
+                    var viewModel = GetPageViewModel(uploadModel.Data, LocalizationService.Localize("general.error"));
+
+                    return View(viewModel);
                 }
 
                 var resetUrl = Url.AbsoluteUrl(Request, "ResetPassword", "Account", new { userId = user.Id, token });
-                await UserManager.SendEmailAsync(user.Id, ResHelper.GetString("passreset.title"),
-                    ResHelper.GetStringFormat("Controllers.Account.ForgotPassword.Email.Body", resetUrl));
+                await UserManager.SendEmailAsync(user.Id, LocalizationService.Localize("passreset.title"),
+                    LocalizationService.LocalizeFormat("Controllers.Account.ForgotPassword.Email.Body", resetUrl));
 
                 return CheckEmailResetPassword();
             }
 
-            return View(GetPageViewModel(uploadModel.Data, ResHelper.GetString("passreset.title")));
+            return View(GetPageViewModel(uploadModel.Data, LocalizationService.Localize("passreset.title")));
         }
 
         // GET: /Account/ResetPassword
@@ -254,7 +293,7 @@ namespace MedioClinic.Controllers
             }
             catch (InvalidOperationException ex)
             {
-                ErrorHelper.LogException(nameof(AccountController), nameof(ResetPassword), ex);
+                ErrorHelperService.LogException(nameof(AccountController), nameof(ResetPassword), ex);
 
                 return InvalidToken();
             }
@@ -265,7 +304,7 @@ namespace MedioClinic.Controllers
                 Token = token
             };
 
-            return View(GetPageViewModel(model, ResHelper.GetString("passreset.title")));
+            return View(GetPageViewModel(model, LocalizationService.Localize("passreset.title")));
         }
 
         // POST: /Account/ResetPassword
@@ -275,7 +314,7 @@ namespace MedioClinic.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(GetPageViewModel(uploadModel.Data, ResHelper.GetString("passreset.title")));
+                return View(GetPageViewModel(uploadModel.Data, LocalizationService.Localize("passreset.title")));
             }
 
             var result = IdentityResult.Failed();
@@ -286,26 +325,25 @@ namespace MedioClinic.Controllers
                         uploadModel.Data.UserId,
                         uploadModel.Data.Token,
                         uploadModel.Data.PasswordConfirmationViewModel.Password);
-
             }
             catch (InvalidOperationException ex)
             {
-                ErrorHelper.LogException(nameof(AccountController), nameof(ResetPassword), ex);
-                ViewBag.Message = ResHelper.GetString("general.usernotfound");
+                ErrorHelperService.LogException(nameof(AccountController), nameof(ResetPassword), ex);
+                ViewBag.Message = LocalizationService.Localize("general.usernotfound");
 
                 return View("ViewbagMessage", GetPageViewModel(ViewBag.Message));
             }
 
             if (result.Succeeded)
             {
-                ViewBag.Message = ResHelper.GetStringFormat("Controllers.Account.ResetPassword.ViewbagMessage", Url.Action("Signin"));
+                ViewBag.Message = LocalizationService.LocalizeFormat("Controllers.Account.ResetPassword.ViewbagMessage", Url.Action("Signin"));
 
-                return View("ViewbagMessage", GetPageViewModel(ResHelper.GetString("general.success")));
+                return View("ViewbagMessage", GetPageViewModel(LocalizationService.Localize("general.success")));
             }
 
             AddErrors(result);
 
-            return View(GetPageViewModel(uploadModel.Data, ResHelper.GetString("general.error")));
+            return View(GetPageViewModel(uploadModel.Data, LocalizationService.Localize("general.error")));
         }
 
         protected ActionResult RedirectToLocal(string returnUrl)
@@ -320,23 +358,38 @@ namespace MedioClinic.Controllers
 
         protected ActionResult InvalidAttempt(PageViewModel<SigninViewModel> uploadModel)
         {
-            ModelState.AddModelError(string.Empty, ResHelper.GetString("Controllers.Account.InvalidAttempt"));
+            ModelState.AddModelError(string.Empty, LocalizationService.Localize("Controllers.Account.InvalidAttempt"));
 
-            return View(GetPageViewModel(uploadModel.Data, ResHelper.GetString("logonform.logonbutton")));
+            return View(GetPageViewModel(uploadModel.Data, LocalizationService.Localize("logonform.logonbutton")));
         }
 
         protected ActionResult CheckEmailResetPassword()
         {
-            ViewBag.Message = ResHelper.GetString("Controllers.Account.CheckEmailResetPassword.ViewbagMessage");
+            ViewBag.Message = LocalizationService.Localize("Controllers.Account.CheckEmailResetPassword.ViewbagMessage");
 
-            return View("ViewbagMessage", GetPageViewModel(ResHelper.GetString("Controllers.Account.CheckEmailResetPassword.Title")));
+            return View("ViewbagMessage", GetPageViewModel(LocalizationService.Localize("Controllers.Account.CheckEmailResetPassword.Title")));
         }
 
         protected ActionResult InvalidToken()
         {
-            ViewBag.Message = ResHelper.GetString("Controllers.Account.InvalidToken.ViewbagMessage");
+            ViewBag.Message = LocalizationService.Localize("Controllers.Account.InvalidToken.ViewbagMessage");
 
-            return View("ViewbagMessage", GetPageViewModel(ResHelper.GetString("Controllers.Account.InvalidToken.Title")));
+            return View("ViewbagMessage", GetPageViewModel(LocalizationService.Localize("Controllers.Account.InvalidToken.Title")));
+        }
+
+        protected async Task<IdentityResult> AddToPatientRole(int userId)
+        {
+            var patientRole = Roles.Patient.ToString();
+            return await UserManager.AddToRolesAsync(userId, patientRole);
+        }
+
+        protected async Task CreateNewAvatar(MedioClinicUser user)
+        {
+            var path = Server.MapPath($"{ContentFolder}/{AvatarFolder}/{DefaultAvatarFileName}");
+
+            user.AvatarId = AvatarRepository.CreateUserAvatar(path, $"Custom {user.UserName}");
+
+            await UserManager.UpdateAsync(user);
         }
     }
 }

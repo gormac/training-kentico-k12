@@ -15,8 +15,5 @@ namespace MedioClinic.Models.Account
         public EmailViewModel EmailViewModel { get; set; }
 
         public PasswordConfirmationViewModel PasswordConfirmationViewModel { get; set; }
-
-        [Display(Name = "Models.Account.RegisterViewModel.MarketingConsent")]
-        public bool MarketingConsent { get; set; }
     }
 }

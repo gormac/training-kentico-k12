@@ -1,14 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Business.Dto.Country
 {
-    public class CountryDto
+    /// <summary>
+    /// A lightweight representation of Kentico's <see cref="CMS.Globalization.CountryInfo"/> objects.
+    /// </summary>
+    public class CountryDto : IDto
     {
-        public string CountryName { get; set; }
+        public Guid CountryGuid { get; set; }
+
+        public string CountryCodeName { get; set; }
+
         public string CountryDisplayName { get; set; }
     }
 }

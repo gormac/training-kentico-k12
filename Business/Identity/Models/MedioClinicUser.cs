@@ -7,6 +7,7 @@ namespace Business.Identity.Models
     /// <summary>
     /// A derived <see cref="Kentico.Membership.User"/> class created for the purpose of the Medio Clinic website.
     /// </summary>
+    /// <remarks>Designed to contain all role-specific properties of all users.</remarks>
     public class MedioClinicUser : Kentico.Membership.User
     {
         public DateTime DateOfBirth { get; set; }
@@ -23,6 +24,9 @@ namespace Business.Identity.Models
 
         public int AvatarId { get; set; }
 
+        /// <summary>
+        /// Explicit default constructor due to the existence of <see cref="MedioClinicUser(UserInfo)"/>.
+        /// </summary>
         public MedioClinicUser()
         {
         }

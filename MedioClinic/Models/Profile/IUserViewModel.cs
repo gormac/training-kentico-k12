@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MedioClinic.Models.Profile
+﻿namespace MedioClinic.Models.Profile
 {
+    /// <summary>
+    /// Common interface of view models of users of various roles.
+    /// </summary>
     public interface IUserViewModel : IViewModel
     {
+        /// <summary>
+        /// Data that's common to users of all roles.
+        /// </summary>
         CommonUserViewModel CommonUserViewModel { get; set; }
     }
 }
