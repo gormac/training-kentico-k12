@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-using MedioClinic.Utils;
-
 namespace MedioClinic.Models.Account
 {
     public class EmailViewModel : IViewModel
