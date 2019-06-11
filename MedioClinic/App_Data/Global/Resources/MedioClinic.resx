@@ -222,4 +222,7 @@
   <data name="Models.Profile.CommonUserViewModel.Street" xml:space="preserve">
     <value>Street</value>
   </data>
+  <data name="Models.AllowedExtensions" xml:space="preserve">
+    <value>Only the following file extensions are allowed: {0}</value>
+  </data>
 </root>

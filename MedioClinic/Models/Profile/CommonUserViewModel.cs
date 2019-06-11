@@ -4,6 +4,7 @@ using System.Web;
 using System.Web.Mvc;
 
 using Business.Identity.Models;
+using MedioClinic.Attributes;
 using MedioClinic.Models.Account;
 
 namespace MedioClinic.Models.Profile
@@ -52,6 +53,8 @@ namespace MedioClinic.Models.Profile
         public string AvatarContentPath { get; set; }
 
         [Display(Name = "Models.Profile.CommonUserViewModel.AvatarFile")]
+        [DataType(DataType.Upload)]
+        [HttpPostedFileExtensions(ErrorMessage = "Models.AllowedExtensions")]
         public HttpPostedFileBase AvatarFile { get; set; }
     }
 }

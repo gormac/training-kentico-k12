@@ -22,7 +22,8 @@ namespace Business.Repository.Avatar
 
             return (null, null);
         }
-
+        
+        // TODO: Document.
         public void UploadUserAvatar(MedioClinicUser user, byte[] avatarBinary)
         {
             var avatarInfo = AvatarInfoProvider.GetAvatarInfo(user.AvatarId);

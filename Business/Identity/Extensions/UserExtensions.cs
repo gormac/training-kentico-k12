@@ -55,10 +55,5 @@ namespace Business.Identity.Extensions
 
             return foundRoles;
         }
-
-        //public static IEnumerable<string> ToStringRoles(this Roles roles)
-        //{
-        //    var test = roles.ToString()
-        //}
     }
 }
