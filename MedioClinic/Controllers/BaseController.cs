@@ -13,11 +13,7 @@ namespace MedioClinic.Controllers
 {
     public class BaseController : Controller
     {
-        public string ContentFolder => "~/Content";
 
-        public string AvatarFolder => "Avatar";
-
-        public string DefaultAvatarFileName => "AvatarTemplate.jpg";
 
         protected IBusinessDependencies Dependencies { get; }
 
@@ -70,12 +66,6 @@ namespace MedioClinic.Controllers
             return Dependencies.CompanyRepository.GetCompany();
         }
 
-        protected void AddErrors(IdentityResult result)
-        {
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error);
-            }
-        }
+
     }
 }

@@ -123,13 +123,10 @@
   <data name="Controllers.Account.CheckEmailResetPassword.ViewbagMessage" xml:space="preserve">
     <value>Please check your email to reset your password.</value>
   </data>
-  <data name="Controllers.Account.ConfirmUser.Title" xml:space="preserve">
+  <data name="Controllers.Account.ConfirmUser.Success.Title" xml:space="preserve">
     <value>Account confirmed</value>
   </data>
-  <data name="Controllers.Account.ConfirmUser.ViewbagMessage" xml:space="preserve">
-    <value>Your registration was successfull. You can now &lt;a href="{0}"&gt;sign in&lt;/a&gt; to your account.</value>
-  </data>
-  <data name="Controllers.Account.ForgotPassword.Email.Body" xml:space="preserve">
+  <data name="AccountManager.ForgotPassword.Email.Body" xml:space="preserve">
     <value>Please reset your password by clicking this &lt;a href="{0}"&gt;link&lt;/a&gt;.</value>
   </data>
   <data name="Controllers.Account.InvalidAttempt" xml:space="preserve">
@@ -138,25 +135,25 @@
   <data name="Controllers.Account.InvalidToken.Title" xml:space="preserve">
     <value>Invalid token</value>
   </data>
-  <data name="Controllers.Account.InvalidToken.ViewbagMessage" xml:space="preserve">
+  <data name="Controllers.Account.InvalidToken.Message" xml:space="preserve">
     <value>The operation cannot be done. The security token is incorrect.</value>
   </data>
-  <data name="Controllers.Account.Register.Email.Confirm.Body" xml:space="preserve">
+  <data name="AccountManager.Register.Email.Confirm.Body" xml:space="preserve">
     <value>To finish the registration process at Medio Clinic, please &lt;a href="{0}"&gt;confirm your new account&lt;/a&gt;.</value>
   </data>
-  <data name="Controllers.Account.Register.Email.Confirm.Subject" xml:space="preserve">
+  <data name="AccountManager.Register.Email.Confirm.Subject" xml:space="preserve">
     <value>Confirm your new account</value>
   </data>
-  <data name="Controllers.Account.Register.RegistrationStarted" xml:space="preserve">
+  <data name="Controllers.Account.Register.ConfirmedSuccess.Title" xml:space="preserve">
     <value>Registration started</value>
   </data>
   <data name="Controllers.Account.Register.Title" xml:space="preserve">
     <value>Register</value>
   </data>
-  <data name="Controllers.Account.Register.ViewbagMessage" xml:space="preserve">
+  <data name="Controllers.Account.Register.ConfirmedSuccess.Message" xml:space="preserve">
     <value>Thank you for registering at Medio Clinic! Please check your mailbox and click the confirmation link in the message we've just sent to you.</value>
   </data>
-  <data name="Controllers.Account.ResetPassword.ViewbagMessage" xml:space="preserve">
+  <data name="Controllers.Account.ResetPassword.Success.Message" xml:space="preserve">
     <value>Your password was successfully reset. You can now &lt;a href="{0}"&gt;sign in&lt;/a&gt;.</value>
   </data>
   <data name="Controllers.Profile.Index.SavedChanges" xml:space="preserve">
@@ -224,5 +221,29 @@
   </data>
   <data name="Models.AllowedExtensions" xml:space="preserve">
     <value>Only the following file extensions are allowed: {0}</value>
+  </data>
+  <data name="Controllers.Account.ConfirmUser.AvatarFailure.Message" xml:space="preserve">
+    <value>The creation of the user avatar picture failed.</value>
+  </data>
+  <data name="Controllers.Account.ConfirmUser.ConfirmationFailure.Message" xml:space="preserve">
+    <value>The confirmation failed.</value>
+  </data>
+  <data name="Controllers.Account.Register.FailureMessage" xml:space="preserve">
+    <value>Registration was not successfull. </value>
+  </data>
+  <data name="ContactAdministrator" xml:space="preserve">
+    <value>Please contact the site administrator.</value>
+  </data>
+  <data name="Controllers.Account.ConfirmUser.Success.Message" xml:space="preserve">
+    <value>Your registration was successfull. You can now &lt;a href="{0}"&gt;sign in&lt;/a&gt; to your account.</value>
+  </data>
+  <data name="Controllers.Account.ResetPassword.Failure.Message" xml:space="preserve">
+    <value>Resetting was not successfull.</value>
+  </data>
+  <data name="Controllers.Account.SignOut.Failure.Message" xml:space="preserve">
+    <value>The sign-out procedure failed.</value>
+  </data>
+  <data name="Error.Message" xml:space="preserve">
+    <value>An unknown error occured.</value>
   </data>
 </root>

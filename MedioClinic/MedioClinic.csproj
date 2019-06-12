@@ -723,6 +723,8 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Profile\IUserViewModel.cs" />
+    <Compile Include="Utils\AccountManager.cs" />
+    <Compile Include="Utils\IAccountManager.cs" />
     <Compile Include="Utils\UserViewModelBinder.cs" />
     <Compile Include="Models\Account\EmailViewModel.cs" />
     <Compile Include="Models\Account\PasswordViewModel.cs" />

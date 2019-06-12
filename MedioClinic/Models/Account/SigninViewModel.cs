@@ -2,7 +2,7 @@
 
 namespace MedioClinic.Models.Account
 {
-    public class SigninViewModel : IViewModel
+    public class SignInViewModel : IViewModel
     {
         public EmailViewModel EmailViewModel { get; set; }
 

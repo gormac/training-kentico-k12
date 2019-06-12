@@ -1,59 +1,40 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
 
 using Business.DependencyInjection;
-using Business.Identity;
-using Business.Identity.Models;
-using Business.Repository.Avatar;
-using Business.Services.Errors;
-using Business.Services.Localization;
-using MedioClinic.Extensions;
 using MedioClinic.Models;
 using MedioClinic.Models.Account;
+using MedioClinic.Utils;
 
 namespace MedioClinic.Controllers
 {
     [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
     public class AccountController : BaseController
     {
-        public IMedioClinicUserManager<MedioClinicUser, int> UserManager { get; }
+        /// <summary>
+        /// Signals if user registration is confirmed by email.
+        /// </summary>
+        /// <remarks>Consider taking from environment variables.</remarks>
+        public bool EmailConfirmedRegistration => true;
 
-        public IMedioClinicSignInManager<MedioClinicUser, int> SignInManager { get; }
+        public string ErrorTitle => Localize("General.Error");
 
-        public ILocalizationService LocalizationService { get; }
+        public IAccountManager AccountManager { get; set; }
 
-        public IAuthenticationManager AuthenticationManager { get; }
-
-        public IErrorHelperService ErrorHelperService { get; }
-
-        public IAvatarRepository AvatarRepository { get; }
 
         public AccountController(
-            IMedioClinicUserManager<MedioClinicUser, int> userManager,
-            IMedioClinicSignInManager<MedioClinicUser, int> signInManager,
-            IAuthenticationManager authenticationManager,
-            IErrorHelperService errorHelperService,
-            ILocalizationService localizationService,
-            IAvatarRepository avatarRepository,
-            IBusinessDependencies dependencies) 
+            IAccountManager accountManager,
+            IBusinessDependencies dependencies)
             : base(dependencies)
         {
-            UserManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
-            SignInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
-            AuthenticationManager = authenticationManager ?? throw new ArgumentNullException(nameof(authenticationManager));
-            ErrorHelperService = errorHelperService ?? throw new ArgumentNullException(nameof(errorHelperService));
-            LocalizationService = localizationService ?? throw new ArgumentNullException(nameof(localizationService));
-            AvatarRepository = avatarRepository ?? throw new ArgumentNullException(nameof(avatarRepository));
+            AccountManager = accountManager ?? throw new ArgumentNullException(nameof(accountManager));
         }
 
         // GET: /Account/Register
         public ActionResult Register()
         {
-            var model = GetPageViewModel(new RegisterViewModel(), LocalizationService.Localize("Controllers.Account.Register.Title"));
+            var model = GetPageViewModel(new RegisterViewModel(), Localize("Controllers.Account.Register.Title"));
 
             return View(model);
         }
@@ -63,61 +44,59 @@ namespace MedioClinic.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(PageViewModel<RegisterViewModel> uploadModel)
         {
+            PageViewModel<RegisterViewModel> viewModel = null;
+            var errorMessage = ConcatenateContactAdmin("Controllers.Account.Register.FailureMessage");
+
             if (ModelState.IsValid)
             {
-                var user = new MedioClinicUser
+                var accountResult = await AccountManager.RegisterAsync(uploadModel.Data, EmailConfirmedRegistration, Request.RequestContext);
+                string title = null;
+                var message = ConcatenateContactAdmin("Error.Message");
+
+                if (EmailConfirmedRegistration)
                 {
-                    UserName = uploadModel.Data.EmailViewModel.Email,
-                    Email = uploadModel.Data.EmailViewModel.Email,
-                    FirstName = uploadModel.Data.FirstName,
-                    LastName = uploadModel.Data.LastName,
 
-                    // Registration: Confirmed registration
-                    Enabled = false
+                    switch (accountResult.ResultState)
+                    {
+                        case RegisterResultState.UserNotCreated:
+                        case RegisterResultState.TokenNotCreated:
+                        case RegisterResultState.NotSignedIn:
+                            title = ErrorTitle;
+                            message = Localize("Controllers.Account.Register.Failure.Message");
+                            break;
+                        case RegisterResultState.EmailSent:
+                            title = Localize("Controllers.Account.Register.ConfirmedSuccess.Title");
+                            message = Localize("Controllers.Account.Register.ConfirmedSuccess.Message");
+                            break;
+                        default:
+                            break;
+                    }
 
-                    // Registration: Direct sign in
-                    //Enabled = true
-                };
+                    ViewBag.Message = message;
+                    viewModel = GetPageViewModel(accountResult.Model, title);
+                    AddErrors(accountResult);
 
-                IdentityResult result = null;
-
-                try
-                {
-                    result = await UserManager.CreateAsync(user, uploadModel.Data.PasswordConfirmationViewModel.Password);
+                    return View("ViewbagMessage", viewModel);
                 }
-                catch (Exception ex)
+                else
                 {
-                    ErrorHelperService.LogException(nameof(AccountController), nameof(Register), ex);
+                    if (accountResult.ResultState == RegisterResultState.NotSignedIn)
+                    {
+                        title = ErrorTitle;
+                        ViewBag.Message = Localize("Controllers.Account.Register.Failure.Message");
+                        viewModel = GetPageViewModel(accountResult.Model, title);
+                        AddErrors(accountResult);
+
+                        return View("ViewbagMessage", viewModel);
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
                 }
-
-                if (result != null && result.Succeeded)
-                {
-                    // Registration: Confirmed registration (begin)
-                    var token = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    var confirmationUrl = Url.AbsoluteUrl(Request, "ConfirmUser", routeValues: new { userId = user.Id, token });
-
-                    await UserManager.SendEmailAsync(user.Id,
-                        LocalizationService.Localize("Controllers.Account.Register.Email.Confirm.Subject"),
-                        LocalizationService.LocalizeFormat("Controllers.Account.Register.Email.Confirm.Body", confirmationUrl));
-
-                    ViewBag.Message = LocalizationService.Localize("Controllers.Account.Register.ViewbagMessage");
-
-                    return View("ViewbagMessage", GetPageViewModel(LocalizationService.Localize("Controllers.Account.Register.RegistrationStarted")));
-                    // Registration: Confirmed registration (end)
-
-                    // Registration: Direct sign in (begin)
-                    /*result = await AddToPatientRole(user.Id);
-                    await CreateNewAvatar(user);
-                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-
-                    return RedirectToAction("Index", "Home");*/
-                    // Registration: Direct sign in (end)
-                }
-
-                AddErrors(result);
             }
 
-            var viewModel = GetPageViewModel(uploadModel.Data, LocalizationService.Localize("general.error"));
+            viewModel = GetPageViewModel(uploadModel.Data, Localize("BasicForm.InvalidInput"));
 
             return View(viewModel);
         }
@@ -126,85 +105,63 @@ namespace MedioClinic.Controllers
         // GET: /Account/ConfirmUser
         public async Task<ActionResult> ConfirmUser(int? userId, string token)
         {
+            var title = ErrorTitle;
+            var message = ConcatenateContactAdmin("Error.Message");
+
             if (userId.HasValue)
             {
-                IdentityResult result = IdentityResult.Failed();
+                var accountResult = await AccountManager.ConfirmUserAsync(userId.Value, token, Request.RequestContext);
 
-                try
+                switch (accountResult.ResultState)
                 {
-                    result = await UserManager.ConfirmEmailAsync(userId.Value, token);
-                }
-                catch (InvalidOperationException)
-                {
-                    return InvalidToken();
+                    case ConfirmUserResultState.EmailNotConfirmed:
+                        message = Localize("Controllers.Account.ConfirmUser.ConfirmationFailure.Message");
+                        break;
+                    case ConfirmUserResultState.AvatarNotCreated:
+                        message = Localize("Controllers.Account.ConfirmUser.AvatarFailure.Message");
+                        break;
+                    case ConfirmUserResultState.UserConfirmed:
+                        title = Dependencies.LocalizationService.LocalizeFormat("Controllers.Account.ConfirmUser.Success.Title", Url.Action("SignIn"));
+                        message = Localize("Controllers.Account.ConfirmUser.Success.Message");
+                        break;
+                    default:
+                        break;
                 }
 
-                if (result.Succeeded && (await AddToPatientRole(userId.Value)).Succeeded)
-                {
-                    var user = await UserManager.FindByIdAsync(userId.Value);
-                    await CreateNewAvatar(user);
-                    ViewBag.Message = LocalizationService.LocalizeFormat("Controllers.Account.ConfirmUser.ViewbagMessage", Url.Action("Signin"));
-                }
+                ViewBag.Message = message;
 
-                AddErrors(result);
+                return View("ViewbagMessage", GetPageViewModel(title));
             }
 
-            return View("ViewbagMessage", GetPageViewModel(LocalizationService.Localize("Controllers.Account.ConfirmUser.Title")));
+            return View("ViewbagMessage", GetPageViewModel(Localize("General.Error")));
         }
         // Registration: Confirmed registration (end)
 
         // GET: /Account/Signin
-        public ActionResult Signin()
+        public ActionResult SignIn()
         {
-            return View(GetPageViewModel(new SigninViewModel(), LocalizationService.Localize("logonform.logonbutton")));
+            return View(GetPageViewModel(new SignInViewModel(), Localize("LogonForm.LogonButton")));
         }
 
         // POST: /Account/Signin
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Signin(PageViewModel<SigninViewModel> uploadModel, string returnUrl)
+        public async Task<ActionResult> SignIn(PageViewModel<SignInViewModel> uploadModel, string returnUrl)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                return View(GetPageViewModel(uploadModel.Data, LocalizationService.Localize("logonform.logonbutton")));
-            }
+                var accountResult = await AccountManager.SignInAsync(uploadModel.Data);
 
-            MedioClinicUser user = null;
-
-            try
-            {
-                user = await UserManager.FindByNameAsync(uploadModel.Data.EmailViewModel.Email);
-            }
-            catch (Exception ex)
-            {
-                ErrorHelperService.LogException(nameof(AccountController), nameof(Signin), ex);
-
-                return InvalidAttempt(uploadModel);
-            }
-
-            // Registration: Confirmed registration (begin)
-            if (user != null && !await UserManager.IsEmailConfirmedAsync(user.Id))
-            {
-                return InvalidAttempt(uploadModel);
-            }
-            // Registration: Confirmed registration (end)
-
-            SignInStatus status = SignInStatus.Failure;
-
-            try
-            {
-                status = await SignInManager.PasswordSignInAsync(uploadModel.Data.EmailViewModel.Email, uploadModel.Data.PasswordViewModel.Password, uploadModel.Data.StaySignedIn, false);
-            }
-            catch (Exception ex)
-            {
-                ErrorHelperService.LogException(nameof(AccountController), nameof(Signin), ex);
-
-                return InvalidAttempt(uploadModel);
-            }
-
-            if (status == SignInStatus.Success)
-            {
-                return RedirectToLocal(Server.UrlDecode(returnUrl));
+                switch (accountResult.ResultState)
+                {
+                    case SignInResultState.UserNotFound:
+                    case SignInResultState.EmailNotConfirmed:
+                    case SignInResultState.NotSignedIn:
+                    default:
+                        return InvalidAttempt(uploadModel);
+                    case SignInResultState.SignedIn:
+                        return RedirectToLocal(Server.UrlDecode(returnUrl));
+                }
             }
 
             return InvalidAttempt(uploadModel);
@@ -212,18 +169,18 @@ namespace MedioClinic.Controllers
 
         // GET: /Account/Signout
         [Authorize]
-        public ActionResult Signout()
+        public ActionResult SignOut()
         {
-            try
+            var accountResult = AccountManager.SignOut();
+
+            if (accountResult.Success)
             {
-                AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            }
-            catch (Exception ex)
-            {
-                ErrorHelperService.LogException(nameof(AccountController), nameof(Signout), ex);
+                return RedirectToAction("Index", "Home");
             }
 
-            return RedirectToAction("Index", "Home");
+            ViewBag.Message = ConcatenateContactAdmin("Controllers.Account.SignOut.Failure.Message");
+
+            return View("ViewbagMessage", GetPageViewModel(Localize("General.Error")));
         }
 
         // GET: /Account/ForgotPassword
@@ -231,7 +188,7 @@ namespace MedioClinic.Controllers
         {
             var model = new EmailViewModel();
 
-            return View(GetPageViewModel(model, LocalizationService.Localize("passreset.title")));
+            return View(GetPageViewModel(model, Localize("PassReset.Title")));
         }
 
         // POST: /Account/ForgotPassword
@@ -241,70 +198,34 @@ namespace MedioClinic.Controllers
         {
             if (ModelState.IsValid)
             {
-                MedioClinicUser user = null;
-
-                try
-                {
-                    user = await UserManager.FindByEmailAsync(uploadModel.Data.Email);
-                }
-                catch (Exception ex)
-                {
-                    ErrorHelperService.LogException(nameof(AccountController), nameof(ForgotPassword), ex);
-                }
-
-                if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
-                {
-                    // Don't reveal that the user does not exist or is not confirmed.
-                    return CheckEmailResetPassword();
-                }
-
-                string token = null;
-
-                try
-                {
-                    token = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-                }
-                catch (Exception ex)
-                {
-                    ErrorHelperService.LogException(nameof(AccountController), nameof(ForgotPassword), ex);
-                    var viewModel = GetPageViewModel(uploadModel.Data, LocalizationService.Localize("general.error"));
-
-                    return View(viewModel);
-                }
-
-                var resetUrl = Url.AbsoluteUrl(Request, "ResetPassword", "Account", new { userId = user.Id, token });
-                await UserManager.SendEmailAsync(user.Id, LocalizationService.Localize("passreset.title"),
-                    LocalizationService.LocalizeFormat("Controllers.Account.ForgotPassword.Email.Body", resetUrl));
+                _ = await AccountManager.ForgotPasswordAsync(uploadModel.Data, Request.RequestContext);
 
                 return CheckEmailResetPassword();
             }
 
-            return View(GetPageViewModel(uploadModel.Data, LocalizationService.Localize("passreset.title")));
+            return View(GetPageViewModel(uploadModel.Data, Localize("PassReset.Title")));
         }
 
         // GET: /Account/ResetPassword
         public async Task<ActionResult> ResetPassword(int? userId, string token)
         {
-            var tokenVerified = false;
+            ViewBag.Message = ConcatenateContactAdmin("Controllers.Account.ResetPassword.Failure.Message");
 
-            try
+            if (userId.HasValue && !string.IsNullOrEmpty(token))
             {
-                tokenVerified = await UserManager.VerifyUserTokenAsync(userId.Value, "ResetPassword", token);
+                var accountResult = await AccountManager.VerifyResetPasswordTokenAsync(userId.Value, token);
+
+                if (accountResult.Success)
+                {
+                    return View(GetPageViewModel(accountResult.Model, Localize("PassReset.Title")));
+                }
+                else
+                {
+                    ViewBag.Message = ConcatenateContactAdmin("Controllers.Account.InvalidToken.Message");
+                }
             }
-            catch (InvalidOperationException ex)
-            {
-                ErrorHelperService.LogException(nameof(AccountController), nameof(ResetPassword), ex);
 
-                return InvalidToken();
-            }
-
-            var model = new ResetPasswordViewModel
-            {
-                UserId = userId.Value,
-                Token = token
-            };
-
-            return View(GetPageViewModel(model, LocalizationService.Localize("passreset.title")));
+            return View("ViewbagMessage", GetPageViewModel(Localize("General.Error")));
         }
 
         // POST: /Account/ResetPassword
@@ -312,38 +233,17 @@ namespace MedioClinic.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ResetPassword(PageViewModel<ResetPasswordViewModel> uploadModel)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                return View(GetPageViewModel(uploadModel.Data, LocalizationService.Localize("passreset.title")));
+                var accountResult = await AccountManager.ResetPasswordAsync(uploadModel.Data);
+
+                if (accountResult.Success)
+                {
+                    ViewBag.Message = Dependencies.LocalizationService.LocalizeFormat("Controllers.Account.ResetPassword.Success.Message", Url.Action("Signin"));
+                }
             }
 
-            var result = IdentityResult.Failed();
-
-            try
-            {
-                result = await UserManager.ResetPasswordAsync(
-                        uploadModel.Data.UserId,
-                        uploadModel.Data.Token,
-                        uploadModel.Data.PasswordConfirmationViewModel.Password);
-            }
-            catch (InvalidOperationException ex)
-            {
-                ErrorHelperService.LogException(nameof(AccountController), nameof(ResetPassword), ex);
-                ViewBag.Message = LocalizationService.Localize("general.usernotfound");
-
-                return View("ViewbagMessage", GetPageViewModel(ViewBag.Message));
-            }
-
-            if (result.Succeeded)
-            {
-                ViewBag.Message = LocalizationService.LocalizeFormat("Controllers.Account.ResetPassword.ViewbagMessage", Url.Action("Signin"));
-
-                return View("ViewbagMessage", GetPageViewModel(LocalizationService.Localize("general.success")));
-            }
-
-            AddErrors(result);
-
-            return View(GetPageViewModel(uploadModel.Data, LocalizationService.Localize("general.error")));
+            return View(GetPageViewModel(uploadModel.Data, Localize("PassReset.Title")));
         }
 
         protected ActionResult RedirectToLocal(string returnUrl)
@@ -356,40 +256,36 @@ namespace MedioClinic.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        protected ActionResult InvalidAttempt(PageViewModel<SigninViewModel> uploadModel)
+        protected ActionResult InvalidAttempt(PageViewModel<SignInViewModel> uploadModel)
         {
-            ModelState.AddModelError(string.Empty, LocalizationService.Localize("Controllers.Account.InvalidAttempt"));
+            ModelState.AddModelError(string.Empty, Localize("Controllers.Account.InvalidAttempt"));
 
-            return View(GetPageViewModel(uploadModel.Data, LocalizationService.Localize("logonform.logonbutton")));
+            return View(GetPageViewModel(uploadModel.Data, Localize("LogonForm.LogonButton")));
         }
 
         protected ActionResult CheckEmailResetPassword()
         {
-            ViewBag.Message = LocalizationService.Localize("Controllers.Account.CheckEmailResetPassword.ViewbagMessage");
+            ViewBag.Message = Localize("Controllers.Account.CheckEmailResetPassword.ViewbagMessage");
 
-            return View("ViewbagMessage", GetPageViewModel(LocalizationService.Localize("Controllers.Account.CheckEmailResetPassword.Title")));
+            return View("ViewbagMessage", GetPageViewModel(Localize("Controllers.Account.CheckEmailResetPassword.Title")));
         }
 
-        protected ActionResult InvalidToken()
+        protected void AddErrors<TResultState>(AccountResult<TResultState> result)
+            where TResultState : Enum
         {
-            ViewBag.Message = LocalizationService.Localize("Controllers.Account.InvalidToken.ViewbagMessage");
 
-            return View("ViewbagMessage", GetPageViewModel(LocalizationService.Localize("Controllers.Account.InvalidToken.Title")));
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error);
+            }
         }
 
-        protected async Task<IdentityResult> AddToPatientRole(int userId)
-        {
-            var patientRole = Roles.Patient.ToString();
-            return await UserManager.AddToRolesAsync(userId, patientRole);
-        }
+        protected string Localize(string resourceKey) =>
+            Localize(resourceKey);
 
-        protected async Task CreateNewAvatar(MedioClinicUser user)
-        {
-            var path = Server.MapPath($"{ContentFolder}/{AvatarFolder}/{DefaultAvatarFileName}");
-
-            user.AvatarId = AvatarRepository.CreateUserAvatar(path, $"Custom {user.UserName}");
-
-            await UserManager.UpdateAsync(user);
-        }
+        protected string ConcatenateContactAdmin(string messageKey) =>
+            Localize(messageKey)
+                + " "
+                + Localize("ContactAdministrator");
     }
 }
