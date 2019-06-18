@@ -7,7 +7,7 @@ namespace Business.Services.FileManagement
     {
         byte[] GetPostedFileBinary(HttpPostedFileBase file);
 
-        string EnsureFilePath(string subfolder);
+        string EnsureFilesystemPath(string subfolder);
 
         string MakeStringUrlCompliant(string input);
 

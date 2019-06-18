@@ -159,10 +159,10 @@
   <data name="Controllers.Profile.Index.SavedChanges" xml:space="preserve">
     <value>Your changes were saved.</value>
   </data>
-  <data name="Controllers.Profile.Index.Title.Doctor" xml:space="preserve">
+  <data name="ProfileManager.GetRoleTitle.Title.Doctor" xml:space="preserve">
     <value>Doctor</value>
   </data>
-  <data name="Controllers.Profile.Index.Title.Patient" xml:space="preserve">
+  <data name="ProfileManager.GetRoleTitle.Title.Patient" xml:space="preserve">
     <value>Patient</value>
   </data>
   <data name="Models.Profile.CommonUserViewModel.AvatarFile" xml:space="preserve">

@@ -18,7 +18,7 @@ namespace MedioClinic.Controllers
         /// <remarks>Consider taking from environment variables.</remarks>
         public bool EmailConfirmedRegistration => true;
 
-        public string ErrorTitle => Localize("General.Error");
+
 
         public IAccountManager AccountManager { get; set; }
 
@@ -280,12 +280,8 @@ namespace MedioClinic.Controllers
             }
         }
 
-        protected string Localize(string resourceKey) =>
-            Localize(resourceKey);
 
-        protected string ConcatenateContactAdmin(string messageKey) =>
-            Localize(messageKey)
-                + " "
-                + Localize("ContactAdministrator");
+
+
     }
 }

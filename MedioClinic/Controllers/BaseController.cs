@@ -13,7 +13,7 @@ namespace MedioClinic.Controllers
 {
     public class BaseController : Controller
     {
-
+        public string ErrorTitle => Localize("General.Error");
 
         protected IBusinessDependencies Dependencies { get; }
 
@@ -46,6 +46,14 @@ namespace MedioClinic.Controllers
                 Data = data
             };
         }
+
+        protected string ConcatenateContactAdmin(string messageKey) =>
+            Localize(messageKey)
+                + " "
+                + Localize("ContactAdministrator");
+
+        protected string Localize(string resourceKey) =>
+            Dependencies.LocalizationService.Localize(resourceKey);
 
         private IEnumerable<SocialLinkDto> GetSocialLinks()
         {

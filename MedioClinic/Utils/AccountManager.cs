@@ -15,36 +15,33 @@ using Business.Repository.Avatar;
 using MedioClinic.Config;
 using MedioClinic.Extensions;
 using MedioClinic.Models.Account;
+using MedioClinic.Models;
 
 namespace MedioClinic.Utils
 {
     // TODO: Document.
-    public class AccountManager : IAccountManager
+    public class AccountManager : BaseIdentityManager, IAccountManager
     {
-        public IMedioClinicUserManager<MedioClinicUser, int> UserManager { get; }
-
         public IMedioClinicSignInManager<MedioClinicUser, int> SignInManager { get; }
 
         public IAuthenticationManager AuthenticationManager { get; }
 
         public IAvatarRepository AvatarRepository { get; set; }
 
-        public IBusinessDependencies Dependencies { get; }
 
         public AccountManager(
             IMedioClinicUserManager<MedioClinicUser, int> userManager,
             IMedioClinicSignInManager<MedioClinicUser, int> signInManager,
             IAuthenticationManager authenticationManager,
-            IBusinessDependencies businessDependencies)
+            IBusinessDependencies dependencies)
+            : base(userManager, dependencies)
         {
-            UserManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
             SignInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
             AuthenticationManager = authenticationManager ?? throw new ArgumentNullException(nameof(authenticationManager));
-            Dependencies = businessDependencies ?? throw new ArgumentNullException(nameof(businessDependencies));
         }
 
 
-        public async Task<AccountResult<RegisterResultState, RegisterViewModel>> RegisterAsync(RegisterViewModel model, bool emailConfirmed, RequestContext requestContext)
+        public async Task<IdentityManagerResult<RegisterResultState, RegisterViewModel>> RegisterAsync(RegisterViewModel model, bool emailConfirmed, RequestContext requestContext)
         {
             var user = new MedioClinicUser
             {
@@ -55,13 +52,7 @@ namespace MedioClinic.Utils
                 Enabled = !emailConfirmed
             };
 
-
-
-            var accountResult = new AccountResult<RegisterResultState, RegisterViewModel>
-            {
-                Model = model
-            };
-
+            var accountResult = new IdentityManagerResult<RegisterResultState>();
             IdentityResult identityResult = null;
 
             try
@@ -70,9 +61,8 @@ namespace MedioClinic.Utils
             }
             catch (Exception ex)
             {
-                var ar = accountResult as AccountResult<RegisterResultState>;
+                HandleException(nameof(RegisterAsync), ex, ref accountResult);
                 accountResult.ResultState = RegisterResultState.UserNotCreated;
-                HandleException(nameof(RegisterAsync), ex, ref ar);
 
                 return accountResult;
             }
@@ -90,7 +80,7 @@ namespace MedioClinic.Utils
                     }
                     catch (Exception ex)
                     {
-                        var ar = accountResult as AccountResult<RegisterResultState>;
+                        var ar = accountResult as IdentityManagerResult<RegisterResultState>;
                         accountResult.ResultState = RegisterResultState.TokenNotCreated;
                         HandleException(nameof(RegisterAsync), ex, ref ar);
 
@@ -127,7 +117,7 @@ namespace MedioClinic.Utils
                     }
                     catch (Exception ex)
                     {
-                        var ar = accountResult as AccountResult<RegisterResultState>;
+                        var ar = accountResult as IdentityManagerResult<RegisterResultState>;
                         accountResult.ResultState = RegisterResultState.NotSignedIn;
                         HandleException(nameof(RegisterAsync), ex, ref ar);
 
@@ -142,9 +132,9 @@ namespace MedioClinic.Utils
             return accountResult;
         }
 
-        public async Task<AccountResult<ConfirmUserResultState>> ConfirmUserAsync(int userId, string token, RequestContext requestContext)
+        public async Task<IdentityManagerResult<ConfirmUserResultState>> ConfirmUserAsync(int userId, string token, RequestContext requestContext)
         {
-            var accountResult = new AccountResult<ConfirmUserResultState>();
+            var accountResult = new IdentityManagerResult<ConfirmUserResultState>();
             IdentityResult identityResult = IdentityResult.Failed();
 
             try
@@ -182,9 +172,9 @@ namespace MedioClinic.Utils
             return accountResult;
         }
 
-        public async Task<AccountResult<SignInResultState, SignInViewModel>> SignInAsync(SignInViewModel model)
+        public async Task<IdentityManagerResult<SignInResultState, SignInViewModel>> SignInAsync(SignInViewModel model)
         {
-            var accountResult = new AccountResult<SignInResultState, SignInViewModel>
+            var accountResult = new IdentityManagerResult<SignInResultState, SignInViewModel>
             {
                 Model = model
             };
@@ -197,7 +187,7 @@ namespace MedioClinic.Utils
             }
             catch (Exception ex)
             {
-                var ar = accountResult as AccountResult<SignInResultState>;
+                var ar = accountResult as IdentityManagerResult<SignInResultState>;
                 accountResult.ResultState = SignInResultState.UserNotFound;
                 HandleException(nameof(SignInAsync), ex, ref ar);
 
@@ -221,7 +211,7 @@ namespace MedioClinic.Utils
             }
             catch (Exception ex)
             {
-                var ar = accountResult as AccountResult<SignInResultState>;
+                var ar = accountResult as IdentityManagerResult<SignInResultState>;
                 accountResult.ResultState = SignInResultState.NotSignedIn;
                 HandleException(nameof(SignInAsync), ex, ref ar);
 
@@ -238,9 +228,9 @@ namespace MedioClinic.Utils
         }
 
 
-        public AccountResult<SignOutResultState> SignOut()
+        public IdentityManagerResult<SignOutResultState> SignOut()
         {
-            var accountResult = new AccountResult<SignOutResultState>();
+            var accountResult = new IdentityManagerResult<SignOutResultState>();
 
             try
             {
@@ -258,9 +248,9 @@ namespace MedioClinic.Utils
         }
 
 
-        public async Task<AccountResult<ForgotPasswordResultState, EmailViewModel>> ForgotPasswordAsync(EmailViewModel model, RequestContext requestContext)
+        public async Task<IdentityManagerResult<ForgotPasswordResultState, EmailViewModel>> ForgotPasswordAsync(EmailViewModel model, RequestContext requestContext)
         {
-            var accountResult = new AccountResult<ForgotPasswordResultState, EmailViewModel>
+            var accountResult = new IdentityManagerResult<ForgotPasswordResultState, EmailViewModel>
             {
                 Model = model
             };
@@ -273,7 +263,7 @@ namespace MedioClinic.Utils
             }
             catch (Exception ex)
             {
-                var ar = accountResult as AccountResult<ForgotPasswordResultState>;
+                var ar = accountResult as IdentityManagerResult<ForgotPasswordResultState>;
                 accountResult.ResultState = ForgotPasswordResultState.UserNotFound;
                 HandleException(nameof(ForgotPasswordAsync), ex, ref ar);
 
@@ -295,7 +285,7 @@ namespace MedioClinic.Utils
             }
             catch (Exception ex)
             {
-                var ar = accountResult as AccountResult<ForgotPasswordResultState>;
+                var ar = accountResult as IdentityManagerResult<ForgotPasswordResultState>;
                 accountResult.ResultState = ForgotPasswordResultState.TokenNotCreated;
                 HandleException(nameof(ForgotPasswordAsync), ex, ref ar);
 
@@ -315,7 +305,7 @@ namespace MedioClinic.Utils
             }
             catch (Exception ex)
             {
-                var ar = accountResult as AccountResult<ForgotPasswordResultState>;
+                var ar = accountResult as IdentityManagerResult<ForgotPasswordResultState>;
                 accountResult.ResultState = ForgotPasswordResultState.EmailNotSent;
                 HandleException(nameof(ForgotPasswordAsync), ex, ref ar);
 
@@ -328,9 +318,9 @@ namespace MedioClinic.Utils
             return accountResult;
         }
 
-        public async Task<AccountResult<ResetPasswordResultState, ResetPasswordViewModel>> VerifyResetPasswordTokenAsync(int userId, string token)
+        public async Task<IdentityManagerResult<ResetPasswordResultState, ResetPasswordViewModel>> VerifyResetPasswordTokenAsync(int userId, string token)
         {
-            var accountResult = new AccountResult<ResetPasswordResultState, ResetPasswordViewModel>();
+            var accountResult = new IdentityManagerResult<ResetPasswordResultState, ResetPasswordViewModel>();
             var tokenVerified = false;
 
             try
@@ -339,7 +329,7 @@ namespace MedioClinic.Utils
             }
             catch (Exception ex)
             {
-                var ar = accountResult as AccountResult<ResetPasswordResultState>;
+                var ar = accountResult as IdentityManagerResult<ResetPasswordResultState>;
                 accountResult.ResultState = ResetPasswordResultState.InvalidToken;
                 HandleException(nameof(VerifyResetPasswordTokenAsync), ex, ref ar);
 
@@ -358,9 +348,9 @@ namespace MedioClinic.Utils
             return accountResult;
         }
 
-        public async Task<AccountResult<ResetPasswordResultState, ResetPasswordViewModel>> ResetPasswordAsync(ResetPasswordViewModel model)
+        public async Task<IdentityManagerResult<ResetPasswordResultState, ResetPasswordViewModel>> ResetPasswordAsync(ResetPasswordViewModel model)
         {
-            var accountResult = new AccountResult<ResetPasswordResultState, ResetPasswordViewModel>
+            var accountResult = new IdentityManagerResult<ResetPasswordResultState, ResetPasswordViewModel>
             {
                 Model = model
             };
@@ -376,7 +366,7 @@ namespace MedioClinic.Utils
             }
             catch (Exception ex)
             {
-                var ar = accountResult as AccountResult<ResetPasswordResultState>;
+                var ar = accountResult as IdentityManagerResult<ResetPasswordResultState>;
                 accountResult.ResultState = ResetPasswordResultState.PasswordNotReset;
                 HandleException(nameof(ResetPasswordAsync), ex, ref ar);
             }
@@ -404,75 +394,15 @@ namespace MedioClinic.Utils
             await UserManager.UpdateAsync(user);
         }
 
-        private void HandleException<TResultState>(string methodName, Exception exception, ref AccountResult<TResultState> accountResult)
-            where TResultState : Enum
-        {
-            Dependencies.ErrorHelperService.LogException(nameof(AccountManager), methodName, exception);
-            accountResult.Success = false;
-            accountResult.Errors.Add(exception.Message);
-        }
+        //private void HandleException<TResultState>(string methodName, Exception exception, ref ManagerResult<TResultState> accountResult)
+        //    where TResultState : Enum
+        //{
+        //    Dependencies.ErrorHelperService.LogException(nameof(AccountManager), methodName, exception);
+        //    accountResult.Success = false;
+        //    accountResult.Errors.Add(exception.Message);
+        //}
 
     }
 
-    public class AccountResult<TResultState>
-        where TResultState : Enum
-    {
-        public bool Success { get; set; }
-        public List<string> Errors { get; set; }
-        public TResultState ResultState { get; set; }
-
-    }
-
-    public class AccountResult<TResultState, TModel> : AccountResult<TResultState>
-        where TResultState : Enum
-    {
-        public TModel Model { get; set; }
-    }
-
-    public enum RegisterResultState
-    {
-        UserNotCreated,
-        TokenNotCreated,
-        EmailSent,
-        SignedIn,
-        NotSignedIn
-    }
-
-    public enum ConfirmUserResultState
-    {
-        EmailNotConfirmed,
-        AvatarNotCreated,
-        UserConfirmed
-    }
-
-    public enum SignInResultState
-    {
-        UserNotFound,
-        EmailNotConfirmed,
-        SignedIn,
-        NotSignedIn
-    }
-
-    public enum SignOutResultState
-    {
-        SignedOut,
-        NotSignedOut
-    }
-
-    public enum ForgotPasswordResultState
-    {
-        UserNotFound,
-        EmailNotConfirmed,
-        TokenNotCreated,
-        EmailSent,
-        EmailNotSent
-    }
-
-    public enum ResetPasswordResultState
-    {
-        InvalidToken,
-        TokenVerified,
-        PasswordNotReset,
-        PasswordReset
-    }
+    
 }

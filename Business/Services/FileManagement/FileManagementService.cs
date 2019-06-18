@@ -38,7 +38,7 @@ namespace Business.Services.FileManagement
             return data;
         }
 
-        public string EnsureFilePath(string physicalPath)
+        public string EnsureFilesystemPath(string physicalPath)
         {
             if (!Directory.Exists(physicalPath))
             {
@@ -50,7 +50,7 @@ namespace Business.Services.FileManagement
                 }
                 catch (Exception ex)
                 {
-                    ErrorHelper.LogException(nameof(FileManagementService), nameof(EnsureFilePath), ex);
+                    ErrorHelper.LogException(nameof(FileManagementService), nameof(EnsureFilesystemPath), ex);
 
                     throw;
                 }

@@ -18,68 +18,27 @@ using MedioClinic.Config;
 using MedioClinic.Models;
 using MedioClinic.Models.Account;
 using MedioClinic.Models.Profile;
+using MedioClinic.Utils;
 
 namespace MedioClinic.Controllers
 {
     [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
     public class ProfileController : BaseController
     {
-        public IMedioClinicUserManager<MedioClinicUser, int> UserManager { get; }
-
-        public IMedioClinicUserStore UserStore { get; }
-
-        public IUserModelService UserModelService { get; }
-
-        public IErrorHelperService ErrorHelperService { get; }
-
-        public IFileManagementService FileManagementService { get; }
-
-        public ILocalizationService LocalizationService { get; }
-
-        public IAvatarRepository AvatarRepository { get; }
+        public IProfileManager ProfileManager { get; }
 
         public ProfileController(
-            IMedioClinicUserManager<MedioClinicUser, int> userManager,
-            IMedioClinicUserStore userStore,
-            IUserModelService userModelService,
-            IErrorHelperService errorHelper,
-            IFileManagementService fileManagementHelper,
-            ILocalizationService localizationService,
-            IAvatarRepository avatarRepository,
+            IProfileManager profileManager,
             IBusinessDependencies dependencies) : base(dependencies)
         {
-            UserManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
-            UserStore = userStore ?? throw new ArgumentNullException(nameof(userStore));
-            UserModelService = userModelService ?? throw new ArgumentNullException(nameof(userModelService));
-            ErrorHelperService = errorHelper ?? throw new ArgumentNullException(nameof(errorHelper));
-            FileManagementService = fileManagementHelper ?? throw new ArgumentNullException(nameof(fileManagementHelper));
-            LocalizationService = localizationService ?? throw new ArgumentNullException(nameof(localizationService));
-            AvatarRepository = avatarRepository ?? throw new ArgumentNullException(nameof(avatarRepository));
+            ProfileManager = profileManager ?? throw new ArgumentNullException(nameof(profileManager));
         }
 
         // GET: Profile
         [MedioClinicAuthorize(Roles = Roles.Doctor | Roles.Patient, SiteName = AppConfig.Sitename)]
         public async Task<ActionResult> Index()
         {
-            MedioClinicUser user = null;
-
-            try
-            {
-                user = await UserManager.FindByNameAsync(HttpContext.User?.Identity?.Name);
-            }
-            catch (Exception ex)
-            {
-                ErrorHelperService.LogException(nameof(ProfileController), nameof(Index), ex);
-            }
-
-            var model = GetViewModelByUserRoles(user);
-
-            if (model != null)
-            {
-                return View(model);
-            }
-
-            return UserNotFound();
+            return await GetProfileAsync();
         }
 
         // POST: Profile
@@ -88,169 +47,59 @@ namespace MedioClinic.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Index(PageViewModel<IUserViewModel> uploadModel)
         {
-            PageViewModel<IUserViewModel> model = null;
-            MedioClinicUser user = null;
+            var message = ConcatenateContactAdmin("Error.Message");
 
             if (ModelState.IsValid)
             {
+                var profileResult = await ProfileManager.PostProfileAsync(uploadModel.Data, Request.RequestContext);
 
-                try
+                switch (profileResult.ResultState)
                 {
-                    user = await UserManager.FindByIdAsync(uploadModel.Data.CommonUserViewModel.Id);
-                }
-                catch (Exception ex)
-                {
-                    ErrorHelperService.LogException(nameof(ProfileController), nameof(Index), ex);
-                }
-
-                var commonUserModelCustomMappings = new Dictionary<(string propertyName, Type propertyType), object>
-                {
-                    { (nameof(MedioClinicUser.Email), typeof(string)), uploadModel.Data.CommonUserViewModel.EmailViewModel.Email },
-                };
-
-                try
-                {
-                    // Map the common user properties.
-                    user = UserModelService.MapToMedioClinicUser(uploadModel.Data.CommonUserViewModel, user, commonUserModelCustomMappings);
-
-                    // Map all other potential properties of specific models (patient, doctor, etc.)
-                    user = UserModelService.MapToMedioClinicUser(uploadModel.Data, user);
-                }
-                catch (Exception ex)
-                {
-                    ErrorHelperService.LogException(nameof(ProfileController), nameof(Index), ex);
+                    case PostProfileResultState.UserNotFound:
+                        message = Localize("Controllers.Profile.Index.UserNotFound");
+                        break;
+                    case PostProfileResultState.UserNotMapped:
+                    case PostProfileResultState.UserNotUpdated:
+                        message = Localize("Controllers.Profile.Index.UserNotUpdated");
+                        break;
+                    case PostProfileResultState.UserUpdated:
+                        message = Localize("Controllers.Profile.Index.UserUpdated");
+                        break;
+                    default:
+                        break;
                 }
 
-                try
+                ViewBag.Message = message;
+                var model = GetPageViewModel(profileResult.Data.UserViewModel, profileResult.Data.PageTitle ?? ErrorTitle);
+
+                return View(model);
+            }
+
+            return await GetProfileAsync();
+        }
+
+        protected async Task<ActionResult> GetProfileAsync()
+        {
+            var userName = HttpContext.User?.Identity?.Name;
+
+            if (!string.IsNullOrEmpty(userName))
+            {
+                var profileResult = await ProfileManager.GetProfileAsync(userName, Request.RequestContext);
+
+                if (profileResult.Success)
                 {
-                    // We need to use the user store directly due to the design of Microsoft.AspNet.Identity.Core.UserManager.UpdateAsync().
-                    await UserStore.UpdateAsync(user);
+                    var model = GetPageViewModel(profileResult.Data.UserViewModel, profileResult.Data.PageTitle);
 
-                    var avatarFile = uploadModel.Data.CommonUserViewModel.AvatarFile;
-
-                    if (avatarFile != null)
-                    {
-                        var avatarBinary = FileManagementService.GetPostedFileBinary(avatarFile);
-                        AvatarRepository.UploadUserAvatar(user, avatarBinary);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ErrorHelperService.LogException(nameof(ProfileController), nameof(Index), ex);
-                }
-
-                ViewBag.Message = LocalizationService.Localize("Controllers.Profile.Index.SavedChanges");
-                model = GetViewModelByUserRoles(user, true);
-
-                if (model != null)
-                {
                     return View(model);
                 }
-            }
-
-            try
-            {
-                user = await UserManager.FindByNameAsync(HttpContext.User.Identity.Name);
-            }
-            catch (Exception ex)
-            {
-                ErrorHelperService.LogException(nameof(ProfileController), nameof(Index), ex);
-            }
-
-            model = GetViewModelByUserRoles(user);
-
-            if (model != null)
-            {
-                return View(model);
             }
 
             return UserNotFound();
         }
 
-
-        /// <summary>
-        /// Computes the user view model, based on roles.
-        /// </summary>
-        /// <param name="user">User to compute the view model by.</param>
-        /// <param name="forceAvatarFileOverwrite">Flag that signals the need to update the app-local physical avatar file.</param>
-        /// <returns>Master <see cref="PageViewModel{TViewModel}"/> filled with models of specific user roles.</returns>
-        protected PageViewModel<IUserViewModel> GetViewModelByUserRoles(MedioClinicUser user, bool forceAvatarFileOverwrite = false)
-        {
-            if (user != null)
-            {
-                var roles = user.Roles.ToMedioClinicRoles();
-                string avatarPhysicalPath = EnsureAvatarPhysicalPath(user, forceAvatarFileOverwrite);
-                var avatarRelativePath = avatarPhysicalPath != null ? FileManagementService.GetServerRelativePath(Request, avatarPhysicalPath) : string.Empty;
-
-                var commonUserModelCustomMappings = new Dictionary<(string propertyName, Type propertyType), object>
-                {
-                    { (nameof(CommonUserViewModel.EmailViewModel), typeof(EmailViewModel)), new EmailViewModel { Email = user.Email } },
-                    { (nameof(CommonUserViewModel.AvatarContentPath), typeof(string)), avatarRelativePath }
-                };
-
-                object mappedParentModel = null;
-
-                try
-                {
-                    // Map the common user properties.
-                    var mappedCommonUserModel = UserModelService.MapToViewModel(user, typeof(CommonUserViewModel), commonUserModelCustomMappings);
-
-                    Type userViewModelType = FlagEnums.HasAnyFlags(roles, Roles.Doctor) ? typeof(DoctorViewModel) : typeof(PatientViewModel);
-
-                    var parentModelCustomMappings = new Dictionary<(string propertyName, Type propertyType), object>
-                    {
-                        { (nameof(CommonUserViewModel), typeof(CommonUserViewModel)), mappedCommonUserModel }
-                    };
-
-                    // Map all other potential properties of specific models (patient, doctor, etc.)
-                    mappedParentModel = UserModelService.MapToViewModel(user, userViewModelType, parentModelCustomMappings);
-                }
-                catch (Exception ex)
-                {
-                    ErrorHelperService.LogException(nameof(ProfileController), nameof(GetViewModelByUserRoles), ex);
-                }
-
-                var finalViewModel = GetPageViewModel((IUserViewModel)mappedParentModel, GetTitle(roles));
-
-                return finalViewModel;
-            }
-
-            return null;
-        }
-
-        protected string GetTitle(Roles roles) =>
-            FlagEnums.HasAnyFlags(roles, Roles.Doctor)
-                ? LocalizationService.Localize("Controllers.Profile.Index.Title.Doctor")
-                : LocalizationService.Localize("Controllers.Profile.Index.Title.Patient");
-
-
-        protected string EnsureAvatarPhysicalPath(MedioClinicUser user, bool forceOverwrite = false)
-        {
-            (var avatarFileName, var avatarBinary) = AvatarRepository.GetUserAvatar(user);
-
-            avatarFileName = avatarFileName ?? DefaultAvatarFileName;
-            string avatarPhysicalPath = GetAvatarContentPath(avatarFileName);
-
-            if (!avatarFileName.Equals(DefaultAvatarFileName, StringComparison.OrdinalIgnoreCase))
-            {
-                FileManagementService.WriteFileIfDoesntExist(avatarPhysicalPath, avatarBinary, forceOverwrite);
-            }
-
-            return avatarPhysicalPath;
-        }
-
-        protected string GetAvatarContentPath(string avatarFileName)
-        {
-            var physicalPath = Server.MapPath($"{ContentFolder}/{AvatarFolder}");
-            var folder = FileManagementService.EnsureFilePath(physicalPath);
-            var fileName = FileManagementService.MakeStringUrlCompliant(avatarFileName);
-
-            return $"{folder}\\{fileName}";
-        }
-
         protected ActionResult UserNotFound()
         {
-            ViewBag.Message = LocalizationService.Localize("general.usernotfound");
+            ViewBag.Message = Dependencies.LocalizationService.Localize("General.UserNotFound");
 
             return View("ViewbagMessage", GetPageViewModel(ViewBag.Message));
         }
