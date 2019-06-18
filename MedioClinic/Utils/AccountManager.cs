@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -41,7 +40,7 @@ namespace MedioClinic.Utils
         }
 
 
-        public async Task<IdentityManagerResult<RegisterResultState, RegisterViewModel>> RegisterAsync(RegisterViewModel model, bool emailConfirmed, RequestContext requestContext)
+        public async Task<IdentityManagerResult<RegisterResultState>> RegisterAsync(RegisterViewModel model, bool emailConfirmed, RequestContext requestContext)
         {
             var user = new MedioClinicUser
             {
@@ -127,7 +126,7 @@ namespace MedioClinic.Utils
                 // Registration: Direct sign in (end)
             }
 
-            accountResult.Errors.AddRange(identityResult.Errors);
+            accountResult.Errors.AddNonNullRange(identityResult.Errors);
 
             return accountResult;
         }
@@ -167,17 +166,14 @@ namespace MedioClinic.Utils
                 }
             }
 
-            accountResult.Errors.AddRange(identityResult.Errors);
+            accountResult.Errors.AddNonNullRange(identityResult.Errors);
 
             return accountResult;
         }
 
-        public async Task<IdentityManagerResult<SignInResultState, SignInViewModel>> SignInAsync(SignInViewModel model)
+        public async Task<IdentityManagerResult<SignInResultState>> SignInAsync(SignInViewModel model)
         {
-            var accountResult = new IdentityManagerResult<SignInResultState, SignInViewModel>
-            {
-                Model = model
-            };
+            var accountResult = new IdentityManagerResult<SignInResultState, SignInViewModel>();
 
             MedioClinicUser user = null;
 
@@ -227,7 +223,6 @@ namespace MedioClinic.Utils
             return accountResult;
         }
 
-
         public IdentityManagerResult<SignOutResultState> SignOut()
         {
             var accountResult = new IdentityManagerResult<SignOutResultState>();
@@ -247,14 +242,9 @@ namespace MedioClinic.Utils
             return accountResult;
         }
 
-
-        public async Task<IdentityManagerResult<ForgotPasswordResultState, EmailViewModel>> ForgotPasswordAsync(EmailViewModel model, RequestContext requestContext)
+        public async Task<IdentityManagerResult<ForgotPasswordResultState>> ForgotPasswordAsync(EmailViewModel model, RequestContext requestContext)
         {
-            var accountResult = new IdentityManagerResult<ForgotPasswordResultState, EmailViewModel>
-            {
-                Model = model
-            };
-
+            var accountResult = new IdentityManagerResult<ForgotPasswordResultState>();
             MedioClinicUser user = null;
 
             try
@@ -263,9 +253,8 @@ namespace MedioClinic.Utils
             }
             catch (Exception ex)
             {
-                var ar = accountResult as IdentityManagerResult<ForgotPasswordResultState>;
                 accountResult.ResultState = ForgotPasswordResultState.UserNotFound;
-                HandleException(nameof(ForgotPasswordAsync), ex, ref ar);
+                HandleException(nameof(ForgotPasswordAsync), ex, ref accountResult);
 
                 return accountResult;
             }
@@ -285,9 +274,8 @@ namespace MedioClinic.Utils
             }
             catch (Exception ex)
             {
-                var ar = accountResult as IdentityManagerResult<ForgotPasswordResultState>;
                 accountResult.ResultState = ForgotPasswordResultState.TokenNotCreated;
-                HandleException(nameof(ForgotPasswordAsync), ex, ref ar);
+                HandleException(nameof(ForgotPasswordAsync), ex, ref accountResult);
 
                 return accountResult;
             }
@@ -305,9 +293,8 @@ namespace MedioClinic.Utils
             }
             catch (Exception ex)
             {
-                var ar = accountResult as IdentityManagerResult<ForgotPasswordResultState>;
                 accountResult.ResultState = ForgotPasswordResultState.EmailNotSent;
-                HandleException(nameof(ForgotPasswordAsync), ex, ref ar);
+                HandleException(nameof(ForgotPasswordAsync), ex, ref accountResult);
 
                 return accountResult;
             }
@@ -339,7 +326,7 @@ namespace MedioClinic.Utils
             accountResult.Success = true;
             accountResult.ResultState = ResetPasswordResultState.TokenVerified;
 
-            accountResult.Model = new ResetPasswordViewModel
+            accountResult.Data = new ResetPasswordViewModel
             {
                 UserId = userId,
                 Token = token
@@ -348,13 +335,9 @@ namespace MedioClinic.Utils
             return accountResult;
         }
 
-        public async Task<IdentityManagerResult<ResetPasswordResultState, ResetPasswordViewModel>> ResetPasswordAsync(ResetPasswordViewModel model)
+        public async Task<IdentityManagerResult<ResetPasswordResultState>> ResetPasswordAsync(ResetPasswordViewModel model)
         {
-            var accountResult = new IdentityManagerResult<ResetPasswordResultState, ResetPasswordViewModel>
-            {
-                Model = model
-            };
-
+            var accountResult = new IdentityManagerResult<ResetPasswordResultState>();
             var identityResult = IdentityResult.Failed();
 
             try
@@ -366,9 +349,8 @@ namespace MedioClinic.Utils
             }
             catch (Exception ex)
             {
-                var ar = accountResult as IdentityManagerResult<ResetPasswordResultState>;
                 accountResult.ResultState = ResetPasswordResultState.PasswordNotReset;
-                HandleException(nameof(ResetPasswordAsync), ex, ref ar);
+                HandleException(nameof(ResetPasswordAsync), ex, ref accountResult);
             }
 
             if (identityResult.Succeeded)
@@ -393,16 +375,5 @@ namespace MedioClinic.Utils
             user.AvatarId = AvatarRepository.CreateUserAvatar(path, $"Custom {user.UserName}");
             await UserManager.UpdateAsync(user);
         }
-
-        //private void HandleException<TResultState>(string methodName, Exception exception, ref ManagerResult<TResultState> accountResult)
-        //    where TResultState : Enum
-        //{
-        //    Dependencies.ErrorHelperService.LogException(nameof(AccountManager), methodName, exception);
-        //    accountResult.Success = false;
-        //    accountResult.Errors.Add(exception.Message);
-        //}
-
     }
-
-    
 }

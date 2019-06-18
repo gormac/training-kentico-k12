@@ -1,22 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
-using EnumsNET;
 using Business.Attributes;
 using Business.DependencyInjection;
-using Business.Identity;
-using Business.Identity.Extensions;
 using Business.Identity.Models;
-using Business.Repository.Avatar;
-using Business.Services.Errors;
-using Business.Services.FileManagement;
-using Business.Services.Localization;
-using Business.Services.ViewModel;
 using MedioClinic.Config;
 using MedioClinic.Models;
-using MedioClinic.Models.Account;
 using MedioClinic.Models.Profile;
 using MedioClinic.Utils;
 

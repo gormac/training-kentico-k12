@@ -85,6 +85,16 @@ namespace MedioClinic
                 .As<IMedioClinicSignInManager<MedioClinicUser, int>>()
                 .InstancePerRequest();
 
+            // Registers the account manager.
+            builder.RegisterType<AccountManager>()
+                .As<IAccountManager>()
+                .InstancePerRequest();
+
+            // Registers the profile manager.
+            builder.RegisterType<ProfileManager>()
+                .As<IProfileManager>()
+                .InstancePerRequest();
+
             // Registers a view registration source so that views can take advantage of DI.
             // See https://autofaccn.readthedocs.io/en/latest/integration/mvc.html#enable-property-injection-for-view-pages
             builder.RegisterSource(new ViewRegistrationSource());

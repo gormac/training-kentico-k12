@@ -27,6 +27,6 @@ namespace MedioClinic.Utils
         /// <param name="requestContext"></param>
         /// <returns></returns>
         Task<IdentityManagerResult<PostProfileResultState, (IUserViewModel UserViewModel, string PageTitle)>>
-            PostProfileAsync(IUserViewModel uploadModel, RequestContext requestContext)
+            PostProfileAsync(IUserViewModel uploadModel, RequestContext requestContext);
     }
 }

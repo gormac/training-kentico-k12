@@ -18,10 +18,7 @@ namespace MedioClinic.Controllers
         /// <remarks>Consider taking from environment variables.</remarks>
         public bool EmailConfirmedRegistration => true;
 
-
-
         public IAccountManager AccountManager { get; set; }
-
 
         public AccountController(
             IAccountManager accountManager,
@@ -73,7 +70,7 @@ namespace MedioClinic.Controllers
                     }
 
                     ViewBag.Message = message;
-                    viewModel = GetPageViewModel(accountResult.Model, title);
+                    viewModel = GetPageViewModel(uploadModel.Data, title);
                     AddErrors(accountResult);
 
                     return View("ViewbagMessage", viewModel);
@@ -84,7 +81,7 @@ namespace MedioClinic.Controllers
                     {
                         title = ErrorTitle;
                         ViewBag.Message = Localize("Controllers.Account.Register.Failure.Message");
-                        viewModel = GetPageViewModel(accountResult.Model, title);
+                        viewModel = GetPageViewModel(uploadModel.Data, title);
                         AddErrors(accountResult);
 
                         return View("ViewbagMessage", viewModel);
@@ -198,6 +195,7 @@ namespace MedioClinic.Controllers
         {
             if (ModelState.IsValid)
             {
+                // All of the result states should be treated equal (to prevent enumeration attacks), hence discarding the result entirely.
                 _ = await AccountManager.ForgotPasswordAsync(uploadModel.Data, Request.RequestContext);
 
                 return CheckEmailResetPassword();
@@ -217,7 +215,7 @@ namespace MedioClinic.Controllers
 
                 if (accountResult.Success)
                 {
-                    return View(GetPageViewModel(accountResult.Model, Localize("PassReset.Title")));
+                    return View(GetPageViewModel(accountResult.Data, Localize("PassReset.Title")));
                 }
                 else
                 {
@@ -270,7 +268,7 @@ namespace MedioClinic.Controllers
             return View("ViewbagMessage", GetPageViewModel(Localize("Controllers.Account.CheckEmailResetPassword.Title")));
         }
 
-        protected void AddErrors<TResultState>(AccountResult<TResultState> result)
+        protected void AddErrors<TResultState>(IdentityManagerResult<TResultState> result)
             where TResultState : Enum
         {
 
@@ -279,9 +277,5 @@ namespace MedioClinic.Controllers
                 ModelState.AddModelError(string.Empty, error);
             }
         }
-
-
-
-
     }
 }

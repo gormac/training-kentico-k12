@@ -11,12 +11,12 @@ namespace MedioClinic.Utils
     // TODO: Document.
     public interface IAccountManager
     {
-        Task<IdentityManagerResult<RegisterResultState, RegisterViewModel>> RegisterAsync(RegisterViewModel model, bool emailConfirmed, RequestContext requestContext);
+        Task<IdentityManagerResult<RegisterResultState>> RegisterAsync(RegisterViewModel model, bool emailConfirmed, RequestContext requestContext);
         Task<IdentityManagerResult<ConfirmUserResultState>> ConfirmUserAsync(int userId, string token, RequestContext requestContext);
-        Task<IdentityManagerResult<SignInResultState, SignInViewModel>> SignInAsync(SignInViewModel model);
+        Task<IdentityManagerResult<SignInResultState>> SignInAsync(SignInViewModel model);
         IdentityManagerResult<SignOutResultState> SignOut();
-        Task<IdentityManagerResult<ForgotPasswordResultState, EmailViewModel>> ForgotPasswordAsync(EmailViewModel model, RequestContext requestContext);
+        Task<IdentityManagerResult<ForgotPasswordResultState>> ForgotPasswordAsync(EmailViewModel model, RequestContext requestContext);
         Task<IdentityManagerResult<ResetPasswordResultState, ResetPasswordViewModel>> VerifyResetPasswordTokenAsync(int userId, string token);
-        Task<IdentityManagerResult<ResetPasswordResultState, ResetPasswordViewModel>> ResetPasswordAsync(ResetPasswordViewModel model);
+        Task<IdentityManagerResult<ResetPasswordResultState>> ResetPasswordAsync(ResetPasswordViewModel model);
     }
 }
