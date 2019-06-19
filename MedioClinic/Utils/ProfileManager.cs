@@ -46,7 +46,9 @@ namespace MedioClinic.Utils
         public async Task<IdentityManagerResult<GetProfileResultState, (IUserViewModel UserViewModel, string PageTitle)>>
             GetProfileAsync(string userName, RequestContext requestContext)
         {
-            var profileResult = new IdentityManagerResult<GetProfileResultState, (IUserViewModel, string)>();
+            var profileResult = InitResult<GetProfileResultState, (IUserViewModel, string)>();
+
+            //var profileResult = new IdentityManagerResult<GetProfileResultState, (IUserViewModel, string)>();
             MedioClinicUser user = null;
 
             try
@@ -77,7 +79,9 @@ namespace MedioClinic.Utils
         public async Task<IdentityManagerResult<PostProfileResultState, (IUserViewModel UserViewModel, string PageTitle)>>
             PostProfileAsync(IUserViewModel uploadModel, RequestContext requestContext)
         {
-            var profileResult = new IdentityManagerResult<PostProfileResultState, (IUserViewModel, string)>();
+            var profileResult = InitResult<PostProfileResultState, (IUserViewModel, string)>();
+
+            //var profileResult = new IdentityManagerResult<PostProfileResultState, (IUserViewModel, string)>();
             var userTitle = Dependencies.LocalizationService.Localize("General.User");
             var userDoesntExistTitle = Dependencies.LocalizationService.Localize("Adm.User.NotExist");
             profileResult.Data = (uploadModel, userTitle);

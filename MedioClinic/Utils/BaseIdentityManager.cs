@@ -1,12 +1,9 @@
-﻿using Business.DependencyInjection;
+﻿using System;
+using System.Collections.Generic;
+
+using Business.DependencyInjection;
 using Business.Identity;
 using Business.Identity.Models;
-using Business.Repository.Avatar;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
 using MedioClinic.Models;
 
 namespace MedioClinic.Utils
@@ -33,5 +30,19 @@ namespace MedioClinic.Utils
             result.Success = false;
             result.Errors.Add(exception.Message);
         }
+
+        protected IdentityManagerResult<TResultState> InitResult<TResultState>()
+            where TResultState : Enum
+            => new IdentityManagerResult<TResultState>
+                {
+                    Errors = new List<string>()
+                };
+
+        protected IdentityManagerResult<TResultState, TData> InitResult<TResultState, TData>()
+            where TResultState : Enum
+            => new IdentityManagerResult<TResultState, TData>
+                {
+                    Errors = new List<string>()
+                };
     }
 }

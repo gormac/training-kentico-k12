@@ -2,6 +2,7 @@
 {
     public enum RegisterResultState
     {
+        InvalidInput,
         UserNotCreated,
         TokenNotCreated,
         EmailSent,

@@ -9,7 +9,7 @@ namespace MedioClinic.Models
         where TResultState : Enum
     {
         public bool Success { get; set; }
-        public List<string> Errors => new List<string>();
+        public List<string> Errors { get; set; }
         public TResultState ResultState { get; set; }
     }
 

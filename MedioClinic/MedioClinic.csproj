@@ -724,8 +724,10 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountManagerResultStates.cs" />
+    <Compile Include="Models\MessageType.cs" />
     <Compile Include="Models\ProfileManagerResultStates.cs" />
     <Compile Include="Models\Profile\IUserViewModel.cs" />
+    <Compile Include="Models\UserMessage.cs" />
     <Compile Include="Utils\AccountManager.cs" />
     <Compile Include="Utils\BaseIdentityManager.cs" />
     <Compile Include="Utils\IAccountManager.cs" />
@@ -776,7 +778,6 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Account\Signin.cshtml" />
-    <Content Include="Views\Shared\ViewbagMessage.cshtml" />
     <Content Include="Views\Account\ForgotPassword.cshtml" />
     <Content Include="Views\Account\ResetPassword.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\PatientViewModel.cshtml" />
@@ -785,6 +786,8 @@
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\DoctorViewModel.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\CommonUserViewModel.cshtml" />
+    <Content Include="Views\Shared\UserMessage.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\UserMessage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Business\Business.csproj">

@@ -792,3 +792,9 @@ span.ktc-checkbox {
 select {
     display: initial;
 }
+
+/* USER MESSAGES */
+
+.ktc-user-message {
+    padding: 2rem;
+}

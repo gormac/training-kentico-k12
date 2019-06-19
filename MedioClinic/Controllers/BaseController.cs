@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
 
 using Business.DependencyInjection;
 using Business.Dto.Company;
@@ -22,7 +22,7 @@ namespace MedioClinic.Controllers
             Dependencies = dependencies;
         }
 
-        public PageViewModel GetPageViewModel(string title) 
+        public PageViewModel GetPageViewModel(string title, string message = null, MessageType messageType = MessageType.Info) 
         {
             return new PageViewModel()
             {
@@ -31,10 +31,20 @@ namespace MedioClinic.Controllers
                 Company = GetCompany(),
                 Cultures = Dependencies.CultureService.GetSiteCultures(),
                 SocialLinks = GetSocialLinks(),
+                UserMessage = new UserMessage
+                {
+                    Message = message,
+                    MessageType = messageType
+                }
             };
         }
 
-        public PageViewModel<TViewModel> GetPageViewModel<TViewModel>(TViewModel data, string title) where TViewModel : IViewModel
+        public PageViewModel<TViewModel> GetPageViewModel<TViewModel>(
+            TViewModel data, 
+            string title, 
+            string message = null, 
+            MessageType messageType = MessageType.Info) 
+            where TViewModel : IViewModel
         {
             return new PageViewModel<TViewModel>()
             {
@@ -43,6 +53,11 @@ namespace MedioClinic.Controllers
                 Company = GetCompany(),
                 Cultures = Dependencies.CultureService.GetSiteCultures(),
                 SocialLinks = GetSocialLinks(),
+                UserMessage = new UserMessage
+                {
+                    Message = message,
+                    MessageType = messageType
+                },
                 Data = data
             };
         }
@@ -54,6 +69,32 @@ namespace MedioClinic.Controllers
 
         protected string Localize(string resourceKey) =>
             Dependencies.LocalizationService.Localize(resourceKey);
+
+        protected ActionResult InvalidInput<TUploadViewModel, TResultState>(
+            PageViewModel<TUploadViewModel> uploadModel, 
+            IdentityManagerResult<TResultState> identityManagerResult)
+            where TUploadViewModel : IViewModel
+            where TResultState : Enum
+        {
+            AddErrors(identityManagerResult);
+
+            var viewModel = GetPageViewModel(
+                uploadModel.Data, 
+                Localize("BasicForm.InvalidInput"), 
+                Localize("Controllers.Base.InvalidInput.Message"), 
+                MessageType.Error);
+
+            return View(viewModel);
+        }
+
+        protected void AddErrors<TResultState>(IdentityManagerResult<TResultState> result)
+            where TResultState : Enum
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error);
+            }
+        }
 
         private IEnumerable<SocialLinkDto> GetSocialLinks()
         {

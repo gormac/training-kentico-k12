@@ -228,7 +228,7 @@
   <data name="Controllers.Account.ConfirmUser.ConfirmationFailure.Message" xml:space="preserve">
     <value>The confirmation failed.</value>
   </data>
-  <data name="Controllers.Account.Register.FailureMessage" xml:space="preserve">
+  <data name="Controllers.Account.Register.Failure.Message" xml:space="preserve">
     <value>Registration was not successfull. </value>
   </data>
   <data name="ContactAdministrator" xml:space="preserve">
@@ -245,5 +245,8 @@
   </data>
   <data name="Error.Message" xml:space="preserve">
     <value>An unknown error occured.</value>
+  </data>
+  <data name="Controllers.Base.InvalidInput.Message" xml:space="preserve">
+    <value>The information submitted in the form was in invalid. Please review the specific error messages and try again.</value>
   </data>
 </root>

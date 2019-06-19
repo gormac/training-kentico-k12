@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -51,7 +52,13 @@ namespace MedioClinic.Utils
                 Enabled = !emailConfirmed
             };
 
-            var accountResult = new IdentityManagerResult<RegisterResultState>();
+            var accountResult = InitResult<RegisterResultState>();
+
+            //var accountResult = new IdentityManagerResult<RegisterResultState>
+            //{
+            //    Errors = new List<string>()
+            //};
+
             IdentityResult identityResult = null;
 
             try
@@ -61,7 +68,6 @@ namespace MedioClinic.Utils
             catch (Exception ex)
             {
                 HandleException(nameof(RegisterAsync), ex, ref accountResult);
-                accountResult.ResultState = RegisterResultState.UserNotCreated;
 
                 return accountResult;
             }
@@ -133,7 +139,13 @@ namespace MedioClinic.Utils
 
         public async Task<IdentityManagerResult<ConfirmUserResultState>> ConfirmUserAsync(int userId, string token, RequestContext requestContext)
         {
-            var accountResult = new IdentityManagerResult<ConfirmUserResultState>();
+            var accountResult = InitResult<ConfirmUserResultState>();
+
+            //var accountResult = new IdentityManagerResult<ConfirmUserResultState>
+            //{
+            //    Errors = new List<string>()
+            //};
+
             IdentityResult identityResult = IdentityResult.Failed();
 
             try
@@ -173,7 +185,12 @@ namespace MedioClinic.Utils
 
         public async Task<IdentityManagerResult<SignInResultState>> SignInAsync(SignInViewModel model)
         {
-            var accountResult = new IdentityManagerResult<SignInResultState, SignInViewModel>();
+            var accountResult = InitResult<SignInResultState, SignInViewModel>();
+
+            //var accountResult = new IdentityManagerResult<SignInResultState, SignInViewModel>
+            //{
+            //    Errors = new List<string>()
+            //};
 
             MedioClinicUser user = null;
 
@@ -225,7 +242,12 @@ namespace MedioClinic.Utils
 
         public IdentityManagerResult<SignOutResultState> SignOut()
         {
-            var accountResult = new IdentityManagerResult<SignOutResultState>();
+            var accountResult = InitResult<SignOutResultState>();
+
+            //var accountResult = new IdentityManagerResult<SignOutResultState>
+            //{
+            //    Errors = new List<string>()
+            //};
 
             try
             {
@@ -244,7 +266,9 @@ namespace MedioClinic.Utils
 
         public async Task<IdentityManagerResult<ForgotPasswordResultState>> ForgotPasswordAsync(EmailViewModel model, RequestContext requestContext)
         {
-            var accountResult = new IdentityManagerResult<ForgotPasswordResultState>();
+            var accountResult = InitResult<ForgotPasswordResultState>();
+
+            //var accountResult = new IdentityManagerResult<ForgotPasswordResultState>();
             MedioClinicUser user = null;
 
             try
@@ -307,7 +331,9 @@ namespace MedioClinic.Utils
 
         public async Task<IdentityManagerResult<ResetPasswordResultState, ResetPasswordViewModel>> VerifyResetPasswordTokenAsync(int userId, string token)
         {
-            var accountResult = new IdentityManagerResult<ResetPasswordResultState, ResetPasswordViewModel>();
+            var accountResult = InitResult<ResetPasswordResultState, ResetPasswordViewModel>();
+
+            //var accountResult = new IdentityManagerResult<ResetPasswordResultState, ResetPasswordViewModel>();
             var tokenVerified = false;
 
             try
@@ -337,7 +363,9 @@ namespace MedioClinic.Utils
 
         public async Task<IdentityManagerResult<ResetPasswordResultState>> ResetPasswordAsync(ResetPasswordViewModel model)
         {
-            var accountResult = new IdentityManagerResult<ResetPasswordResultState>();
+            var accountResult = InitResult<ResetPasswordResultState>();
+
+            //var accountResult = new IdentityManagerResult<ResetPasswordResultState>();
             var identityResult = IdentityResult.Failed();
 
             try

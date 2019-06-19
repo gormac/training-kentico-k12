@@ -47,56 +47,43 @@ namespace MedioClinic.Controllers
             if (ModelState.IsValid)
             {
                 var accountResult = await AccountManager.RegisterAsync(uploadModel.Data, EmailConfirmedRegistration, Request.RequestContext);
-                string title = null;
-                var message = ConcatenateContactAdmin("Error.Message");
+
+                if (accountResult.ResultState == RegisterResultState.InvalidInput)
+                {
+                    return InvalidInput(uploadModel);
+                }
+
+                string title = ErrorTitle;
+                var message = ConcatenateContactAdmin("Controllers.Account.Register.Failure.Message");
+                var messageType = MessageType.Error;
 
                 if (EmailConfirmedRegistration)
                 {
-
-                    switch (accountResult.ResultState)
+                    if (accountResult.ResultState == RegisterResultState.EmailSent)
                     {
-                        case RegisterResultState.UserNotCreated:
-                        case RegisterResultState.TokenNotCreated:
-                        case RegisterResultState.NotSignedIn:
-                            title = ErrorTitle;
-                            message = Localize("Controllers.Account.Register.Failure.Message");
-                            break;
-                        case RegisterResultState.EmailSent:
-                            title = Localize("Controllers.Account.Register.ConfirmedSuccess.Title");
-                            message = Localize("Controllers.Account.Register.ConfirmedSuccess.Message");
-                            break;
-                        default:
-                            break;
+                        title = Localize("Controllers.Account.Register.ConfirmedSuccess.Title");
+                        message = Localize("Controllers.Account.Register.ConfirmedSuccess.Message");
+                        messageType = MessageType.Info;
                     }
-
-                    ViewBag.Message = message;
-                    viewModel = GetPageViewModel(uploadModel.Data, title);
-                    AddErrors(accountResult);
-
-                    return View("ViewbagMessage", viewModel);
                 }
                 else
                 {
-                    if (accountResult.ResultState == RegisterResultState.NotSignedIn)
-                    {
-                        title = ErrorTitle;
-                        ViewBag.Message = Localize("Controllers.Account.Register.Failure.Message");
-                        viewModel = GetPageViewModel(uploadModel.Data, title);
-                        AddErrors(accountResult);
-
-                        return View("ViewbagMessage", viewModel);
-                    }
-                    else
+                    if (accountResult.ResultState != RegisterResultState.NotSignedIn)
                     {
                         return RedirectToAction("Index", "Home");
                     }
                 }
+
+                viewModel = GetPageViewModel(uploadModel.Data, title, message, messageType);
+                AddErrors(accountResult);
+
+                return View(viewModel);
             }
 
-            viewModel = GetPageViewModel(uploadModel.Data, Localize("BasicForm.InvalidInput"));
-
-            return View(viewModel);
+            return InvalidInput(uploadModel);
         }
+
+
 
         // Registration: Confirmed registration (begin)
         // GET: /Account/ConfirmUser
@@ -104,6 +91,7 @@ namespace MedioClinic.Controllers
         {
             var title = ErrorTitle;
             var message = ConcatenateContactAdmin("Error.Message");
+            var messageType = MessageType.Error;
 
             if (userId.HasValue)
             {
@@ -120,17 +108,12 @@ namespace MedioClinic.Controllers
                     case ConfirmUserResultState.UserConfirmed:
                         title = Dependencies.LocalizationService.LocalizeFormat("Controllers.Account.ConfirmUser.Success.Title", Url.Action("SignIn"));
                         message = Localize("Controllers.Account.ConfirmUser.Success.Message");
-                        break;
-                    default:
+                        messageType = MessageType.Info;
                         break;
                 }
-
-                ViewBag.Message = message;
-
-                return View("ViewbagMessage", GetPageViewModel(title));
             }
 
-            return View("ViewbagMessage", GetPageViewModel(Localize("General.Error")));
+            return View("UserMessage", GetPageViewModel(title, message, messageType));
         }
         // Registration: Confirmed registration (end)
 
@@ -268,14 +251,6 @@ namespace MedioClinic.Controllers
             return View("ViewbagMessage", GetPageViewModel(Localize("Controllers.Account.CheckEmailResetPassword.Title")));
         }
 
-        protected void AddErrors<TResultState>(IdentityManagerResult<TResultState> result)
-            where TResultState : Enum
-        {
 
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error);
-            }
-        }
     }
 }
