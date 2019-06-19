@@ -8,7 +8,9 @@ using MedioClinic.Models;
 
 namespace MedioClinic.Utils
 {
-    // TODO: Document.
+    /// <summary>
+    /// Base class for identity-related managers.
+    /// </summary>
     public abstract class BaseIdentityManager
     {
         public IMedioClinicUserManager<MedioClinicUser, int> UserManager { get; }
@@ -23,6 +25,13 @@ namespace MedioClinic.Utils
             Dependencies = dependencies ?? throw new ArgumentNullException(nameof(dependencies));
         }
 
+        /// <summary>
+        /// Logs exceptions and gets a result object.
+        /// </summary>
+        /// <typeparam name="TResultState">Result states of the client code.</typeparam>
+        /// <param name="methodName">Method name to log.</param>
+        /// <param name="exception">An exception to log.</param>
+        /// <param name="result">An operation result.</param>
         protected void HandleException<TResultState>(string methodName, Exception exception, ref IdentityManagerResult<TResultState> result)
             where TResultState : Enum
         {
@@ -31,6 +40,11 @@ namespace MedioClinic.Utils
             result.Errors.Add(exception.Message);
         }
 
+        /// <summary>
+        /// Creates an operation result object.
+        /// </summary>
+        /// <typeparam name="TResultState">Result states of the client code.</typeparam>
+        /// <returns>The operation result.</returns>
         protected IdentityManagerResult<TResultState> InitResult<TResultState>()
             where TResultState : Enum
             => new IdentityManagerResult<TResultState>
@@ -38,6 +52,12 @@ namespace MedioClinic.Utils
                     Errors = new List<string>()
                 };
 
+        /// <summary>
+        /// Creates an operation result object.
+        /// </summary>
+        /// <typeparam name="TResultState">Result states of the client code.</typeparam>
+        /// <typeparam name="TData">Operation result data.</typeparam>
+        /// <returns>The operation result.</returns>
         protected IdentityManagerResult<TResultState, TData> InitResult<TResultState, TData>()
             where TResultState : Enum
             => new IdentityManagerResult<TResultState, TData>

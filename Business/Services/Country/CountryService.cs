@@ -7,7 +7,7 @@ using Business.Dto.Country;
 
 namespace Business.Services.Country
 {
-    class CountryService : BaseService, ICountryService
+    public class CountryService : BaseService, ICountryService
     {
         public IEnumerable<CountryDto> GetCountries() =>
             CountryInfoProvider.GetCountries()

@@ -12,7 +12,7 @@ using Business.Identity.Models;
 using Business.Repository.Avatar;
 using Business.Services.Errors;
 using Business.Services.FileManagement;
-using Business.Services.ViewModel;
+using Business.Services.Model;
 using MedioClinic.Config;
 using MedioClinic.Models;
 using MedioClinic.Models.Account;
@@ -34,12 +34,18 @@ namespace MedioClinic.Utils
 
         public ProfileManager(
             IAvatarRepository avatarRepository,
+            IFileManagementService fileManagementService,
+            IUserModelService userModelService,
+            IErrorHelperService errorHelperService,
             IMedioClinicUserManager<MedioClinicUser, int> userManager,
             IMedioClinicUserStore userStore,
             IBusinessDependencies dependencies)
                 : base(userManager, dependencies)
         {
             AvatarRepository = avatarRepository ?? throw new ArgumentNullException(nameof(avatarRepository));
+            FileManagementService = fileManagementService ?? throw new ArgumentNullException(nameof(fileManagementService));
+            UserModelService = userModelService ?? throw new ArgumentNullException(nameof(userModelService));
+            ErrorHelperService = errorHelperService ?? throw new ArgumentNullException(nameof(errorHelperService));
             UserStore = userStore ?? throw new ArgumentNullException(nameof(userStore));
         }
 
@@ -47,8 +53,6 @@ namespace MedioClinic.Utils
             GetProfileAsync(string userName, RequestContext requestContext)
         {
             var profileResult = InitResult<GetProfileResultState, (IUserViewModel, string)>();
-
-            //var profileResult = new IdentityManagerResult<GetProfileResultState, (IUserViewModel, string)>();
             MedioClinicUser user = null;
 
             try
@@ -80,8 +84,6 @@ namespace MedioClinic.Utils
             PostProfileAsync(IUserViewModel uploadModel, RequestContext requestContext)
         {
             var profileResult = InitResult<PostProfileResultState, (IUserViewModel, string)>();
-
-            //var profileResult = new IdentityManagerResult<PostProfileResultState, (IUserViewModel, string)>();
             var userTitle = Dependencies.LocalizationService.Localize("General.User");
             var userDoesntExistTitle = Dependencies.LocalizationService.Localize("Adm.User.NotExist");
             profileResult.Data = (uploadModel, userTitle);
@@ -151,9 +153,6 @@ namespace MedioClinic.Utils
             return profileResult;
         }
 
-
-
-
         /// <summary>
         /// Computes the user view model, based on roles.
         /// </summary>
@@ -170,8 +169,8 @@ namespace MedioClinic.Utils
             {
                 var roles = user.Roles.ToMedioClinicRoles();
                 string avatarPhysicalPath = EnsureAvatarPhysicalPath(user, requestContext, forceAvatarFileOverwrite);
-                var avatarRelativePath =
-                    avatarPhysicalPath != null
+
+                var avatarRelativePath = avatarPhysicalPath != null
                         ? FileManagementService.GetServerRelativePath(requestContext.HttpContext.Request, avatarPhysicalPath)
                         : string.Empty;
 
@@ -186,7 +185,7 @@ namespace MedioClinic.Utils
                 try
                 {
                     // Map the common user properties.
-                    var mappedCommonUserModel = UserModelService.MapToViewModel(user, typeof(CommonUserViewModel), commonUserModelCustomMappings);
+                    var mappedCommonUserModel = UserModelService.MapToCustomModel(user, typeof(CommonUserViewModel), commonUserModelCustomMappings);
 
                     Type userViewModelType = FlagEnums.HasAnyFlags(roles, Roles.Doctor) ? typeof(DoctorViewModel) : typeof(PatientViewModel);
 
@@ -196,7 +195,7 @@ namespace MedioClinic.Utils
                     };
 
                     // Map all other potential properties of specific models (patient, doctor, etc.)
-                    mappedParentModel = UserModelService.MapToViewModel(user, userViewModelType, parentModelCustomMappings);
+                    mappedParentModel = UserModelService.MapToCustomModel(user, userViewModelType, parentModelCustomMappings);
                 }
                 catch (Exception ex)
                 {
@@ -227,7 +226,7 @@ namespace MedioClinic.Utils
 
             if (!avatarFileName.Equals(AppConfig.DefaultAvatarFileName, StringComparison.OrdinalIgnoreCase))
             {
-                FileManagementService.WriteFileIfDoesntExist(avatarPhysicalPath, avatarBinary, forceOverwrite);
+                FileManagementService.EnsureFileExistence(avatarPhysicalPath, avatarBinary, forceOverwrite);
             }
 
             return avatarPhysicalPath;
@@ -241,11 +240,11 @@ namespace MedioClinic.Utils
         /// <returns>A complete filesystem path to the avatar file.</returns>
         protected string GetAvatarContentPath(string avatarFileName, RequestContext requestContext)
         {
-            var physicalPath = requestContext.HttpContext.Server.MapPath($"{AppConfig.ContentFolder}/{AppConfig.AvatarFolder}");
-            var folder = FileManagementService.EnsureFilesystemPath(physicalPath);
+            var physicalFolderPath = requestContext.HttpContext.Server.MapPath($"{AppConfig.ContentFolder}/{AppConfig.AvatarFolder}");
+            FileManagementService.EnsureFolderExistence(physicalFolderPath);
             var fileName = FileManagementService.MakeStringUrlCompliant(avatarFileName);
 
-            return $"{folder}\\{fileName}";
+            return $"{physicalFolderPath}\\{fileName}";
         }
 
         /// <summary>
@@ -255,8 +254,8 @@ namespace MedioClinic.Utils
         /// <returns>A friendly name of the role.</returns>
         protected string GetRoleTitle(Roles roles) =>
             FlagEnums.HasAnyFlags(roles, Roles.Doctor)
-                ? Dependencies.LocalizationService.Localize("ProfileManager.GetTitle.Title.Doctor")
-                : Dependencies.LocalizationService.Localize("ProfileManager.GetTitle.Title.Patient");
+                ? Dependencies.LocalizationService.Localize("ProfileManager.GetRoleTitle.Doctor")
+                : Dependencies.LocalizationService.Localize("ProfileManager.GetRoleTitle.Patient");
 
         /// <summary>
         /// Handles exceptions raised in <see cref="ProfileManager.PostProfileAsync(IUserViewModel, RequestContext)"/>

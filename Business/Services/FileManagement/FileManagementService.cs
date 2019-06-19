@@ -38,25 +38,23 @@ namespace Business.Services.FileManagement
             return data;
         }
 
-        public string EnsureFilesystemPath(string physicalPath)
+        public void EnsureFolderExistence(string folderPhysicalPath)
         {
-            if (!Directory.Exists(physicalPath))
+            if (!Directory.Exists(folderPhysicalPath))
             {
                 DirectoryInfo directoryInfo;
 
                 try
                 {
-                    directoryInfo = Directory.CreateDirectory(physicalPath);
+                    directoryInfo = Directory.CreateDirectory(folderPhysicalPath);
                 }
                 catch (Exception ex)
                 {
-                    ErrorHelper.LogException(nameof(FileManagementService), nameof(EnsureFilesystemPath), ex);
+                    ErrorHelper.LogException(nameof(FileManagementService), nameof(EnsureFolderExistence), ex);
 
                     throw;
                 }
             }
-
-            return physicalPath;
         }
 
         public string MakeStringUrlCompliant(string input)
@@ -73,7 +71,7 @@ namespace Business.Services.FileManagement
             return stringBuilder.ToString();
         }
 
-        public void WriteFileIfDoesntExist(string physicalPath, byte[] fileBinary, bool forceOverwrite = false)
+        public void EnsureFileExistence(string physicalPath, byte[] fileBinary, bool forceOverwrite = false)
         {
             if (!File.Exists(physicalPath) || forceOverwrite)
             {
@@ -83,7 +81,7 @@ namespace Business.Services.FileManagement
                 }
                 catch (Exception ex)
                 {
-                    ErrorHelper.LogException(nameof(FileManagementService), nameof(WriteFileIfDoesntExist), ex);
+                    ErrorHelper.LogException(nameof(FileManagementService), nameof(EnsureFileExistence), ex);
 
                     throw;
                 } 

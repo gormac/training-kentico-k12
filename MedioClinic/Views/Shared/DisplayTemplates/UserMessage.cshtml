@@ -21,6 +21,13 @@
 @if (!string.IsNullOrEmpty(Model.Message))
 {
     <p class="@Html.Raw(styleSelector)">
-        @Html.DisplayFor(m => m.Message)
+        @if (Model.DisplayAsRaw)
+        {
+            @Html.Raw(Model.Message);
+        }
+        else
+        {
+            @Html.DisplayFor(m => m.Message);
+        }
     </p>
 }

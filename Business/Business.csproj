@@ -618,8 +618,8 @@
     <Compile Include="Services\Query\IDocumentQueryService.cs" />
     <Compile Include="Services\Country\ICountryService.cs" />
     <Compile Include="Services\Localization\ILocalizationService.cs" />
-    <Compile Include="Services\ViewModel\IUserModelService.cs" />
-    <Compile Include="Services\ViewModel\UserModelService.cs" />
+    <Compile Include="Services\Model\IUserModelService.cs" />
+    <Compile Include="Services\Model\UserModelService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

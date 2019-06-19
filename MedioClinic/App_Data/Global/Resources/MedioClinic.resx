@@ -120,7 +120,7 @@
   <data name="Controllers.Account.CheckEmailResetPassword.Title" xml:space="preserve">
     <value>Check email</value>
   </data>
-  <data name="Controllers.Account.CheckEmailResetPassword.ViewbagMessage" xml:space="preserve">
+  <data name="Controllers.Account.CheckEmailResetPassword.Message" xml:space="preserve">
     <value>Please check your email to reset your password.</value>
   </data>
   <data name="Controllers.Account.ConfirmUser.Success.Title" xml:space="preserve">
@@ -131,9 +131,6 @@
   </data>
   <data name="Controllers.Account.InvalidAttempt" xml:space="preserve">
     <value>Invalid sign in attempt.</value>
-  </data>
-  <data name="Controllers.Account.InvalidToken.Title" xml:space="preserve">
-    <value>Invalid token</value>
   </data>
   <data name="Controllers.Account.InvalidToken.Message" xml:space="preserve">
     <value>The operation cannot be done. The security token is incorrect.</value>
@@ -156,13 +153,13 @@
   <data name="Controllers.Account.ResetPassword.Success.Message" xml:space="preserve">
     <value>Your password was successfully reset. You can now &lt;a href="{0}"&gt;sign in&lt;/a&gt;.</value>
   </data>
-  <data name="Controllers.Profile.Index.SavedChanges" xml:space="preserve">
+  <data name="Controllers.Profile.Index.UserUpdated.Message" xml:space="preserve">
     <value>Your changes were saved.</value>
   </data>
-  <data name="ProfileManager.GetRoleTitle.Title.Doctor" xml:space="preserve">
+  <data name="ProfileManager.GetRoleTitle.Doctor" xml:space="preserve">
     <value>Doctor</value>
   </data>
-  <data name="ProfileManager.GetRoleTitle.Title.Patient" xml:space="preserve">
+  <data name="ProfileManager.GetRoleTitle.Patient" xml:space="preserve">
     <value>Patient</value>
   </data>
   <data name="Models.Profile.CommonUserViewModel.AvatarFile" xml:space="preserve">
@@ -248,5 +245,17 @@
   </data>
   <data name="Controllers.Base.InvalidInput.Message" xml:space="preserve">
     <value>The information submitted in the form was in invalid. Please review the specific error messages and try again.</value>
+  </data>
+  <data name="Controllers.Account.Register.DirectSuccess.Message" xml:space="preserve">
+    <value>Your registration was successful. You're now logged in.</value>
+  </data>
+  <data name="Controllers.Account.Register.DirectSuccess.Title" xml:space="preserve">
+    <value>You're registered</value>
+  </data>
+  <data name="Controllers.Profile.Index.UserNotFound.Message" xml:space="preserve">
+    <value>There is no matching user object in our database.</value>
+  </data>
+  <data name="Controllers.Profile.Index.UserNotUpdated.Message" xml:space="preserve">
+    <value>Your user profile data were not updated.</value>
   </data>
 </root>

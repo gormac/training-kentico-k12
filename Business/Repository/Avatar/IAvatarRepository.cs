@@ -1,6 +1,4 @@
-﻿using System;
-
-using Business.Identity.Models;
+﻿using Business.Identity.Models;
 
 namespace Business.Repository.Avatar
 {

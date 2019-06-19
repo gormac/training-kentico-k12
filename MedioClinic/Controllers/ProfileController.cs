@@ -46,21 +46,18 @@ namespace MedioClinic.Controllers
                 switch (profileResult.ResultState)
                 {
                     case PostProfileResultState.UserNotFound:
-                        message = Localize("Controllers.Profile.Index.UserNotFound");
+                        message = ConcatenateContactAdmin("Controllers.Profile.Index.UserNotFound.Message");
                         break;
                     case PostProfileResultState.UserNotMapped:
                     case PostProfileResultState.UserNotUpdated:
-                        message = Localize("Controllers.Profile.Index.UserNotUpdated");
+                        message = ConcatenateContactAdmin("Controllers.Profile.Index.UserNotUpdated.Message");
                         break;
                     case PostProfileResultState.UserUpdated:
-                        message = Localize("Controllers.Profile.Index.UserUpdated");
-                        break;
-                    default:
+                        message = Localize("Controllers.Profile.Index.UserUpdated.Message");
                         break;
                 }
 
-                ViewBag.Message = message;
-                var model = GetPageViewModel(profileResult.Data.UserViewModel, profileResult.Data.PageTitle ?? ErrorTitle);
+                var model = GetPageViewModel(profileResult.Data.UserViewModel, profileResult.Data.PageTitle ?? ErrorTitle, message);
 
                 return View(model);
             }
@@ -68,6 +65,10 @@ namespace MedioClinic.Controllers
             return await GetProfileAsync();
         }
 
+        /// <summary>
+        /// Displays the user profile.
+        /// </summary>
+        /// <returns>Either a user profile page, or a not-found page.</returns>
         protected async Task<ActionResult> GetProfileAsync()
         {
             var userName = HttpContext.User?.Identity?.Name;
@@ -87,11 +88,15 @@ namespace MedioClinic.Controllers
             return UserNotFound();
         }
 
+        /// <summary>
+        /// Displays a not-found page.
+        /// </summary>
+        /// <returns>A not-found page.</returns>
         protected ActionResult UserNotFound()
         {
-            ViewBag.Message = Dependencies.LocalizationService.Localize("General.UserNotFound");
+            var message = Dependencies.LocalizationService.Localize("General.UserNotFound");
 
-            return View("ViewbagMessage", GetPageViewModel(ViewBag.Message));
+            return View("UserMessage", GetPageViewModel(ErrorTitle, message, messageType: MessageType.Error));
         }
     }
 }

@@ -780,12 +780,12 @@
     <Content Include="Views\Account\Signin.cshtml" />
     <Content Include="Views\Account\ForgotPassword.cshtml" />
     <Content Include="Views\Account\ResetPassword.cshtml" />
-    <Content Include="Views\Shared\DisplayTemplates\PatientViewModel.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\PatientViewModel.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Gender.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\CountrySelector.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
-    <Content Include="Views\Shared\DisplayTemplates\DoctorViewModel.cshtml" />
-    <Content Include="Views\Shared\DisplayTemplates\CommonUserViewModel.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\DoctorViewModel.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\CommonUserViewModel.cshtml" />
     <Content Include="Views\Shared\UserMessage.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\UserMessage.cshtml" />
   </ItemGroup>

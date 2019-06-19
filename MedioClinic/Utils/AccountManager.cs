@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -19,7 +18,6 @@ using MedioClinic.Models;
 
 namespace MedioClinic.Utils
 {
-    // TODO: Document.
     public class AccountManager : BaseIdentityManager, IAccountManager
     {
         public IMedioClinicSignInManager<MedioClinicUser, int> SignInManager { get; }
@@ -33,37 +31,32 @@ namespace MedioClinic.Utils
             IMedioClinicUserManager<MedioClinicUser, int> userManager,
             IMedioClinicSignInManager<MedioClinicUser, int> signInManager,
             IAuthenticationManager authenticationManager,
+            IAvatarRepository avatarRepository,
             IBusinessDependencies dependencies)
             : base(userManager, dependencies)
         {
             SignInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
             AuthenticationManager = authenticationManager ?? throw new ArgumentNullException(nameof(authenticationManager));
+            AvatarRepository = avatarRepository ?? throw new ArgumentNullException(nameof(avatarRepository));
         }
 
-
-        public async Task<IdentityManagerResult<RegisterResultState>> RegisterAsync(RegisterViewModel model, bool emailConfirmed, RequestContext requestContext)
+        public async Task<IdentityManagerResult<RegisterResultState>> RegisterAsync(RegisterViewModel uploadModel, bool emailConfirmed, RequestContext requestContext)
         {
             var user = new MedioClinicUser
             {
-                UserName = model.EmailViewModel.Email,
-                Email = model.EmailViewModel.Email,
-                FirstName = model.FirstName,
-                LastName = model.LastName,
+                UserName = uploadModel.EmailViewModel.Email,
+                Email = uploadModel.EmailViewModel.Email,
+                FirstName = uploadModel.FirstName,
+                LastName = uploadModel.LastName,
                 Enabled = !emailConfirmed
             };
 
             var accountResult = InitResult<RegisterResultState>();
-
-            //var accountResult = new IdentityManagerResult<RegisterResultState>
-            //{
-            //    Errors = new List<string>()
-            //};
-
             IdentityResult identityResult = null;
 
             try
             {
-                identityResult = await UserManager.CreateAsync(user, model.PasswordConfirmationViewModel.Password);
+                identityResult = await UserManager.CreateAsync(user, uploadModel.PasswordConfirmationViewModel.Password);
             }
             catch (Exception ex)
             {
@@ -100,8 +93,8 @@ namespace MedioClinic.Utils
                                         routeValues: new { userId = user.Id, token });
 
                         await UserManager.SendEmailAsync(user.Id,
-                            Dependencies.LocalizationService.Localize("Controllers.Account.Register.Email.Confirm.Subject"),
-                            Dependencies.LocalizationService.LocalizeFormat("Controllers.Account.Register.Email.Confirm.Body", confirmationUrl));
+                            Dependencies.LocalizationService.Localize("AccountManager.Register.Email.Confirm.Subject"),
+                            Dependencies.LocalizationService.LocalizeFormat("AccountManager.Register.Email.Confirm.Body", confirmationUrl));
 
                         accountResult.Success = true;
                         accountResult.ResultState = RegisterResultState.EmailSent;
@@ -112,12 +105,13 @@ namespace MedioClinic.Utils
                 // Registration: Direct sign in (begin)
                 else
                 {
-                    identityResult = await AddToPatientRole(user.Id);
+                    identityResult = await AddToPatientRoleAsync(user.Id);
 
                     try
                     {
                         await CreateNewAvatarAsync(user, requestContext.HttpContext.Server);
                         await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                        accountResult.ResultState = RegisterResultState.SignedIn;
                         accountResult.Success = true;
                     }
                     catch (Exception ex)
@@ -140,12 +134,6 @@ namespace MedioClinic.Utils
         public async Task<IdentityManagerResult<ConfirmUserResultState>> ConfirmUserAsync(int userId, string token, RequestContext requestContext)
         {
             var accountResult = InitResult<ConfirmUserResultState>();
-
-            //var accountResult = new IdentityManagerResult<ConfirmUserResultState>
-            //{
-            //    Errors = new List<string>()
-            //};
-
             IdentityResult identityResult = IdentityResult.Failed();
 
             try
@@ -160,7 +148,7 @@ namespace MedioClinic.Utils
                 return accountResult;
             }
 
-            if (identityResult.Succeeded && (await AddToPatientRole(userId)).Succeeded)
+            if (identityResult.Succeeded && (await AddToPatientRoleAsync(userId)).Succeeded)
             {
                 try
                 {
@@ -183,20 +171,14 @@ namespace MedioClinic.Utils
             return accountResult;
         }
 
-        public async Task<IdentityManagerResult<SignInResultState>> SignInAsync(SignInViewModel model)
+        public async Task<IdentityManagerResult<SignInResultState>> SignInAsync(SignInViewModel uploadModel)
         {
             var accountResult = InitResult<SignInResultState, SignInViewModel>();
-
-            //var accountResult = new IdentityManagerResult<SignInResultState, SignInViewModel>
-            //{
-            //    Errors = new List<string>()
-            //};
-
             MedioClinicUser user = null;
 
             try
             {
-                user = await UserManager.FindByNameAsync(model.EmailViewModel.Email);
+                user = await UserManager.FindByNameAsync(uploadModel.EmailViewModel.Email);
             }
             catch (Exception ex)
             {
@@ -220,7 +202,7 @@ namespace MedioClinic.Utils
 
             try
             {
-                signInStatus = await SignInManager.PasswordSignInAsync(model.EmailViewModel.Email, model.PasswordViewModel.Password, model.StaySignedIn, false);
+                signInStatus = await SignInManager.PasswordSignInAsync(uploadModel.EmailViewModel.Email, uploadModel.PasswordViewModel.Password, uploadModel.StaySignedIn, false);
             }
             catch (Exception ex)
             {
@@ -244,11 +226,6 @@ namespace MedioClinic.Utils
         {
             var accountResult = InitResult<SignOutResultState>();
 
-            //var accountResult = new IdentityManagerResult<SignOutResultState>
-            //{
-            //    Errors = new List<string>()
-            //};
-
             try
             {
                 AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
@@ -264,16 +241,14 @@ namespace MedioClinic.Utils
             return accountResult;
         }
 
-        public async Task<IdentityManagerResult<ForgotPasswordResultState>> ForgotPasswordAsync(EmailViewModel model, RequestContext requestContext)
+        public async Task<IdentityManagerResult<ForgotPasswordResultState>> ForgotPasswordAsync(EmailViewModel uploadModel, RequestContext requestContext)
         {
             var accountResult = InitResult<ForgotPasswordResultState>();
-
-            //var accountResult = new IdentityManagerResult<ForgotPasswordResultState>();
             MedioClinicUser user = null;
 
             try
             {
-                user = await UserManager.FindByEmailAsync(model.Email);
+                user = await UserManager.FindByEmailAsync(uploadModel.Email);
             }
             catch (Exception ex)
             {
@@ -313,7 +288,7 @@ namespace MedioClinic.Utils
             try
             {
                 await UserManager.SendEmailAsync(user.Id, Dependencies.LocalizationService.Localize("PassReset.Title"),
-                        Dependencies.LocalizationService.LocalizeFormat("Controllers.Account.ForgotPassword.Email.Body", resetUrl));
+                        Dependencies.LocalizationService.LocalizeFormat("AccountManager.ForgotPassword.Email.Body", resetUrl));
             }
             catch (Exception ex)
             {
@@ -332,8 +307,6 @@ namespace MedioClinic.Utils
         public async Task<IdentityManagerResult<ResetPasswordResultState, ResetPasswordViewModel>> VerifyResetPasswordTokenAsync(int userId, string token)
         {
             var accountResult = InitResult<ResetPasswordResultState, ResetPasswordViewModel>();
-
-            //var accountResult = new IdentityManagerResult<ResetPasswordResultState, ResetPasswordViewModel>();
             var tokenVerified = false;
 
             try
@@ -361,19 +334,17 @@ namespace MedioClinic.Utils
             return accountResult;
         }
 
-        public async Task<IdentityManagerResult<ResetPasswordResultState>> ResetPasswordAsync(ResetPasswordViewModel model)
+        public async Task<IdentityManagerResult<ResetPasswordResultState>> ResetPasswordAsync(ResetPasswordViewModel uploadModel)
         {
             var accountResult = InitResult<ResetPasswordResultState>();
-
-            //var accountResult = new IdentityManagerResult<ResetPasswordResultState>();
             var identityResult = IdentityResult.Failed();
 
             try
             {
                 identityResult = await UserManager.ResetPasswordAsync(
-                        model.UserId,
-                        model.Token,
-                        model.PasswordConfirmationViewModel.Password);
+                    uploadModel.UserId,
+                    uploadModel.Token,
+                    uploadModel.PasswordConfirmationViewModel.Password);
             }
             catch (Exception ex)
             {
@@ -390,13 +361,24 @@ namespace MedioClinic.Utils
             return accountResult;
         }
 
-        protected async Task<IdentityResult> AddToPatientRole(int userId)
+        /// <summary>
+        /// Adds a user to the patient role.
+        /// </summary>
+        /// <param name="userId">User ID.</param>
+        /// <returns>An identity result.</returns>
+        protected async Task<IdentityResult> AddToPatientRoleAsync(int userId)
         {
             var patientRole = Roles.Patient.ToString();
 
             return await UserManager.AddToRolesAsync(userId, patientRole);
         }
 
+        /// <summary>
+        /// Creates a new user avatar.
+        /// </summary>
+        /// <param name="user">A user.</param>
+        /// <param name="server">A server object.</param>
+        /// <returns></returns>
         protected async Task CreateNewAvatarAsync(MedioClinicUser user, HttpServerUtilityBase server)
         {
             var path = server.MapPath($"{AppConfig.ContentFolder}/{AppConfig.AvatarFolder}/{AppConfig.DefaultAvatarFileName}");

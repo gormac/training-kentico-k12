@@ -22,7 +22,11 @@ namespace MedioClinic.Controllers
             Dependencies = dependencies;
         }
 
-        public PageViewModel GetPageViewModel(string title, string message = null, MessageType messageType = MessageType.Info) 
+        public PageViewModel GetPageViewModel(
+            string title, 
+            string message = null, 
+            bool displayAsRaw = false, 
+            MessageType messageType = MessageType.Info) 
         {
             return new PageViewModel()
             {
@@ -34,7 +38,8 @@ namespace MedioClinic.Controllers
                 UserMessage = new UserMessage
                 {
                     Message = message,
-                    MessageType = messageType
+                    MessageType = messageType,
+                    DisplayAsRaw = displayAsRaw
                 }
             };
         }
@@ -42,7 +47,8 @@ namespace MedioClinic.Controllers
         public PageViewModel<TViewModel> GetPageViewModel<TViewModel>(
             TViewModel data, 
             string title, 
-            string message = null, 
+            string message = null,
+            bool displayAsRaw = false,
             MessageType messageType = MessageType.Info) 
             where TViewModel : IViewModel
         {
@@ -56,7 +62,8 @@ namespace MedioClinic.Controllers
                 UserMessage = new UserMessage
                 {
                     Message = message,
-                    MessageType = messageType
+                    MessageType = messageType,
+                    DisplayAsRaw = displayAsRaw
                 },
                 Data = data
             };
@@ -70,18 +77,15 @@ namespace MedioClinic.Controllers
         protected string Localize(string resourceKey) =>
             Dependencies.LocalizationService.Localize(resourceKey);
 
-        protected ActionResult InvalidInput<TUploadViewModel, TResultState>(
-            PageViewModel<TUploadViewModel> uploadModel, 
-            IdentityManagerResult<TResultState> identityManagerResult)
+        protected ActionResult InvalidInput<TUploadViewModel>(
+            PageViewModel<TUploadViewModel> uploadModel)
             where TUploadViewModel : IViewModel
-            where TResultState : Enum
         {
-            AddErrors(identityManagerResult);
-
             var viewModel = GetPageViewModel(
-                uploadModel.Data, 
-                Localize("BasicForm.InvalidInput"), 
-                Localize("Controllers.Base.InvalidInput.Message"), 
+                uploadModel.Data,
+                Localize("BasicForm.InvalidInput"),
+                Localize("Controllers.Base.InvalidInput.Message"),
+                false,
                 MessageType.Error);
 
             return View(viewModel);

@@ -4,13 +4,13 @@ using System.Linq;
 
 using Business.Identity.Models;
 
-namespace Business.Services.ViewModel
+namespace Business.Services.Model
 {
-    class UserModelService : BaseService, IUserModelService
+    public class UserModelService : BaseService, IUserModelService
     {
-        public object MapToViewModel(
+        public object MapToCustomModel(
             MedioClinicUser user,
-            Type targetViewModelType,
+            Type targetModelType,
             Dictionary<(string propertyName, Type propertyType), object> customMappings = null)
         {
             if (user == null)
@@ -18,14 +18,14 @@ namespace Business.Services.ViewModel
                 throw new ArgumentNullException(nameof(user));
             }
 
-            if (targetViewModelType == null)
+            if (targetModelType == null)
             {
-                throw new ArgumentNullException(nameof(targetViewModelType));
+                throw new ArgumentNullException(nameof(targetModelType));
             }
 
             var userProperties = user.GetType().GetProperties();
-            var targetProperties = targetViewModelType.GetProperties();
-            var viewModel = Activator.CreateInstance(targetViewModelType);
+            var targetProperties = targetModelType.GetProperties();
+            var viewModel = Activator.CreateInstance(targetModelType);
 
             foreach (var targetProperty in targetProperties)
             {
@@ -49,13 +49,13 @@ namespace Business.Services.ViewModel
         }
 
         public MedioClinicUser MapToMedioClinicUser(
-            object viewModel,
+            object customModel,
             MedioClinicUser userToMapTo,
             Dictionary<(string propertyName, Type propertyType), object> customMappings = null)
         {
-            if (viewModel == null)
+            if (customModel == null)
             {
-                throw new ArgumentNullException(nameof(viewModel));
+                throw new ArgumentNullException(nameof(customModel));
             }
 
             if (userToMapTo == null)
@@ -63,7 +63,7 @@ namespace Business.Services.ViewModel
                 throw new ArgumentNullException(nameof(userToMapTo));
             }
 
-            var viewModelProperties = viewModel.GetType().GetProperties();
+            var viewModelProperties = customModel.GetType().GetProperties();
             var userProperties = userToMapTo.GetType().GetProperties();
 
             foreach (var userProperty in userProperties)
@@ -80,7 +80,7 @@ namespace Business.Services.ViewModel
                 }
                 else if (sourceProperty != null)
                 {
-                    userProperty.SetValue(userToMapTo, sourceProperty.GetValue(viewModel));
+                    userProperty.SetValue(userToMapTo, sourceProperty.GetValue(customModel));
                 }
             }
 
