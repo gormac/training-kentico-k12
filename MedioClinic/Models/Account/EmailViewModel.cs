@@ -5,8 +5,8 @@ namespace MedioClinic.Models.Account
 {
     public class EmailViewModel : IViewModel
     {
-        [Required(ErrorMessage = "general.requireemail")]
-        [DisplayName("general.emailaddress")]
+        [Required(ErrorMessage = "General.RequireEmail")]
+        [DisplayName("General.EmailAddress")]
         [DataType(DataType.EmailAddress)]
         [EmailAddress(ErrorMessage = "Models.EmailFormat")]
         [MaxLength(100, ErrorMessage = "Models.MaxLength")]

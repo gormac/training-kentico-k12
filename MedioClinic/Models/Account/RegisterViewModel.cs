@@ -5,11 +5,11 @@ namespace MedioClinic.Models.Account
     public class RegisterViewModel : IViewModel
     {
         [Required]
-        [Display(Name = "general.firstname")]
+        [Display(Name = "General.FirstName")]
         public string FirstName { get; set; }
 
         [Required]
-        [Display(Name = "general.lastname")]
+        [Display(Name = "General.LastName")]
         public string LastName { get; set; }
 
         public EmailViewModel EmailViewModel { get; set; }
