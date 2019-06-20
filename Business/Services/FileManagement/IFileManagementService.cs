@@ -21,13 +21,6 @@ namespace Business.Services.FileManagement
         void EnsureFolderExistence(string folderPhysicalPath);
 
         /// <summary>
-        /// Makes a string contain only characters allowed in URLs.
-        /// </summary>
-        /// <param name="input">String to check.</param>
-        /// <returns>String converted to be URL-compliant.</returns>
-        string MakeStringUrlCompliant(string input);
-
-        /// <summary>
         /// Makes sure that a local file exists.
         /// </summary>
         /// <param name="path">File physical path.</param>

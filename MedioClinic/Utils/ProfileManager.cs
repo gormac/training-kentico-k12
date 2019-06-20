@@ -14,6 +14,7 @@ using Business.Services.Errors;
 using Business.Services.FileManagement;
 using Business.Services.Model;
 using MedioClinic.Config;
+using MedioClinic.Extensions;
 using MedioClinic.Models;
 using MedioClinic.Models.Account;
 using MedioClinic.Models.Profile;
@@ -242,7 +243,7 @@ namespace MedioClinic.Utils
         {
             var physicalFolderPath = requestContext.HttpContext.Server.MapPath($"{AppConfig.ContentFolder}/{AppConfig.AvatarFolder}");
             FileManagementService.EnsureFolderExistence(physicalFolderPath);
-            var fileName = FileManagementService.MakeStringUrlCompliant(avatarFileName);
+            var fileName = avatarFileName.ToUrlCompliantString();
 
             return $"{physicalFolderPath}\\{fileName}";
         }

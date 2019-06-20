@@ -57,20 +57,6 @@ namespace Business.Services.FileManagement
             }
         }
 
-        public string MakeStringUrlCompliant(string input)
-        {
-            var allowedCharacters = @"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=";
-            var stringBuilder = new StringBuilder();
-
-            foreach (var character in input)
-            {
-                var charToAdd = allowedCharacters.Contains(character) ? character : '_';
-                stringBuilder.Append(charToAdd);
-            }
-
-            return stringBuilder.ToString();
-        }
-
         public void EnsureFileExistence(string physicalPath, byte[] fileBinary, bool forceOverwrite = false)
         {
             if (!File.Exists(physicalPath) || forceOverwrite)
