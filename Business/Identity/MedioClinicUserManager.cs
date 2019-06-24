@@ -78,6 +78,8 @@ namespace Business.Identity
 
                 // Don't change the way the passwords are hashed once the app is released in production.
                 user.PasswordHash = UserInfoProvider.GetPasswordHash(newPassword, UserInfoProvider.NewPasswordFormat, user.GUID.ToString());
+
+                await passwordStore.SetPasswordHashAsync(user, user.PasswordHash);
             }
             else
             {
@@ -139,9 +141,7 @@ namespace Business.Identity
             return cast;
         }
 
-        private string NewSecurityStamp()
-        {
-            return Guid.NewGuid().ToString();
-        }
+        private string NewSecurityStamp() =>
+            Guid.NewGuid().ToString();
     }
 }

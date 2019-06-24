@@ -126,7 +126,7 @@ namespace Business.Identity
 
             if (userInfo == null)
             {
-                throw new Exception(ResHelper.GetString("general.usernotfound"));
+                throw new Exception(ResHelper.GetString("General.UserNotFound"));
             }
 
             UserHelper.UpdateUserInfo(ref userInfo, user);
