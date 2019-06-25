@@ -7,11 +7,7 @@ namespace Business.Services.Localization
         public string Localize(string resourceKey) =>
             ResHelper.GetString(resourceKey);
 
-        public string LocalizeFormat(string resourceKey, params object[] args)
-        {
-            var rawText = ResHelper.GetString(resourceKey);
-
-            return string.Format(rawText, args);
-        }
+        public string LocalizeFormat(string resourceKey, params object[] args) =>
+            ResHelper.GetStringFormat(resourceKey, args);
     }
 }
