@@ -27,11 +27,11 @@ namespace MedioClinic
                 {
                     OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<MedioClinicUserManager, MedioClinicUser, int>(
                         // Sets the interval after which the validity of the user's security stamp is checked
-                        validateInterval: TimeSpan.FromMinutes(1),
+                        validateInterval: TimeSpan.FromMinutes(10),
                         regenerateIdentityCallback: (manager, user) => manager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie),
                         getUserIdCallback: ((claimsIdentity) => int.Parse(claimsIdentity.GetUserId()))),
                     // Redirect to logon page with return url
-                    OnApplyRedirect = context => context.Response.Redirect(urlHelper.Action("Signin", "Account") + new Uri(context.RedirectUri).Query)
+                    OnApplyRedirect = context => context.Response.Redirect(urlHelper.Action("SignIn", "Account") + new Uri(context.RedirectUri).Query)
                 },
                 ExpireTimeSpan = TimeSpan.FromDays(14),
                 SlidingExpiration = true

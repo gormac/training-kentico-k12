@@ -76,12 +76,7 @@ namespace MedioClinic
                 .As<IAuthenticationManager>();
 
             // Registers the application-level sign in manager.
-            builder.Register(context =>
-                {
-                    return new MedioClinicSignInManager(
-                        context.Resolve<IMedioClinicUserManager<MedioClinicUser, int>>(),
-                        context.Resolve<IAuthenticationManager>());
-                })
+            builder.RegisterType<MedioClinicSignInManager>()
                 .As<IMedioClinicSignInManager<MedioClinicUser, int>>()
                 .InstancePerRequest();
 
