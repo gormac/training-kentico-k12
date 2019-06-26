@@ -11,6 +11,9 @@ namespace MedioClinic.Models.Profile
 {
     public class CommonUserViewModel
     {
+        [Display(Name = "Models.Profile.CommonUserViewModel.Id")]
+        public int Id { get; set; }
+
         [Required]
         [Display(Name = "Models.Profile.CommonUserViewModel.FirstName")]
         [MaxLength(100, ErrorMessage = "Models.MaxLength")]
@@ -30,9 +33,6 @@ namespace MedioClinic.Models.Profile
         public DateTime DateOfBirth { get; set; }
 
         public Gender Gender { get; set; }
-
-        [Display(Name = "Models.Profile.CommonUserViewModel.Id")]
-        public int Id { get; set; }
 
         [Display(Name = "Models.Profile.CommonUserViewModel.City")]
         public string City { get; set; }

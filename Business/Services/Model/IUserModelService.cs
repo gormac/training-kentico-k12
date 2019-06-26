@@ -26,7 +26,6 @@ namespace Business.Services.Model
         /// <param name="userToMapTo">The target Identity user object.</param>
         /// <param name="customMappings">Custom mappings of properties with different names and/or types.</param>
         /// <returns>The mapped <see cref="MedioClinicUser"/> object.</returns>
-        /// <remarks>Maps properties by reference, does not copy them by value.</remarks>
         MedioClinicUser MapToMedioClinicUser(object customModel, MedioClinicUser userToMapTo, Dictionary<(string propertyName, Type propertyType), object> customMappings = null);
     }
 }

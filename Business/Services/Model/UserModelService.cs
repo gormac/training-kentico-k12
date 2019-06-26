@@ -63,14 +63,14 @@ namespace Business.Services.Model
                 throw new ArgumentNullException(nameof(userToMapTo));
             }
 
-            var viewModelProperties = customModel.GetType().GetProperties();
+            var customModelProperties = customModel.GetType().GetProperties();
             var userProperties = userToMapTo.GetType().GetProperties();
 
             foreach (var userProperty in userProperties)
             {
                 var propertyToMatch = (propertyName: userProperty.Name, propertyType: userProperty.PropertyType);
 
-                var sourceProperty = viewModelProperties.FirstOrDefault(prop =>
+                var sourceProperty = customModelProperties.FirstOrDefault(prop =>
                     prop.Name.Equals(userProperty.Name, StringComparison.OrdinalIgnoreCase)
                     && prop.PropertyType == userProperty.PropertyType);
 
