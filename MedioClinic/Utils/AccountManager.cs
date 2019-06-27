@@ -51,7 +51,7 @@ namespace MedioClinic.Utils
                 Enabled = !emailConfirmed
             };
 
-            var accountResult = InitResult<RegisterResultState>();
+            var accountResult = new IdentityManagerResult<RegisterResultState>();
             IdentityResult identityResult = null;
 
             try
@@ -133,7 +133,7 @@ namespace MedioClinic.Utils
 
         public async Task<IdentityManagerResult<ConfirmUserResultState>> ConfirmUserAsync(int userId, string token, RequestContext requestContext)
         {
-            var accountResult = InitResult<ConfirmUserResultState>();
+            var accountResult = new IdentityManagerResult<ConfirmUserResultState>();
             IdentityResult identityResult = IdentityResult.Failed();
 
             try
@@ -173,7 +173,7 @@ namespace MedioClinic.Utils
 
         public async Task<IdentityManagerResult<SignInResultState>> SignInAsync(SignInViewModel uploadModel)
         {
-            var accountResult = InitResult<SignInResultState, SignInViewModel>();
+            var accountResult = new IdentityManagerResult<SignInResultState, SignInViewModel>();
             MedioClinicUser user = null;
 
             try
@@ -224,7 +224,7 @@ namespace MedioClinic.Utils
 
         public IdentityManagerResult<SignOutResultState> SignOut()
         {
-            var accountResult = InitResult<SignOutResultState>();
+            var accountResult = new IdentityManagerResult<SignOutResultState>();
 
             try
             {
@@ -243,7 +243,7 @@ namespace MedioClinic.Utils
 
         public async Task<IdentityManagerResult<ForgotPasswordResultState>> ForgotPasswordAsync(EmailViewModel uploadModel, RequestContext requestContext)
         {
-            var accountResult = InitResult<ForgotPasswordResultState>();
+            var accountResult = new IdentityManagerResult<ForgotPasswordResultState>();
             MedioClinicUser user = null;
 
             try
@@ -306,7 +306,7 @@ namespace MedioClinic.Utils
 
         public async Task<IdentityManagerResult<ResetPasswordResultState, ResetPasswordViewModel>> VerifyResetPasswordTokenAsync(int userId, string token)
         {
-            var accountResult = InitResult<ResetPasswordResultState, ResetPasswordViewModel>();
+            var accountResult = new IdentityManagerResult<ResetPasswordResultState, ResetPasswordViewModel>();
             var tokenVerified = false;
 
             try
@@ -336,7 +336,7 @@ namespace MedioClinic.Utils
 
         public async Task<IdentityManagerResult<ResetPasswordResultState>> ResetPasswordAsync(ResetPasswordViewModel uploadModel)
         {
-            var accountResult = InitResult<ResetPasswordResultState>();
+            var accountResult = new IdentityManagerResult<ResetPasswordResultState>();
             var identityResult = IdentityResult.Failed();
 
             try

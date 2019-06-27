@@ -39,30 +39,5 @@ namespace MedioClinic.Utils
             result.Success = false;
             result.Errors.Add(exception.Message);
         }
-
-        /// <summary>
-        /// Creates an operation result object.
-        /// </summary>
-        /// <typeparam name="TResultState">Result states of the client code.</typeparam>
-        /// <returns>The operation result.</returns>
-        protected IdentityManagerResult<TResultState> InitResult<TResultState>()
-            where TResultState : Enum
-            => new IdentityManagerResult<TResultState>
-                {
-                    Errors = new List<string>()
-                };
-
-        /// <summary>
-        /// Creates an operation result object.
-        /// </summary>
-        /// <typeparam name="TResultState">Result states of the client code.</typeparam>
-        /// <typeparam name="TData">Operation result data.</typeparam>
-        /// <returns>The operation result.</returns>
-        protected IdentityManagerResult<TResultState, TData> InitResult<TResultState, TData>()
-            where TResultState : Enum
-            => new IdentityManagerResult<TResultState, TData>
-                {
-                    Errors = new List<string>()
-                };
     }
 }
