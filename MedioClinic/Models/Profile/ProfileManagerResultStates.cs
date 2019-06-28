@@ -1,4 +1,4 @@
-﻿namespace MedioClinic.Models
+﻿namespace MedioClinic.Models.Profile
 {
     public enum GetProfileResultState
     {

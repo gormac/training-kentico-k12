@@ -36,6 +36,7 @@ namespace MedioClinic.Extensions
         {
             var scheme = request?.Url?.Scheme;
             var domain = request?.Url?.Host;
+
             var relativePath = string.IsNullOrEmpty(controller)
                 ? helper.Action(action, routeValues)
                 : helper.Action(action, controller, routeValues);
