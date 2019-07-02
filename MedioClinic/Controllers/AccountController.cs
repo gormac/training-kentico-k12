@@ -179,7 +179,10 @@ namespace MedioClinic.Controllers
                 // All of the result states should be treated equal (to prevent enumeration attacks), hence discarding the result entirely.
                 _ = await AccountManager.ForgotPasswordAsync(uploadModel.Data, Request.RequestContext);
 
-                return CheckEmailResetPassword();
+                var title = Localize("Controllers.Account.CheckEmailResetPassword.Title");
+                var message = Localize("Controllers.Account.CheckEmailResetPassword.Message");
+
+                return View("UserMessage", GetPageViewModel(title, message, messageType: MessageType.Info));
             }
 
             return View(GetPageViewModel(uploadModel.Data, Localize("PassReset.Title")));
@@ -254,18 +257,6 @@ namespace MedioClinic.Controllers
             ModelState.AddModelError(string.Empty, Localize("Controllers.Account.InvalidAttempt"));
 
             return View(GetPageViewModel(uploadModel.Data, Localize("LogonForm.LogonButton")));
-        }
-
-        /// <summary>
-        /// Points the user to their email inbox.
-        /// </summary>
-        /// <returns>The user message.</returns>
-        protected ActionResult CheckEmailResetPassword()
-        {
-            var title = Localize("Controllers.Account.CheckEmailResetPassword.Title");
-            var message = Localize("Controllers.Account.CheckEmailResetPassword.Message");
-
-            return View("UserMessage", GetPageViewModel(title, message, messageType: MessageType.Info));
         }
     }
 }

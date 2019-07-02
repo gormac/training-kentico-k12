@@ -5,6 +5,6 @@
         public const string Sitename = "MedioClinic";
         public const string ContentFolder = "~/Content";
         public const string AvatarFolder = "Avatar";
-        public const string DefaultAvatarFileName = "AvatarTemplate.jpg";
+        public const string DefaultAvatarFileName = "avatar-template.jpg";
     }
 }

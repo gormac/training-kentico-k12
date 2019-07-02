@@ -1,6 +1,5 @@
 ﻿@using System.Threading
 @using System.Web.Optimization
-@using System.Security.Claims;
 
 @model MedioClinic.Models.PageViewModel
 
@@ -63,46 +62,39 @@
                     <li><a href="@Url.Action("Signin", "Account")">Sign in</a></li>
                 </ul>
             }
-                <ul class="right hide-on-med-and-down">
-                    @foreach (var menuItem in Model.MenuItems)
+            <ul class="right hide-on-med-and-down">
+                @foreach (var menuItem in Model.MenuItems)
+                {
+                    if (ViewContext.RouteData.Values["controller"]?.ToString().Equals(menuItem.Controller, StringComparison.OrdinalIgnoreCase) ?? false)
                     {
-                        if (ViewContext.RouteData.Values["controller"]?.ToString().Equals(menuItem.Controller, StringComparison.OrdinalIgnoreCase) ?? false)
-                        {
-                            <li class="kn-bold">
-                                <a href="@Url.Action(menuItem.Action, menuItem.Controller)">@menuItem.Caption</a>
-                            </li>
-                        }
-                        else
-                        {
-                            <li>
-                                <a href="@Url.Action(menuItem.Action, menuItem.Controller)">@menuItem.Caption</a>
-                            </li>
-                        }
-                    }
-                    <li>
-                        <a class="dropdown-trigger" href="#" data-target="langs">
-                            @Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName
-                            <i class="fas fa-globe-africa right"></i>
-                        </a>
-                    </li>
-                    @if (Context.User.Identity.IsAuthenticated)
-                    {
-                        <li>
-                            <a class="dropdown-trigger" href="#" data-target="user-account">
-                                @Html.Raw(User.Identity.Name)
-                                <i class="fas fa-user-circle right"></i>
-                            </a>
+                        <li class="kn-bold">
+                            <a href="@Url.Action(menuItem.Action, menuItem.Controller)">@menuItem.Caption</a>
                         </li>
                     }
                     else
                     {
                         <li>
-                            <a class="dropdown-trigger" href="#" data-target="user-account">
-                                <i class="fas fa-user-circle right"></i>
-                            </a>
+                            <a href="@Url.Action(menuItem.Action, menuItem.Controller)">@menuItem.Caption</a>
                         </li>
                     }
-                </ul>
+                }
+                <li>
+                    <a class="dropdown-trigger" href="#" data-target="langs">
+                        @Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName
+                        <i class="fas fa-globe-africa right"></i>
+                    </a>
+                </li>
+
+                <li>
+                    <a class="dropdown-trigger" href="#" data-target="user-account">
+                        @if (Context.User.Identity.IsAuthenticated)
+                        {
+                            @Html.Raw(User.Identity.Name)
+                        }
+                        <i class="fas fa-user-circle right"></i>
+                    </a>
+                </li>
+            </ul>
             <ul id="nav-mobile" class="sidenav">
                 @foreach (var menuItem in Model.MenuItems)
                 {

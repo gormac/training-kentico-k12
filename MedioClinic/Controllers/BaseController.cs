@@ -69,13 +69,13 @@ namespace MedioClinic.Controllers
             };
         }
 
+        protected string Localize(string resourceKey) =>
+            Dependencies.LocalizationService.Localize(resourceKey);
+
         protected string ConcatenateContactAdmin(string messageKey) =>
             Localize(messageKey)
                 + " "
                 + Localize("ContactAdministrator");
-
-        protected string Localize(string resourceKey) =>
-            Dependencies.LocalizationService.Localize(resourceKey);
 
         protected ActionResult InvalidInput<TUploadViewModel>(
             PageViewModel<TUploadViewModel> uploadModel)

@@ -26,10 +26,8 @@ namespace MedioClinic.Controllers
 
         // GET: Profile
         [MedioClinicAuthorize(Roles = Roles.Doctor | Roles.Patient, SiteName = AppConfig.Sitename)]
-        public async Task<ActionResult> Index()
-        {
-            return await GetProfileAsync();
-        }
+        public async Task<ActionResult> Index() =>
+            await GetProfileAsync();
 
         // POST: Profile
         [MedioClinicAuthorize(Roles = Roles.Doctor | Roles.Patient, SiteName = AppConfig.Sitename)]

@@ -78,9 +78,8 @@ namespace MedioClinic.Utils
                     }
                     catch (Exception ex)
                     {
-                        var ar = accountResult as IdentityManagerResult<RegisterResultState>;
                         accountResult.ResultState = RegisterResultState.TokenNotCreated;
-                        HandleException(nameof(RegisterAsync), ex, ref ar);
+                        HandleException(nameof(RegisterAsync), ex, ref accountResult);
 
                         return accountResult;
                     }
@@ -116,9 +115,8 @@ namespace MedioClinic.Utils
                     }
                     catch (Exception ex)
                     {
-                        var ar = accountResult as IdentityManagerResult<RegisterResultState>;
                         accountResult.ResultState = RegisterResultState.NotSignedIn;
-                        HandleException(nameof(RegisterAsync), ex, ref ar);
+                        HandleException(nameof(RegisterAsync), ex, ref accountResult);
 
                         return accountResult;
                     }
@@ -235,7 +233,7 @@ namespace MedioClinic.Utils
             catch (Exception ex)
             {
                 accountResult.ResultState = SignOutResultState.NotSignedOut;
-                Dependencies.ErrorHelperService.LogException(nameof(AccountManager), nameof(SignOut), ex);
+                HandleException(nameof(SignOut), ex, ref accountResult);
             }
 
             return accountResult;
@@ -258,12 +256,14 @@ namespace MedioClinic.Utils
                 return accountResult;
             }
 
+            // Registration: Confirmed registration (begin)
             if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
             {
                 accountResult.ResultState = ForgotPasswordResultState.EmailNotConfirmed;
 
                 return accountResult;
             }
+            // Registration: Confirmed registration (end)
 
             string token = null;
 
@@ -350,6 +350,8 @@ namespace MedioClinic.Utils
             {
                 accountResult.ResultState = ResetPasswordResultState.PasswordNotReset;
                 HandleException(nameof(ResetPasswordAsync), ex, ref accountResult);
+
+                return accountResult;
             }
 
             if (identityResult.Succeeded)
