@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 
 using Business.DependencyInjection;
+using MedioClinic.Config;
 using MedioClinic.Models;
 using MedioClinic.Models.Account;
 using MedioClinic.Utils;
@@ -13,12 +14,6 @@ namespace MedioClinic.Controllers
     [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
     public class AccountController : BaseController
     {
-        /// <summary>
-        /// Signals if user registration is confirmed by email.
-        /// </summary>
-        /// <remarks>Consider taking the value from environment variables.</remarks>
-        public bool EmailConfirmedRegistration => true;
-
         public IAccountManager AccountManager { get; set; }
 
         public AccountController(
@@ -44,7 +39,7 @@ namespace MedioClinic.Controllers
         {
             if (ModelState.IsValid)
             {
-                var accountResult = await AccountManager.RegisterAsync(uploadModel.Data, EmailConfirmedRegistration, Request.RequestContext);
+                var accountResult = await AccountManager.RegisterAsync(uploadModel.Data, AppConfig.EmailConfirmedRegistration, Request.RequestContext);
 
                 if (accountResult.ResultState == RegisterResultState.InvalidInput)
                 {
@@ -57,7 +52,7 @@ namespace MedioClinic.Controllers
                 var message = ConcatenateContactAdmin("Controllers.Account.Register.Failure.Message");
                 var messageType = MessageType.Error;
 
-                if (EmailConfirmedRegistration)
+                if (AppConfig.EmailConfirmedRegistration)
                 {
                     if (accountResult.ResultState == RegisterResultState.EmailSent)
                     {

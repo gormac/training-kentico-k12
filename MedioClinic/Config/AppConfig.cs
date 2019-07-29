@@ -6,5 +6,6 @@
         public const string ContentFolder = "~/Content";
         public const string AvatarFolder = "Avatar";
         public const string DefaultAvatarFileName = "avatar-template.jpg";
+        public const bool EmailConfirmedRegistration = true;
     }
 }
