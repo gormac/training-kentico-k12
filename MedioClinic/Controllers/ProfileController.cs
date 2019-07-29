@@ -12,6 +12,7 @@ using MedioClinic.Utils;
 
 namespace MedioClinic.Controllers
 {
+    // In production, use [RequireHttps].
     [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
     public class ProfileController : BaseController
     {
