@@ -617,7 +617,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="Content\Avatar\AvatarTemplate.jpg">
+    <Content Include="Content\Avatar\avatar-template.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Css\Master\icon.css" />
