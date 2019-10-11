@@ -371,7 +371,7 @@
         </member>
         <member name="M:CMS.Membership.AuthenticationHelper.FindUsersByEmail(System.String)">
             <summary>
-            Find users specified by Email
+            Finds enabled users specified by the <paramref name="userEmail"/>.
             </summary>
             <param name="userEmail">Email assigned to the user.</param>
         </member>
@@ -2589,11 +2589,6 @@
         <member name="T:CMS.Membership.MembershipContext">
             <summary>
             Membership related context methods and variables.
-            </summary>
-        </member>
-        <member name="F:CMS.Membership.MembershipContext.SHIFTED_INTERVAL_IN_MINUTES">
-            <summary>
-            Time interval used for creating token info.
             </summary>
         </member>
         <member name="F:CMS.Membership.MembershipContext.MF_AUTHENICATION_INFO">

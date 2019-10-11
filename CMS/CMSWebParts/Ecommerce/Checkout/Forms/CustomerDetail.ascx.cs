@@ -166,7 +166,7 @@ public partial class CMSWebParts_Ecommerce_Checkout_Forms_CustomerDetail : CMSCh
             customer.CustomerOrganizationID = "";
             customer.CustomerTaxRegistrationID = "";
         }
-        
+
         if (customer.CustomerID < 1 && ShoppingCart.ShoppingCartUserID > 0)
         {
             // Connect newly created customer with registered user -> if user returns to the site, customer`s data will be filled
@@ -177,15 +177,7 @@ public partial class CMSWebParts_Ecommerce_Checkout_Forms_CustomerDetail : CMSCh
         var shoppingService = Service.Resolve<IShoppingService>();
         shoppingService.SetCustomer(customer);
 
-        // Address cannot be inserted before customer is saved (otherwise it would be an orphan address)
-        // In case of address update - AddressName and AddressPersonalName should be re-generated according current customer info (if not present on the address form)
-        if (((shoppingService.GetBillingAddress() == null) ||
-            (shoppingService.GetShippingAddress() == null) ||
-            (ShoppingCart.ShoppingCartCompanyAddress != null))
-            && (customer.CustomerID > 0))
-        {
-            SaveCustomerAddresses(ShoppingCart);
-        }
+        SaveCustomerAddresses(ShoppingCart);
 
         ShoppingCartInfoProvider.SetShoppingCartInfo(ShoppingCart);
 

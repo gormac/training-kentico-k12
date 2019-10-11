@@ -94,6 +94,7 @@ InitCheckboxes();
         chkImportTasks.Text = GetString("ImportObjects.ImportTasks");
         chkLogSync.Text = GetString("ImportObjects.LogSynchronization");
         chkLogInt.Text = GetString("ImportObjects.LogIntegration");
+        chkRebuildIndexes.Text = GetString("importobjects.rebuildsiteindexes");
 
         userSelectorMacroResigningUser.UniSelector.TextBoxSelect.AddCssClass("input-width-60");
     }
@@ -125,6 +126,7 @@ InitCheckboxes();
 
         ImportSettings.LogSynchronization = chkLogSync.Checked;
         ImportSettings.LogIntegration = chkLogInt.Checked;
+        ImportSettings.RebuildSearchIndex = chkRebuildIndexes.Checked;
 
         var userId = (string) userSelectorMacroResigningUser.Value;
         if (!String.IsNullOrEmpty(userId))
@@ -180,6 +182,8 @@ InitCheckboxes();
             chkImportTasks.Checked = ValidationHelper.GetBoolean(ImportSettings.GetSettings(ImportExportHelper.SETTINGS_TASKS), true);
             chkLogSync.Checked = ImportSettings.LogSynchronization;
             chkLogInt.Checked = ImportSettings.LogIntegration;
+            chkRebuildIndexes.Checked = ImportSettings.SiteIsIncluded;
+            chkRebuildIndexes.Visible = ImportSettings.SiteIsIncluded;
 
             Visible = true;
 

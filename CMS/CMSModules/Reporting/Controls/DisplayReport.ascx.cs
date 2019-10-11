@@ -503,9 +503,26 @@ public partial class CMSModules_Reporting_Controls_DisplayReport : AbstractRepor
                 ctrl.SavedReportID = mSavedReportId;
             }
 
-            if (formParameters != null && (!formParameters.Visible || formParameters.ValidateData()))
+            if (formParameters != null)
             {
-                ctrl.ReloadData(forceLoad);
+                if (EmailMode || !formParameters.Visible || formParameters.FieldControls != null && formParameters.ValidateData())
+                {
+                    ctrl.ReloadData(forceLoad);
+                }
+                else if (formParameters.FieldControls == null)
+                {
+                    void DelayReportReload(object sender, EventArgs eventArgs)
+                    {
+                        formParameters.PreRender -= DelayReportReload;
+
+                        if (formParameters.ValidateData())
+                        {
+                            ctrl.ReloadData(forceLoad);
+                        }
+                    }
+
+                    formParameters.PreRender += DelayReportReload;
+                }
             }
 
             if (ctrl.ComputedWidth != 0)

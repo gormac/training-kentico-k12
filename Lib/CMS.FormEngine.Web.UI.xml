@@ -990,6 +990,7 @@
             </summary>
             <param name="ffi">Form field info</param>
             <param name="form">Form where the control is used.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="ffi"/> or <paramref name="form"/> is <c>null</c></exception>
         </member>
         <member name="M:CMS.FormEngine.Web.UI.FieldActions.CreateChildControls">
             <summary>
@@ -1252,6 +1253,11 @@
         <member name="P:CMS.FormEngine.Web.UI.Html5InputFormControl.Value">
             <summary>
             Form control value.
+            </summary>
+        </member>
+        <member name="P:CMS.FormEngine.Web.UI.Html5InputFormControl.Enabled">
+            <summary>
+            Gets or sets state enable.
             </summary>
         </member>
         <member name="M:CMS.FormEngine.Web.UI.Html5InputFormControl.IsCheckbox(System.String)">

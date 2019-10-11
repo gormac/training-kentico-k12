@@ -89,6 +89,7 @@
             <cms:CMSCheckBox ID="chkImportTasks" runat="server" />
             <cms:CMSCheckBox ID="chkLogSync" runat="server" />
             <cms:CMSCheckBox ID="chkLogInt" runat="server" />
+            <cms:CMSCheckBox ID="chkRebuildIndexes" runat="server" />
             <cms:CMSCheckBox ID="chkCopyFiles" runat="server" />
             <div class="selector-subitem">
                 <div class="checkbox-list-vertical">

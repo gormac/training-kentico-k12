@@ -116,7 +116,7 @@ public partial class CMSModules_Content_FormControls_Relationships_RelatedDocume
             mConfig.ContentSelectedSite = SiteContext.CurrentSiteName;
             mConfig.OutputFormat = OutputFormatEnum.Custom;
             mConfig.CustomFormatCode = "relationship";
-            mConfig.ContentSites = AvailableSitesEnum.OnlyCurrentSite;
+            mConfig.ContentSites = IsAdHocRelationship ? AvailableSitesEnum.OnlyCurrentSite : AvailableSitesEnum.All;
             mConfig.AdditionalQueryParameters = "contentchanged=false";
             return mConfig;
         }

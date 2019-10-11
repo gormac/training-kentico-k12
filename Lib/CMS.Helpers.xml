@@ -11020,12 +11020,13 @@
             <param name="msg">Message</param>
             <param name="className">CSS class</param>
         </member>
-        <member name="M:CMS.Helpers.HTMLHelper.UnResolveUrls(System.String,System.String)">
+        <member name="M:CMS.Helpers.HTMLHelper.UnResolveUrls(System.String,System.String,System.Func{System.String,System.String})">
             <summary>
             Unresolve relative URI if used in "src=" or "href=" or "background=" or "url(".
             </summary>
             <param name="mHtml">HTML code</param>
             <param name="applicationPath">Application path</param>
+            <param name="pathModifier">Method that is called after each of the local path is unresolved. Input parameter format: "~/relativePath?query=.."</param>
         </member>
         <member name="M:CMS.Helpers.HTMLHelper.UnResolveUri(System.Text.RegularExpressions.Match)">
             <summary>
@@ -11352,6 +11353,44 @@
             Match evaluator for FixUrl regex replacement.
             </summary>
             <param name="match">Match</param>
+        </member>
+        <member name="T:CMS.Helpers.RichTextLinksConverter">
+            <summary>
+            Converts local links in a rich text HTML to a relative form.
+            </summary>
+            <remarks>
+            Replaces all links in the format "/applicationPath/xxx*" to "~/xxx*". 
+            External link modification is available via the <see cref="M:CMS.Helpers.RichTextLinksConverter.#ctor(System.String,System.Func{System.String,System.String})"/>.
+            </remarks>
+        </member>
+        <member name="F:CMS.Helpers.RichTextLinksConverter.pathModifier">
+            <summary>
+            Function that is called after each of the absolute URL paths is unresolved.
+            </summary>
+        </member>
+        <member name="F:CMS.Helpers.RichTextLinksConverter.linksRegex">
+            <summary>
+            The regular expression that searches for all local links (absolute path without a domain).
+            </summary>
+        </member>
+        <member name="M:CMS.Helpers.RichTextLinksConverter.#ctor(System.String,System.Func{System.String,System.String})">
+            <summary>
+            Initializes a new instance of the <see cref="T:CMS.Helpers.RichTextLinksConverter"/> class.
+            </summary>
+            <param name="applicationPath">The application path of links to be unresolved</param>
+            <param name="pathModifier">Function that is called after each of the absolute URL paths is unresolved.</param>
+        </member>
+        <member name="M:CMS.Helpers.RichTextLinksConverter.Unresolve(System.String)">
+            <summary>
+            Unresolves URL paths in the given <paramref name="html"/> if used in "src=" or "href=" or "background=" or "url(" HTML attributes.
+            </summary>
+            <param name="html">HTML code to unresolve.</param>
+        </member>
+        <member name="M:CMS.Helpers.RichTextLinksConverter.GetLinksRegex(System.String)">
+            <summary>
+            Gets a regular expression that searches for all local links (absolute path without a domain).
+            </summary>
+            <param name="applicationPath">The application path.</param>
         </member>
         <member name="T:CMS.Helpers.WebLanguagesContext">
             <summary>

@@ -264,6 +264,15 @@ public partial class CMSModules_ImportExport_Controls_Import___objects__ {
     protected global::CMS.Base.Web.UI.CMSCheckBox chkLogInt;
     
     /// <summary>
+    /// chkRebuildIndexes control.
+    /// </summary>
+    /// <remarks>
+    /// Auto-generated field.
+    /// To modify move field declaration from designer file to code-behind file.
+    /// </remarks>
+    protected global::CMS.Base.Web.UI.CMSCheckBox chkRebuildIndexes;
+    
+    /// <summary>
     /// chkCopyFiles control.
     /// </summary>
     /// <remarks>

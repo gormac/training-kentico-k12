@@ -794,6 +794,11 @@
             </summary>
             <returns>Error message if the value doesn't match field's data type; otherwise null.</returns>
         </member>
+        <member name="M:CMS.FormEngine.DataTypeIntegrity.GetDataTypeErrorMessage(System.String)">
+            <summary>
+            Gets error message for data type.
+            </summary>
+        </member>
         <member name="M:CMS.FormEngine.DataTypeIntegrity.GetIntErrorMessage">
             <summary>
             Gets error message for integer type.
