@@ -311,6 +311,8 @@
     <Content Include="App_Data\CMSModules\Cms\UI\Grids\CMS_WorkflowStep\default.xml" />
     <Content Include="App_Data\CMSModules\Cms\UI\Grids\CMS_Workflow\default.xml" />
     <Content Include="App_Data\CMSModules\Design\UI\Grids\CMS_WebPartLayout\WebPartLayoutInherited.xml" />
+    <Content Include="App_Data\CMSModules\DoctorAppointments\UI\Grids\DoctorAppointments_Appointment\default.xml" />
+    <Content Include="App_Data\CMSModules\DoctorAppointments\UI\Grids\DoctorAppointments_Doctor\default.xml" />
     <Content Include="App_Data\CMSModules\Ecommerce\UI\Grids\Ecommerce_Collection\default.xml" />
     <Content Include="App_Data\CMSModules\Ecommerce\UI\Grids\Ecommerce_Brand\default.xml" />
     <Content Include="App_Data\CMSModules\Ecommerce\UI\Grids\Ecommerce_GiftCardCouponCode\default.xml" />
@@ -22051,6 +22053,12 @@
   <ItemGroup>
     <Folder Include="App_Data\CMSModules\WebAnalytics\MaxMind\" />
     <Folder Include="CorporateSite\media\VideoGallery\__thumbnails\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CustomModules\Customizations.csproj">
+      <Project>{291c565d-8c98-43f6-a273-9b04a1f15eb8}</Project>
+      <Name>Customizations</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
