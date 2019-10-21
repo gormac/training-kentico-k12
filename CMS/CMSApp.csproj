@@ -291,6 +291,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Admin\Default.aspx" />
+    <Content Include="ApiTest.aspx" />
     <Content Include="App_Data\CMSModules\Chat\UI\Grids\Chat_User\default.xml" />
     <Content Include="App_Data\CMSModules\Cms\UI\Grids\CMS_Class\objecttypes.xml" />
     <Content Include="App_Data\CMSModules\Cms\UI\Grids\CMS_HelpTopic\default.xml" />
@@ -4435,6 +4436,13 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApiTest.aspx.cs">
+      <DependentUpon>ApiTest.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ApiTest.aspx.designer.cs">
+      <DependentUpon>ApiTest.aspx</DependentUpon>
+    </Compile>
     <Compile Include="CMSAdminControls\UI\SmartTip.ascx.cs">
       <DependentUpon>SmartTip.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

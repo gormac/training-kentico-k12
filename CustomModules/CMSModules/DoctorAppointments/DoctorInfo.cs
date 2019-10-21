@@ -30,6 +30,7 @@ namespace DoctorAppointments
         {
             ModuleName = "DoctorAppointments",
             TouchCacheDependencies = true,
+            LogEvents = true
         };
 
 

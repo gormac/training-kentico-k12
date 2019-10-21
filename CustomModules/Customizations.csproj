@@ -40,8 +40,17 @@
     <Reference Include="CMS.DataEngine">
       <HintPath>..\Lib\CMS.DataEngine.dll</HintPath>
     </Reference>
+    <Reference Include="CMS.EmailEngine">
+      <HintPath>..\Lib\CMS.EmailEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="CMS.EventLog">
+      <HintPath>..\Lib\CMS.EventLog.dll</HintPath>
+    </Reference>
     <Reference Include="CMS.Helpers">
       <HintPath>..\Lib\CMS.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="CMS.Scheduler">
+      <HintPath>..\Lib\CMS.Scheduler.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -53,12 +62,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CMSModules\DoctorAppointments\AppointmentEvents.cs" />
     <Compile Include="CMSModules\DoctorAppointments\AppointmentInfo.cs" />
     <Compile Include="CMSModules\DoctorAppointments\AppointmentInfoProvider.cs" />
+    <Compile Include="CMSModules\DoctorAppointments\DoctorAppointmentsModule.cs" />
+    <Compile Include="CMSModules\DoctorAppointments\DoctorImportEx1.cs" />
     <Compile Include="CMSModules\DoctorAppointments\DoctorInfo.cs" />
     <Compile Include="CMSModules\DoctorAppointments\DoctorInfoProvider.cs" />
+    <Compile Include="CMSModules\DoctorAppointments\DoctorInfoProviderExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="CMSModules\DoctorAppointments\Import\DoctorList.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
